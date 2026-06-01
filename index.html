@@ -624,22 +624,12 @@ async function syncFromSupabase(){
   if(matches&&matches.length) DB._s('matches',matches.map(matchFromDB));
 }
 
+let _pollTimer=null;
+
 async function initSupabase(){
   try{
     supa=supabase.createClient(SUPA_URL,SUPA_KEY);
     await syncFromSupabase();
-    // Realtime: recebe atualizações ao vivo de outros dispositivos
-    supa.channel('gfe-live')
-      .on('postgres_changes',{event:'*',schema:'public',table:'sessions'},()=>{
-        syncFromSupabase().then(()=>render());
-      })
-      .on('postgres_changes',{event:'*',schema:'public',table:'matches'},()=>{
-        syncFromSupabase().then(()=>{ recalcAllElo(); render(); });
-      })
-      .on('postgres_changes',{event:'*',schema:'public',table:'players'},()=>{
-        syncFromSupabase().then(()=>render());
-      })
-      .subscribe();
     // Intercepta escritas do DB para também salvar no Supabase
     const _sp=DB.setPlayers.bind(DB);
     DB.setPlayers=v=>{ _sp(v); supa.from('players').upsert(v).then(({error})=>{ if(error)console.warn('supa players:',error); }); };
@@ -647,7 +637,27 @@ async function initSupabase(){
     DB.setSessions=v=>{ _ss(v); supa.from('sessions').upsert(v.map(sessionToDB)).then(({error})=>{ if(error)console.warn('supa sessions:',error); }); };
     const _sm=DB.setMatches.bind(DB);
     DB.setMatches=v=>{ _sm(v); supa.from('matches').upsert(v.map(matchToDB)).then(({error})=>{ if(error)console.warn('supa matches:',error); }); };
+    // Polling: sincroniza com o banco a cada 3s (garante atualização entre dispositivos)
+    startPolling();
+    document.addEventListener('visibilitychange',()=>{
+      document.hidden ? stopPolling() : startPolling();
+    });
   } catch(e){ console.warn('Supabase init error:',e); }
+}
+
+function startPolling(){
+  if(_pollTimer)return;
+  _pollTimer=setInterval(async()=>{
+    if(document.hidden||!supa)return;
+    const prev=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
+    await syncFromSupabase();
+    const next=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
+    if(prev!==next){ recalcAllElo(); render(); }
+  },3000);
+}
+
+function stopPolling(){
+  if(_pollTimer){ clearInterval(_pollTimer); _pollTimer=null; }
 }
 
 // ══════════════════════════════════════
