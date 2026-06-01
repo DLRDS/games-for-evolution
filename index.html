@@ -456,6 +456,10 @@
       <div class="hd-title">Games For Evolution</div>
       <div class="hd-sub" id="hd-sub">Beach Tennis · GFE</div>
     </div>
+    <div id="live-badge" onclick="goToLive()" style="display:none;align-items:center;gap:6px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:5px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent">
+      <div style="width:7px;height:7px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;flex-shrink:0"></div>
+      <span style="font-family:var(--font-m);font-size:9px;color:var(--danger);font-weight:700;letter-spacing:1px">AO VIVO</span>
+    </div>
   </header>
   <main id="content"></main>
   <nav>
@@ -652,8 +656,39 @@ function startPolling(){
     const prev=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
     await syncFromSupabase();
     const next=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
-    if(prev!==next){ recalcAllElo(); render(); }
+    if(prev!==next){
+      recalcAllElo();
+      // Auto-navegar para sessão ao vivo se espectador
+      _checkLiveSession();
+      render();
+    }
+    // Sempre atualiza badge ao vivo no header
+    _updateLiveBadge();
   },3000);
+}
+
+function _checkLiveSession(){
+  if(sessionFlow) return; // é o organizador, não faz nada
+  const pid=DB.currentPlayer();
+  if(!pid) return;
+  const activeSess=DB.sessions().find(s=>
+    s.status==='active' &&
+    (s.liveScore||s.flowState) &&
+    (s.confirmed||[]).includes(pid)
+  );
+  if(!activeSess) return;
+  // Abre automaticamente a sessão ao vivo
+  if(page!=='lista'){ page='lista'; document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active')); document.getElementById('nav-lista')?.classList.add('active'); }
+  listaActiveId=activeSess.id;
+}
+
+function _updateLiveBadge(){
+  const pid=DB.currentPlayer();
+  const activeSess=DB.sessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
+  const badge=document.getElementById('live-badge');
+  if(!badge) return;
+  if(activeSess){ badge.style.display='flex'; }
+  else { badge.style.display='none'; }
 }
 
 function stopPolling(){
@@ -1023,6 +1058,16 @@ function buildConvocacao(){
 // NAVIGATION
 // ══════════════════════════════════════
 let page='home', rankTab='elo', histFilter=null, rrState=null, mvpSessionId=null, selectedMvpId=null;
+
+function goToLive(){
+  const activeSess=DB.sessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
+  if(!activeSess) return;
+  page='lista';
+  listaActiveId=activeSess.id;
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-lista')?.classList.add('active');
+  render();
+}
 
 function nav(p){
   page=p;
@@ -1421,69 +1466,84 @@ function renderPairManager(session){
 function renderSpectator(session){
   const ls=session.liveScore;
   const fs=session.flowState;
-  // Entre partidas: mostra quem está em quadra e aguarda próxima
-  if(!ls && fs && fs.phase==='pick_opponent'){
-    const pairs=session.pairs||[];
-    const onCourt=fs.onCourtIdx!=null?pairs[fs.onCourtIdx]:null;
-    const courtNames=onCourt?(onCourt.map(pid=>getName(pid).split(' ')[0]).join(' & ')):'—';
-    return`<div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">AO VIVO · MODO ESPECTADOR</div></div>
-      <div style="text-align:center;padding:24px 0">
-        <div style="font-size:40px;margin-bottom:10px">👑</div>
-        <div style="font-family:var(--font-h);font-size:18px;font-weight:700;color:var(--orange);text-transform:uppercase">${esc(courtNames)}</div>
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:4px;letter-spacing:1px">EM QUADRA · AGUARDANDO PRÓXIMA PARTIDA</div>
-      </div>
-      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Atualiza automaticamente em tempo real</p>`;
+  const pairs=session.pairs||[];
+
+  // ── Bloco de placar ──
+  let scoreBlock='';
+  if(ls && ls.status!=='finished'){
+    const t1names=(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
+    const t2names=(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
+    const winning1=ls.t1>ls.t2, winning2=ls.t2>ls.t1;
+    const setsPills=(ls.completedSets||[]).map(s=>{
+      const t1w=s.won===1;
+      return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}</div>
+             <div class="sets-sep">·</div>
+             <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}</div>
+             <div class="sets-sep" style="margin:0 4px">|</div>`;
+    }).join('');
+    const tbBanner=ls.isTb?`<div style="text-align:center;padding:5px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;border-bottom:1px solid var(--n600)">⚡ TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
+    scoreBlock=`
+      <div class="eyebrow">Partida ao vivo</div>
+      <div style="background:var(--n700);border:1px solid rgba(255,102,0,.4);border-radius:12px;overflow:hidden;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--n600);background:rgba(255,102,0,.05)">
+          <div class="live-dot" style="width:7px;height:7px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;flex-shrink:0"></div>
+          <span style="font-family:var(--font-m);font-size:9px;color:var(--danger);letter-spacing:1.5px;font-weight:700">AO VIVO</span>
+          <div style="margin-left:auto;display:flex;gap:4px;align-items:center">${setsPills}
+            <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t1}</div>
+            <div class="sets-sep">·</div>
+            <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t2}</div>
+          </div>
+        </div>
+        ${tbBanner}
+        <div style="display:grid;grid-template-columns:1fr 1fr">
+          <div style="padding:18px 12px;text-align:center;border-right:1px solid var(--n600);background:${winning1?'rgba(255,102,0,.06)':''}">
+            <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t1names)}</div>
+            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':winning1?'var(--orange)':'var(--lente)'}">${ls.t1}</div>
+          </div>
+          <div style="padding:18px 12px;text-align:center;background:${winning2?'rgba(255,102,0,.06)':''}">
+            <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t2names)}</div>
+            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':winning2?'var(--orange)':'var(--lente)'}">${ls.t2}</div>
+          </div>
+        </div>
+      </div>`;
+  } else if(ls && ls.status==='finished'){
+    const winNames=ls.winner===1?(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & '):(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
+    scoreBlock=`<div class="alert alert-ok" style="margin-bottom:16px;text-align:center">
+      🏆 <strong>${esc(winNames)}</strong> venceu · Próxima partida em breve...
+    </div>`;
+  } else {
+    scoreBlock=`<div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">
+      <div style="font-size:32px;margin-bottom:8px">🎾</div>
+      <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:1px">AGUARDANDO INÍCIO DA PARTIDA</div>
+    </div>`;
   }
-  if(!ls) return`<div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO EM ANDAMENTO</div></div>
-    <div class="empty"><div class="ei">🎾</div><p>Aguardando início da partida...</p></div>`;
 
-  const t1names=(ls.team1||[]).map(getName).join(' & ');
-  const t2names=(ls.team2||[]).map(getName).join(' & ');
-  const tgt=ls.targetGames||6;
-  const winning1=ls.t1>ls.t2, winning2=ls.t2>ls.t1;
-
-  // Sets completados
-  const setsPills=(ls.completedSets||[]).map(s=>{
-    const t1w=s.won===1;
-    return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}</div>
-           <div class="sets-sep">·</div>
-           <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}</div>
-           <div class="sets-sep" style="margin:0 4px">|</div>`;
+  // ── Bloco do grupo ──
+  const onCourtIds=ls?[...(ls.team1||[]),...(ls.team2||[])]:[];
+  const pairRows=pairs.map((pair,i)=>{
+    const isOnCourt=pair.some(pid=>onCourtIds.includes(pid));
+    const pairNames=pair.map(pid=>getName(pid).split(' ')[0]).join(' & ');
+    const eloAvg=pair.length?Math.round(pair.reduce((s,pid)=>s+getElo(pid),0)/pair.length):0;
+    return`<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--n600);${isOnCourt?'background:rgba(255,102,0,.06)':''}">
+      <div style="font-family:var(--font-d);font-size:18px;color:${isOnCourt?'var(--orange)':'var(--n500)'};width:20px;text-align:center">${i+1}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:${isOnCourt?'var(--lente)':'var(--n300)'}">${esc(pairNames)}</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:1px">ELO médio ${eloAvg}</div>
+      </div>
+      ${isOnCourt?`<span style="font-family:var(--font-m);font-size:8px;font-weight:700;color:var(--orange);letter-spacing:1px;padding:3px 7px;border-radius:4px;background:rgba(255,102,0,.15);border:1px solid rgba(255,102,0,.3)">EM QUADRA</span>`
+        :`<span style="font-family:var(--font-m);font-size:8px;color:var(--n500);letter-spacing:.8px">AGUARDANDO</span>`}
+    </div>`;
   }).join('');
 
-  const tbBanner=ls.isTb?`<div style="text-align:center;padding:6px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px">⚡ TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
-
-  if(ls.status==='finished'){
-    const winNames=ls.winner===1?t1names:t2names;
-    return`
-      <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO EM ANDAMENTO</div></div>
-      <div style="text-align:center;padding:24px 0">
-        <div style="font-size:48px;margin-bottom:8px">🏆</div>
-        <div style="font-family:var(--font-h);font-size:22px;font-weight:700;color:var(--orange);text-transform:uppercase">${esc(winNames)}</div>
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:4px;letter-spacing:1px">VENCEU A PARTIDA</div>
-      </div>
-      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Próxima partida sendo escolhida...</p>`;
-  }
-
   return`
-    <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">AO VIVO · MODO ESPECTADOR</div></div>
-    <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:12px">
-      <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--n600)">
-        ${setsPills}
-        <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t1}</div>
-        <div class="sets-sep">·</div>
-        <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t2}</div>
-      </div>
-      ${tbBanner}
-      <div style="display:grid;grid-template-columns:1fr 1fr">
-        <div style="padding:20px 14px;text-align:center;border-right:1px solid var(--n600);background:${winning1?'rgba(255,102,0,.06)':''}">
-          <div style="font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--n300);margin-bottom:8px">${esc(t1names)}</div>
-          <div style="font-family:var(--font-d);font-size:72px;line-height:1;color:${ls.isTb?'var(--gold)':winning1?'var(--orange)':'var(--lente)'}">${ls.t1}</div>
-        </div>
-        <div style="padding:20px 14px;text-align:center;background:${winning2?'rgba(255,102,0,.06)':''}">
-          <div style="font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--n300);margin-bottom:8px">${esc(t2names)}</div>
-          <div style="font-family:var(--font-d);font-size:72px;line-height:1;color:${ls.isTb?'var(--gold)':winning2?'var(--orange)':'var(--lente)'}">${ls.t2}</div>
-        </div>
+    <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO AO VIVO · ESPECTADOR</div></div>
+    ${scoreBlock}
+    <div class="eyebrow">Grupo da sessão</div>
+    <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:10px">
+      ${pairRows||`<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>`}
+    </div>
+    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>`;
+}
       </div>
     </div>
     <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Atualiza automaticamente em tempo real</p>`;
@@ -2045,8 +2105,6 @@ function openNewSessionModal(){
 function createSession(){
   const date=document.getElementById('ns-date').value;
   if(!date){alert('Selecione uma data.');return;}
-  const existing=DB.sessions().find(s=>s.date===date);
-  if(existing){ closeModal('modal-new-session'); listaActiveId=existing.id; render(); return; }
   const s={id:uid(),date,confirmed:[],mvpId:null};
   const ss=DB.sessions(); ss.push(s); DB.setSessions(ss);
   closeModal('modal-new-session');
