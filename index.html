@@ -468,6 +468,7 @@
     <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic">📅</span>Histórico</button>
     <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic">🏆</span>Ranking</button>
     <button class="nb" onclick="nav('config')" id="nav-config"><span class="ic">⚙️</span>Config</button>
+    <button class="nb" onclick="nav('grupo')" id="nav-grupo" style="display:none"><span class="ic">🔑</span>Grupo</button>
   </nav>
 </div>
 
@@ -514,6 +515,23 @@
 <!-- MODAL: Perfil do jogador -->
 <div class="modal-ov hidden" id="modal-profile">
   <div class="modal" id="modal-profile-content"></div>
+</div>
+
+<!-- MODAL: Gerenciar jogador (dono) -->
+<div class="modal-ov hidden" id="modal-manage-player">
+  <div class="modal" id="modal-manage-content"></div>
+</div>
+
+<!-- MODAL: Adicionar jogador ao grupo (dono) -->
+<div class="modal-ov hidden" id="modal-add-player">
+  <div class="modal">
+    <div class="modal-title">➕ Adicionar ao Grupo</div>
+    <div class="ig"><label>Nome do jogador</label><input type="text" id="add-player-name" placeholder="Nome completo..." maxlength="30"></div>
+    <div class="modal-actions">
+      <button class="btn btn-s" onclick="closeModal('modal-add-player')">Cancelar</button>
+      <button class="btn btn-p" onclick="confirmAddPlayer()">Adicionar</button>
+    </div>
+  </div>
 </div>
 
 <!-- SPLASH -->
@@ -952,10 +970,14 @@ function getEloFromList(list,id){ return list.find(p=>p.id===id)?.elo??1000; }
 
 function roleBadge(pid){
   const p=getPlayer(pid); if(!p?.role)return'';
+  if(p.role==='dono')       return`<span class="role-badge" style="background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">🔑 Dono</span>`;
   if(p.role==='presidente') return`<span class="role-badge role-pres">👑 Presidente</span>`;
   if(p.role==='vice')       return`<span class="role-badge role-vice">⭐ Vice</span>`;
   return'';
 }
+
+function isDono(pid){ return getPlayer(pid||DB.currentPlayer())?.role==='dono'; }
+function isPresOrDono(pid){ const r=getPlayer(pid||DB.currentPlayer())?.role; return r==='presidente'||r==='dono'; }
 
 // ══════════════════════════════════════
 // STATS ENGINE
@@ -1084,6 +1106,10 @@ function render(){
   else if(page==='historico') c.innerHTML=renderHistorico();
   else if(page==='ranking')   c.innerHTML=renderRanking();
   else if(page==='config')    c.innerHTML=renderConfig();
+  else if(page==='grupo')     c.innerHTML=renderGrupo();
+  // Mostra aba Grupo só para o dono
+  const grupoTab=document.getElementById('nav-grupo');
+  if(grupoTab) grupoTab.style.display=isDono(DB.currentPlayer())?'':'none';
 // update header subtitle with current player
   const cp=DB.currentPlayer();
   const hd=document.getElementById('hd-sub');
@@ -1543,7 +1569,7 @@ function renderSpectator(session){
       ${pairRows||`<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>`}
     </div>
     <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>
-    ${(()=>{const p=getPlayer(DB.currentPlayer());return p?.role==='presidente'?`<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession('${session.id}')">⏹ Encerrar sessão</button>`:'';})()}
+    '+(isPresOrDono(DB.currentPlayer())?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">⏹ Encerrar sessão</button>':'')+`
   `;
 }
       </div>
@@ -1930,10 +1956,8 @@ function editPairsInFlow(sessionId){
 
 function finishSession(sessionId){
   const pid=DB.currentPlayer();
-  const player=getPlayer(pid);
-  const isPresidente=player?.role==='presidente';
   const isOwner=sessionFlow&&sessionFlow.sessionId===sessionId&&sessionFlow._owner;
-  if(!isPresidente&&!isOwner){ alert('Apenas presidentes podem encerrar a sessão.'); return; }
+  if(!isPresOrDono(pid)&&!isOwner){ alert('Apenas presidentes e o dono podem encerrar a sessão.'); return; }
   if(!confirm('Finalizar a sessão agora?'))return;
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(s){ s.status='finished'; DB.setSessions(ss); }
@@ -2213,14 +2237,118 @@ function renderConfig(){
     </div>
 
     <div class="card" style="margin-bottom:14px">
-      ${configRow('📖','Ver onboarding novamente','',`replayOnboarding()`)}
+      ${configRow('📖','Ver onboarding novamente','','replayOnboarding()')}
     </div>
+
+    ${isDono(pid)?'<div class="eyebrow" style="margin-top:4px">Gerenciar grupo</div><div class="card" style="margin-bottom:14px">'+configRow('👥','Ver e editar jogadores','','openGrupoManager()')+'</div>':''}
 
     <button class="btn btn-d btn-full" style="margin-top:4px" onclick="logout()">
       Sair da conta
     </button>
     <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">GFE v1.0 · Beach Tennis · Grupo</p>
   `;
+}
+
+// ── GERENCIAR GRUPO (dono) ──
+function openGrupoManager(){
+  nav('grupo');
+}
+
+function renderGrupo(){
+  const players=DB.players().slice().sort((a,b)=>{
+    const order={dono:0,presidente:1,vice:2};
+    return (order[a.role]??3)-(order[b.role]??3);
+  });
+
+  const rows=players.map(p=>`
+    <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--n600)">
+      <div style="width:40px;height:40px;border-radius:50%;background:var(--n600);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:16px;flex-shrink:0">${initials(p.name)}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:700">${esc(p.name)}</div>
+        <div style="margin-top:3px">${roleBadge(p.id)||`<span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">Membro</span>`}</div>
+      </div>
+      <button class="btn btn-s btn-sm" onclick="openManagePlayer('${p.id}')">Editar</button>
+    </div>`).join('');
+
+  return`
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--font-h);font-size:20px;font-weight:700;text-transform:uppercase">Grupo</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:1px">${players.length} JOGADORES</div>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="openModal('modal-add-player');document.getElementById('add-player-name').value=''">+ Adicionar</button>
+    </div>
+    <div class="card">${rows}</div>
+    <button class="btn btn-s btn-full" style="margin-top:10px" onclick="nav('config')">← Voltar</button>
+  `;
+}
+
+function openManagePlayer(pid){
+  const p=getPlayer(pid);
+  if(!p) return;
+  const roles=[
+    {val:'dono',    label:'🔑 Dono',       desc:'Gerencia o grupo e todos os papéis'},
+    {val:'presidente',label:'👑 Presidente',desc:'Pode encerrar sessões'},
+    {val:'vice',    label:'⭐ Vice',        desc:'Vice-presidente do grupo'},
+    {val:null,      label:'👤 Membro',      desc:'Membro regular'},
+  ];
+  const opts=roles.map(r=>`
+    <div onclick="setPlayerRole('${pid}','${r.val}')" style="
+      display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;
+      border:1px solid ${p.role===r.val?'var(--orange)':'var(--n600)'};
+      background:${p.role===r.val?'rgba(255,102,0,.1)':'var(--n700)'};
+      cursor:pointer;margin-bottom:8px;-webkit-tap-highlight-color:transparent">
+      <div style="font-size:20px">${r.label.split(' ')[0]}</div>
+      <div>
+        <div style="font-size:13px;font-weight:700">${r.label.split(' ').slice(1).join(' ')}</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);margin-top:2px">${r.desc}</div>
+      </div>
+      ${p.role===r.val?`<div style="margin-left:auto;color:var(--orange);font-size:16px">✓</div>`:''}
+    </div>`).join('');
+
+  document.getElementById('modal-manage-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+      <div style="width:48px;height:48px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:20px;color:var(--ink)">${initials(p.name)}</div>
+      <div>
+        <div style="font-family:var(--font-h);font-size:18px;font-weight:700;text-transform:uppercase">${esc(p.name)}</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:.8px">ELO ${p.elo||1000}</div>
+      </div>
+    </div>
+    <div class="eyebrow" style="margin-bottom:10px">Papel no grupo</div>
+    ${opts}
+    <button class="btn btn-d btn-full" style="margin-top:8px" onclick="removeFromGroup('${pid}')">Remover do grupo</button>
+    <button class="btn btn-s btn-full" style="margin-top:8px" onclick="closeModal('modal-manage-player')">Fechar</button>
+  `;
+  openModal('modal-manage-player');
+}
+
+function setPlayerRole(pid, role){
+  const players=DB.players();
+  const p=players.find(x=>x.id===pid);
+  if(!p) return;
+  p.role=role==='null'?null:role;
+  DB.setPlayers(players);
+  closeModal('modal-manage-player');
+  render();
+}
+
+function removeFromGroup(pid){
+  if(!confirm('Remover este jogador do grupo?')) return;
+  DB.setPlayers(DB.players().filter(p=>p.id!==pid));
+  closeModal('modal-manage-player');
+  if(page==='grupo') render();
+}
+
+function confirmAddPlayer(){
+  const name=document.getElementById('add-player-name').value.trim();
+  if(!name){ alert('Digite o nome.'); return; }
+  const existing=DB.players().find(p=>p.name.toLowerCase()===name.toLowerCase());
+  if(existing){ alert('Jogador já existe no grupo.'); return; }
+  const players=DB.players();
+  players.push({id:uid(),name,elo:1000,role:null});
+  DB.setPlayers(players);
+  closeModal('modal-add-player');
+  render();
 }
 
 function changePin(){
@@ -2819,7 +2947,7 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
   const defs=[
     {name:'Pedro',   role:'presidente'},
     {name:'Gabriel', role:'vice'},
-    {name:'Daniel',  role:'presidente'},
+    {name:'Daniel',  role:'dono'},
     {name:'Luis Fernando'},
     {name:'Flávio'},
     {name:'Fabio'},
