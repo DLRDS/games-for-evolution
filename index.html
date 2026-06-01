@@ -1253,14 +1253,20 @@ function renderListaDetail(sessionId){
     return backBtn+dateHdr+renderPairManager(session);
   }
 
-  // Finished session → restore flow and show destaques if available
+  // Finished session → show destaques (owner) or summary (spectator)
   if(session.status==='finished'){
-    if(!sessionFlow&&session.flowState&&session.flowState.sessionId===session.id){
-      sessionFlow={...session.flowState};
+    if(sessionFlow&&sessionFlow.sessionId===session.id&&sessionFlow._owner){
       if(!sessionFlow._destaques) sessionFlow._destaques=buildDestaques(session.id);
-    }
-    if(sessionFlow&&sessionFlow.phase==='finished'){
       return backBtn+dateHdr+renderSessionFlow(session);
+    }
+    // Espectador: tenta montar destaques a partir do flowState salvo
+    if(session.flowState){
+      const tmpFlow={...session.flowState,_owner:false};
+      if(!tmpFlow._destaques) tmpFlow._destaques=buildDestaquesFromFlow(tmpFlow,session);
+      if(tmpFlow._destaques){
+        const d=tmpFlow._destaques;
+        return backBtn+dateHdr+`<div class="alert alert-ok" style="margin-bottom:14px">✅ Sessão finalizada!</div>`+renderDestaques(d,session.id);
+      }
     }
     // Fallback: sessão finalizada sem dados de flow
     return backBtn+dateHdr+`<div class="alert alert-ok">✅ Sessão finalizada em ${fmtDate(session.date)}</div>
@@ -1333,18 +1339,22 @@ function startSession(sessionId){
 }
 
 function renderPairManager(session){
-  // Restaura sessionFlow do banco se este dispositivo não o tem
-  if(!sessionFlow&&session.flowState&&session.flowState.sessionId===session.id){
-    sessionFlow={...session.flowState};
-  }
-  // Se tem sessionFlow local, controla o jogo normalmente
-  if(sessionFlow&&sessionFlow.sessionId===session.id&&sessionFlow.phase!=='editing'){
+  // Este dispositivo é dono do controle?
+  const isOwner = sessionFlow && sessionFlow.sessionId===session.id && sessionFlow._owner;
+
+  // Dono: mostra tela de controle completa
+  if(isOwner && sessionFlow.phase!=='editing'){
     return renderSessionFlow(session);
   }
-  // Modo espectador: outro dispositivo está controlando, mostra placar ao vivo
-  if(session.liveScore&&session.status==='active'){
+
+  // Espectador: outro dispositivo está controlando
+  // Mostra placar ao vivo se há jogo em andamento
+  if(!isOwner && (session.liveScore || session.flowState)){
     return renderSpectator(session);
   }
+
+  // Sem flow ainda: mostra montagem de duplas
+
   // If pairs are already saved (pairsReady), show saved pairs + start button
   if(session.pairsReady&&session.pairs&&session.pairs.every(p=>p[0]&&p[1])){
     return renderSavedPairs(session);
@@ -1410,7 +1420,22 @@ function renderPairManager(session){
 
 function renderSpectator(session){
   const ls=session.liveScore;
-  if(!ls) return`<div class="empty"><div class="ei">🎾</div><p>Aguardando início da partida...</p></div>`;
+  const fs=session.flowState;
+  // Entre partidas: mostra quem está em quadra e aguarda próxima
+  if(!ls && fs && fs.phase==='pick_opponent'){
+    const pairs=session.pairs||[];
+    const onCourt=fs.onCourtIdx!=null?pairs[fs.onCourtIdx]:null;
+    const courtNames=onCourt?(onCourt.map(pid=>getName(pid).split(' ')[0]).join(' & ')):'—';
+    return`<div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">AO VIVO · MODO ESPECTADOR</div></div>
+      <div style="text-align:center;padding:24px 0">
+        <div style="font-size:40px;margin-bottom:10px">👑</div>
+        <div style="font-family:var(--font-h);font-size:18px;font-weight:700;color:var(--orange);text-transform:uppercase">${esc(courtNames)}</div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:4px;letter-spacing:1px">EM QUADRA · AGUARDANDO PRÓXIMA PARTIDA</div>
+      </div>
+      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Atualiza automaticamente em tempo real</p>`;
+  }
+  if(!ls) return`<div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO EM ANDAMENTO</div></div>
+    <div class="empty"><div class="ei">🎾</div><p>Aguardando início da partida...</p></div>`;
 
   const t1names=(ls.team1||[]).map(getName).join(' & ');
   const t2names=(ls.team2||[]).map(getName).join(' & ');
@@ -1559,10 +1584,11 @@ function initSessionFlow(sessionId){
   sessionFlow={
     sessionId, onCourtIdx:null, pickSelected:[], matches:[],
     phase:'pick_rule',
-    rule:'rei',             // 'rei' | 'rodizio'
-    targetGames:6,          // 4 or 6
-    tiebreakPoints:7,       // 7 or 10
-    kingRun:[],             // pair indices beaten by king consecutively
+    rule:'rei',
+    targetGames:6,
+    tiebreakPoints:7,
+    kingRun:[],
+    _owner:true,  // este dispositivo é o controlador
   };
   render();
 }
@@ -1883,6 +1909,15 @@ function persistLiveScore(sessionId){
   if(s){ s.liveScore=score; DB._s('sessions',ss); }
   supa.from('sessions').update({live_score:score}).eq('id',sessionId)
     .then(({error})=>{ if(error)console.warn('persist score:',error); });
+}
+
+function buildDestaquesFromFlow(flow, session){
+  if(!flow||!flow.matches||!flow.matches.length) return null;
+  const savedFlow = sessionFlow;
+  sessionFlow = flow;
+  const d = buildDestaques(session.id);
+  sessionFlow = savedFlow;
+  return d;
 }
 
 function buildDestaques(sessionId){
