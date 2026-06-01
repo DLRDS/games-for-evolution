@@ -1542,7 +1542,9 @@ function renderSpectator(session){
     <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:10px">
       ${pairRows||`<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>`}
     </div>
-    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>`;
+    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>
+    ${(()=>{const p=getPlayer(DB.currentPlayer());return p?.role==='presidente'?`<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession('${session.id}')">⏹ Encerrar sessão</button>`:'';})()}
+  `;
 }
       </div>
     </div>
@@ -1927,6 +1929,11 @@ function editPairsInFlow(sessionId){
 }
 
 function finishSession(sessionId){
+  const pid=DB.currentPlayer();
+  const player=getPlayer(pid);
+  const isPresidente=player?.role==='presidente';
+  const isOwner=sessionFlow&&sessionFlow.sessionId===sessionId&&sessionFlow._owner;
+  if(!isPresidente&&!isOwner){ alert('Apenas presidentes podem encerrar a sessão.'); return; }
   if(!confirm('Finalizar a sessão agora?'))return;
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(s){ s.status='finished'; DB.setSessions(ss); }
@@ -2812,7 +2819,7 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
   const defs=[
     {name:'Pedro',   role:'presidente'},
     {name:'Gabriel', role:'vice'},
-    {name:'Daniel'},
+    {name:'Daniel',  role:'presidente'},
     {name:'Luis Fernando'},
     {name:'Flávio'},
     {name:'Fabio'},
@@ -2822,96 +2829,6 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
   DB.setPlayers(defs.map(d=>({id:uid(),name:d.name,elo:1000,role:d.role||null})));
 })();
 
-(function seedMatches(){
-  if(DB.matches().length>0)return;
-  const players=DB.players();
-  const pid=name=>players.find(p=>p.name===name)?.id;
-
-  // Últimas 5 sextas antes de 2026-05-28
-  const DATES=['2026-04-25','2026-05-02','2026-05-09','2026-05-16','2026-05-23'];
-
-  // Pares e resultados de cada sessão
-  // Formato: [t1p1, t1p2, t2p1, t2p2, g1, g2]
-  const SESSIONS=[
-    {
-      date:'2026-04-25', mvp:'Pedro',
-      matches:[
-        ['Pedro','Leoni',     'Gabriel','Flávio',     6,4],
-        ['Pedro','Leoni',     'Daniel','Fabio',       6,3],
-        ['Pedro','Leoni',     'Vitor','Luis Fernando', 4,6],
-        ['Gabriel','Flávio',  'Daniel','Fabio',       6,2],
-        ['Gabriel','Flávio',  'Vitor','Luis Fernando', 6,5],
-        ['Daniel','Fabio',    'Vitor','Luis Fernando', 3,6],
-      ]
-    },
-    {
-      date:'2026-05-02', mvp:'Gabriel',
-      matches:[
-        ['Pedro','Gabriel',   'Daniel','Vitor',       6,3],
-        ['Pedro','Gabriel',   'Flávio','Leoni',       6,4],
-        ['Pedro','Gabriel',   'Fabio','Luis Fernando', 6,1],
-        ['Daniel','Vitor',    'Flávio','Leoni',       6,4],
-        ['Daniel','Vitor',    'Fabio','Luis Fernando', 4,6],
-        ['Flávio','Leoni',    'Fabio','Luis Fernando', 6,3],
-      ]
-    },
-    {
-      date:'2026-05-09', mvp:'Gabriel',
-      matches:[
-        ['Pedro','Vitor',     'Gabriel','Daniel',     4,6],
-        ['Pedro','Vitor',     'Fabio','Leoni',        6,3],
-        ['Pedro','Vitor',     'Flávio','Luis Fernando',6,2],
-        ['Gabriel','Daniel',  'Fabio','Leoni',        6,4],
-        ['Gabriel','Daniel',  'Flávio','Luis Fernando',6,3],
-        ['Fabio','Leoni',     'Flávio','Luis Fernando',6,5],
-      ]
-    },
-    {
-      date:'2026-05-16', mvp:'Pedro',
-      matches:[
-        ['Pedro','Flávio',    'Gabriel','Leoni',      6,4],
-        ['Pedro','Flávio',    'Daniel','Luis Fernando',6,3],
-        ['Pedro','Flávio',    'Vitor','Fabio',        5,6],
-        ['Gabriel','Leoni',   'Daniel','Luis Fernando',4,6],
-        ['Gabriel','Leoni',   'Vitor','Fabio',        6,4],
-        ['Daniel','Luis Fernando','Vitor','Fabio',    6,4],
-      ]
-    },
-    {
-      date:'2026-05-23', mvp:'Vitor',
-      matches:[
-        ['Pedro','Fabio',     'Gabriel','Luis Fernando',6,4],
-        ['Pedro','Fabio',     'Daniel','Leoni',        6,3],
-        ['Pedro','Fabio',     'Vitor','Flávio',        4,6],
-        ['Gabriel','Luis Fernando','Daniel','Leoni',   6,4],
-        ['Gabriel','Luis Fernando','Vitor','Flávio',   5,6],
-        ['Daniel','Leoni',    'Vitor','Flávio',        6,4],
-      ]
-    },
-  ];
-
-  const allSessions=[], allMatches=[];
-  SESSIONS.forEach(sd=>{
-    const allPids=players.map(p=>p.id);
-    const sess={id:uid(),date:sd.date,confirmed:allPids,mvpId:pid(sd.mvp)||null};
-    allSessions.push(sess);
-    sd.matches.forEach(([n1,n2,n3,n4,g1,g2])=>{
-      const t1=[pid(n1),pid(n2)].filter(Boolean);
-      const t2=[pid(n3),pid(n4)].filter(Boolean);
-      if(t1.length<2||t2.length<2)return;
-      allMatches.push({id:uid(),sessionId:sess.id,date:sd.date,team1:t1,team2:t2,games1:g1,games2:g2,winner:g1>g2?1:2});
-    });
-  });
-
-  // Add an upcoming session today with all 8 players confirmed (for testing)
-  const today=new Date().toISOString().slice(0,10);
-  const allPids=players.map(p=>p.id);
-  allSessions.push({id:uid(),date:today,confirmed:allPids,mvpId:null});
-
-  DB.setSessions(allSessions);
-  DB.setMatches(allMatches);
-  recalcAllElo();
-})();
 
 // Init: splash → sync Supabase → login (se necessário) → app
 showSplash();
