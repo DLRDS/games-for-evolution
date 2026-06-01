@@ -595,7 +595,8 @@ let supa=null;
 // Converte snake_case do banco → camelCase do app
 function sessionFromDB(s){
   return {...s, mvpId:s.mvp_id, pairsReady:s.pairs_ready,
-    pairs:s.pairs||null, confirmed:s.confirmed||[], status:s.status||'pending'};
+    pairs:s.pairs||null, confirmed:s.confirmed||[], status:s.status||'pending',
+    flowState:s.flow_state||null, liveScore:s.live_score||null};
 }
 function matchFromDB(m){
   return {...m, sessionId:m.session_id};
@@ -603,7 +604,8 @@ function matchFromDB(m){
 // Converte camelCase do app → snake_case do banco
 function sessionToDB(s){
   return {id:s.id, date:s.date, confirmed:s.confirmed||[], mvp_id:s.mvpId||null,
-    status:s.status||'pending', pairs:s.pairs||null, pairs_ready:s.pairsReady||false};
+    status:s.status||'pending', pairs:s.pairs||null, pairs_ready:s.pairsReady||false,
+    flow_state:s.flowState||null, live_score:s.liveScore||null};
 }
 function matchToDB(m){
   return {id:m.id, session_id:m.sessionId||null, date:m.date,
@@ -1236,9 +1238,23 @@ function renderListaDetail(sessionId){
     <div class="sess-dt">${fmtDateLong(session.date)}</div>
   </div>`;
 
-  // Active session → show pair manager
+  // Active session → show pair manager or spectator
   if(session.status==='active'){
     return backBtn+dateHdr+renderPairManager(session);
+  }
+
+  // Finished session → restore flow and show destaques if available
+  if(session.status==='finished'){
+    if(!sessionFlow&&session.flowState&&session.flowState.sessionId===session.id){
+      sessionFlow={...session.flowState};
+      if(!sessionFlow._destaques) sessionFlow._destaques=buildDestaques(session.id);
+    }
+    if(sessionFlow&&sessionFlow.phase==='finished'){
+      return backBtn+dateHdr+renderSessionFlow(session);
+    }
+    // Fallback: sessão finalizada sem dados de flow
+    return backBtn+dateHdr+`<div class="alert alert-ok">✅ Sessão finalizada em ${fmtDate(session.date)}</div>
+      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-top:8px">Confira o histórico para ver as partidas.</p>`;
   }
 
   // Pending → show confirmation list
@@ -1307,9 +1323,17 @@ function startSession(sessionId){
 }
 
 function renderPairManager(session){
-  // If session flow is active, render the flow UI
+  // Restaura sessionFlow do banco se este dispositivo não o tem
+  if(!sessionFlow&&session.flowState&&session.flowState.sessionId===session.id){
+    sessionFlow={...session.flowState};
+  }
+  // Se tem sessionFlow local, controla o jogo normalmente
   if(sessionFlow&&sessionFlow.sessionId===session.id&&sessionFlow.phase!=='editing'){
     return renderSessionFlow(session);
+  }
+  // Modo espectador: outro dispositivo está controlando, mostra placar ao vivo
+  if(session.liveScore&&session.status==='active'){
+    return renderSpectator(session);
   }
   // If pairs are already saved (pairsReady), show saved pairs + start button
   if(session.pairsReady&&session.pairs&&session.pairs.every(p=>p[0]&&p[1])){
@@ -1372,6 +1396,62 @@ function renderPairManager(session){
     ${allFilled?`<button class="btn btn-p btn-full" onclick="savePairs('${session.id}')">💾 Salvar Duplas</button>`:''}
     <button class="btn btn-s btn-full" style="margin-top:8px;margin-bottom:4px" onclick="resetPairs('${session.id}')">↺ Limpar Duplas</button>
   `;
+}
+
+function renderSpectator(session){
+  const ls=session.liveScore;
+  if(!ls) return`<div class="empty"><div class="ei">🎾</div><p>Aguardando início da partida...</p></div>`;
+
+  const t1names=(ls.team1||[]).map(getName).join(' & ');
+  const t2names=(ls.team2||[]).map(getName).join(' & ');
+  const tgt=ls.targetGames||6;
+  const winning1=ls.t1>ls.t2, winning2=ls.t2>ls.t1;
+
+  // Sets completados
+  const setsPills=(ls.completedSets||[]).map(s=>{
+    const t1w=s.won===1;
+    return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}</div>
+           <div class="sets-sep">·</div>
+           <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}</div>
+           <div class="sets-sep" style="margin:0 4px">|</div>`;
+  }).join('');
+
+  const tbBanner=ls.isTb?`<div style="text-align:center;padding:6px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px">⚡ TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
+
+  if(ls.status==='finished'){
+    const winNames=ls.winner===1?t1names:t2names;
+    return`
+      <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO EM ANDAMENTO</div></div>
+      <div style="text-align:center;padding:24px 0">
+        <div style="font-size:48px;margin-bottom:8px">🏆</div>
+        <div style="font-family:var(--font-h);font-size:22px;font-weight:700;color:var(--orange);text-transform:uppercase">${esc(winNames)}</div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:4px;letter-spacing:1px">VENCEU A PARTIDA</div>
+      </div>
+      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Próxima partida sendo escolhida...</p>`;
+  }
+
+  return`
+    <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">AO VIVO · MODO ESPECTADOR</div></div>
+    <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--n600)">
+        ${setsPills}
+        <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t1}</div>
+        <div class="sets-sep">·</div>
+        <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t2}</div>
+      </div>
+      ${tbBanner}
+      <div style="display:grid;grid-template-columns:1fr 1fr">
+        <div style="padding:20px 14px;text-align:center;border-right:1px solid var(--n600);background:${winning1?'rgba(255,102,0,.06)':''}">
+          <div style="font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--n300);margin-bottom:8px">${esc(t1names)}</div>
+          <div style="font-family:var(--font-d);font-size:72px;line-height:1;color:${ls.isTb?'var(--gold)':winning1?'var(--orange)':'var(--lente)'}">${ls.t1}</div>
+        </div>
+        <div style="padding:20px 14px;text-align:center;background:${winning2?'rgba(255,102,0,.06)':''}">
+          <div style="font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--n300);margin-bottom:8px">${esc(t2names)}</div>
+          <div style="font-family:var(--font-d);font-size:72px;line-height:1;color:${ls.isTb?'var(--gold)':winning2?'var(--orange)':'var(--lente)'}">${ls.t2}</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Atualiza automaticamente em tempo real</p>`;
 }
 
 function selectPoolChip(pid){
@@ -1702,6 +1782,7 @@ function _launchFlowMatch(session, p1Idx, p2Idx){
           sf.phase='rotation';
           sf.pickSelected=[];
           liveSessionCallback=null;
+          persistFlowState(sf.sessionId);
           render(); return;
         }
       } else {
@@ -1714,6 +1795,7 @@ function _launchFlowMatch(session, p1Idx, p2Idx){
     sf.pickSelected=[];
     sf.phase='pick_opponent';
     liveSessionCallback=null;
+    persistFlowState(sf.sessionId);
     render();
   };
 
@@ -1733,6 +1815,8 @@ function _launchFlowMatch(session, p1Idx, p2Idx){
   if(liveTimer)clearInterval(liveTimer);
   liveTimer=setInterval(()=>{ liveSeconds++; updateTimer(); },1000);
   document.getElementById('live-overlay').classList.remove('hidden');
+  persistFlowState(sf.sessionId);
+  persistLiveScore(sf.sessionId);
   renderLiveInner();
 }
 
@@ -1750,8 +1834,45 @@ function finishSession(sessionId){
   if(!confirm('Finalizar a sessão agora?'))return;
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(s){ s.status='finished'; DB.setSessions(ss); }
-  if(sessionFlow){ sessionFlow.phase='finished'; sessionFlow._destaques=buildDestaques(sessionId); }
+  if(sessionFlow){
+    sessionFlow.phase='finished';
+    sessionFlow._destaques=buildDestaques(sessionId);
+    persistFlowState(sessionId);
+  }
+  // Limpa live score do Supabase
+  if(supa) supa.from('sessions').update({live_score:null}).eq('id',sessionId).then(()=>{});
   render();
+}
+
+// Salva estado do fluxo no Supabase para outros dispositivos verem
+function persistFlowState(sessionId){
+  if(!supa)return;
+  const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
+  if(!s||!sessionFlow)return;
+  const {_destaques,...flowClean}=sessionFlow;
+  s.flowState=flowClean;
+  DB._s('sessions',ss);
+  supa.from('sessions').update({flow_state:flowClean}).eq('id',sessionId)
+    .then(({error})=>{ if(error)console.warn('persist flow:',error); });
+}
+
+// Salva placar ao vivo ponto a ponto
+function persistLiveScore(sessionId){
+  if(!supa||!liveMatch)return;
+  const cur=liveMatch.sets[liveMatch.sets.length-1];
+  const tgt=liveMatch.targetGames||6;
+  const inTb=cur.t1>=tgt&&cur.t2>=tgt;
+  const score={
+    team1:liveMatch.team1, team2:liveMatch.team2,
+    targetGames:liveMatch.targetGames, tiebreakPoints:liveMatch.tiebreakPoints,
+    t1:inTb?(cur.tb1||0):cur.t1, t2:inTb?(cur.tb2||0):cur.t2,
+    completedSets:liveMatch.completedSets,
+    isTb:inTb, status:liveMatch.status, winner:liveMatch.winner,
+  };
+  const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
+  if(s){ s.liveScore=score; DB._s('sessions',ss); }
+  supa.from('sessions').update({live_score:score}).eq('id',sessionId)
+    .then(({error})=>{ if(error)console.warn('persist score:',error); });
 }
 
 function buildDestaques(sessionId){
@@ -2473,6 +2594,7 @@ function addGame(team){
     const setWinner=checkSetWinner(cur);
     if(setWinner){ _resolveSet(m,cur,setWinner); }
   }
+  if(sessionFlow) persistLiveScore(sessionFlow.sessionId);
   renderLiveInner();
 }
 
