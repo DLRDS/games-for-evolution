@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Antonio:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -373,6 +374,79 @@
     .lm-result.loss{background:rgba(239,68,68,.1);color:var(--danger);}
     .lm-score{font-family:var(--font-d);font-size:32px;color:var(--lente);letter-spacing:1px;line-height:1;margin-bottom:4px;}
     .lm-detail{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;}
+
+    /* SPLASH */
+    #gfe-splash{position:fixed;inset:0;background:var(--ink);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
+    #gfe-splash.hidden{display:none;}
+    .splash-logo{font-family:var(--font-d);font-size:88px;color:var(--orange);line-height:1;letter-spacing:-4px;animation:splashPop .5s cubic-bezier(.34,1.56,.64,1) both;}
+    .splash-title{font-family:var(--font-h);font-size:16px;font-weight:700;color:var(--lente);text-transform:uppercase;letter-spacing:3px;margin-top:6px;opacity:0;animation:splashFade .4s .4s ease forwards;}
+    .splash-sub{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;opacity:0;animation:splashFade .4s .6s ease forwards;}
+    @keyframes splashPop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
+    @keyframes splashFade{to{opacity:1;}}
+
+    /* LOGIN */
+    #gfe-login{position:fixed;inset:0;background:var(--ink);z-index:800;display:flex;flex-direction:column;overflow-y:auto;}
+    #gfe-login.hidden{display:none;}
+    .login-header{padding:48px 24px 20px;text-align:center;}
+    .login-logo{font-family:var(--font-d);font-size:44px;color:var(--orange);line-height:1;letter-spacing:-2px;}
+    .login-title{font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:2px;margin-top:4px;}
+    .login-body{flex:1;padding:0 20px 32px;}
+    .login-section-title{font-family:var(--font-h);font-size:22px;font-weight:700;text-transform:uppercase;color:var(--lente);margin-bottom:4px;}
+    .login-section-sub{font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:.8px;margin-bottom:24px;}
+    /* Player picker for login */
+    .lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+    .lp-card{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+    .lp-card:active{transform:scale(.96);}
+    .lp-card.sel{border-color:var(--orange);background:rgba(255,102,0,.1);}
+    .lp-avatar{width:44px;height:44px;border-radius:50%;background:var(--n600);border:2px solid var(--n500);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:18px;color:var(--n200);}
+    .lp-card.sel .lp-avatar{border-color:var(--orange);background:rgba(255,102,0,.2);color:var(--orange);}
+    .lp-name{font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--lente);text-align:center;line-height:1.2;}
+    .lp-elo{font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px;}
+    /* PIN display */
+    .pin-display{display:flex;justify-content:center;gap:14px;margin:24px 0 20px;}
+    .pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--n500);background:transparent;transition:all .15s;}
+    .pin-dot.filled{background:var(--orange);border-color:var(--orange);}
+    .pin-dot.shake{animation:pinShake .3s ease;}
+    @keyframes pinShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-6px);}75%{transform:translateX(6px);}}
+    /* Numpad */
+    .numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:280px;margin:0 auto;}
+    .nk{height:60px;border-radius:12px;border:1px solid var(--n600);background:var(--n700);color:var(--lente);font-family:var(--font-d);font-size:24px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .1s;display:flex;align-items:center;justify-content:center;}
+    .nk:active{background:var(--n600);transform:scale(.94);}
+    .nk.del{font-size:18px;color:var(--n400);}
+    .nk.empty{background:transparent;border:none;cursor:default;}
+    /* New account input */
+    .new-name-input{width:100%;background:var(--n700);border:1px solid var(--n600);border-radius:10px;color:var(--lente);padding:14px 16px;font-family:var(--font-b);font-size:16px;outline:none;transition:border-color .15s;margin-bottom:20px;}
+    .new-name-input:focus{border-color:var(--orange);}
+    /* Login toggle */
+    .login-toggle{display:flex;background:var(--n700);border-radius:8px;padding:3px;margin-bottom:24px;border:1px solid var(--n600);}
+    .lt-btn{flex:1;padding:9px 4px;border:none;border-radius:6px;background:transparent;color:var(--n400);font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
+    .lt-btn.active{background:var(--orange);color:var(--ink);}
+
+    /* ONBOARDING */
+    #gfe-onboarding{position:fixed;inset:0;background:var(--ink);z-index:800;display:flex;flex-direction:column;}
+    #gfe-onboarding.hidden{display:none;}
+    .ob-slides{flex:1;display:flex;overflow:hidden;transition:transform .35s cubic-bezier(.4,0,.2,1);}
+    .ob-slide{min-width:100%;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 28px;text-align:center;}
+    .ob-icon{font-size:72px;margin-bottom:24px;animation:splashPop .4s cubic-bezier(.34,1.56,.64,1) both;}
+    .ob-title{font-family:var(--font-h);font-size:28px;font-weight:700;text-transform:uppercase;color:var(--lente);line-height:1.1;margin-bottom:12px;}
+    .ob-desc{font-family:var(--font-b);font-size:14px;color:var(--n300);line-height:1.6;max-width:300px;}
+    .ob-highlight{color:var(--orange);font-weight:700;}
+    .ob-footer{padding:20px 24px 40px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+    .ob-dots{display:flex;gap:8px;}
+    .ob-dot{width:8px;height:8px;border-radius:50%;background:var(--n600);transition:all .25s;}
+    .ob-dot.active{background:var(--orange);width:24px;border-radius:4px;}
+    .ob-btn{width:100%;padding:14px;border-radius:10px;border:none;background:var(--orange);color:var(--ink);font-family:var(--font-h);font-size:16px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:.5px;-webkit-tap-highlight-color:transparent;}
+
+    /* DESTAQUES */
+    .destaques-wrap{padding:16px 0;}
+    .destaque-card{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
+    .dest-icon{font-size:32px;flex-shrink:0;width:44px;text-align:center;}
+    .dest-body{flex:1;min-width:0;}
+    .dest-label{font-family:var(--font-m);font-size:8px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:3px;}
+    .dest-name{font-family:var(--font-h);font-size:17px;font-weight:700;text-transform:uppercase;color:var(--lente);line-height:1.1;}
+    .dest-detail{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
+    .wpp-btn{width:100%;padding:14px;border-radius:10px;border:none;background:#25D366;color:#fff;font-family:var(--font-h);font-size:16px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:.5px;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
+    .wpp-btn:active{opacity:.85;}
   </style>
 </head>
 <body>
@@ -384,12 +458,12 @@
     </div>
   </header>
   <main id="content"></main>
-  <button id="fab" onclick="openLive()" title="Nova Partida">🎾</button>
   <nav>
     <button class="nb active" onclick="nav('home')" id="nav-home"><span class="ic">🏠</span>Home</button>
     <button class="nb" onclick="nav('lista')" id="nav-lista"><span class="ic">📋</span>Lista</button>
     <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic">📅</span>Histórico</button>
     <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic">🏆</span>Ranking</button>
+    <button class="nb" onclick="nav('config')" id="nav-config"><span class="ic">⚙️</span>Config</button>
   </nav>
 </div>
 
@@ -438,6 +512,51 @@
   <div class="modal" id="modal-profile-content"></div>
 </div>
 
+<!-- SPLASH -->
+<div id="gfe-splash" class="hidden">
+  <div class="splash-logo">GFE</div>
+  <div class="splash-title">Games For Evolution</div>
+  <div class="splash-sub">Beach Tennis · Seu grupo, seu jogo</div>
+</div>
+
+<!-- LOGIN -->
+<div id="gfe-login" class="hidden">
+  <div class="login-header">
+    <div class="login-logo">GFE</div>
+    <div class="login-title">Games For Evolution</div>
+  </div>
+  <div class="login-body" id="login-body"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="gfe-onboarding" class="hidden">
+  <div class="ob-slides" id="ob-slides">
+    <div class="ob-slide">
+      <div class="ob-icon">📋</div>
+      <div class="ob-title">Confirme sua presença</div>
+      <div class="ob-desc">Veja quem vai jogar, entre na lista e acompanhe em <span class="ob-highlight">tempo real</span> as confirmações da sessão.</div>
+    </div>
+    <div class="ob-slide">
+      <div class="ob-icon">🎾</div>
+      <div class="ob-title">Jogue e marque pontos</div>
+      <div class="ob-desc">Placar ao vivo, tiebreak automático, <span class="ob-highlight">Rei da Quadra</span> e Rodízio Completo — o court no seu celular.</div>
+    </div>
+    <div class="ob-slide">
+      <div class="ob-icon">🏆</div>
+      <div class="ob-title">Suba no ranking</div>
+      <div class="ob-desc">Sistema de <span class="ob-highlight">ELO</span> recalculado a cada partida. Seu histórico, sequências e evolução sempre à mão.</div>
+    </div>
+  </div>
+  <div class="ob-footer">
+    <div class="ob-dots" id="ob-dots">
+      <div class="ob-dot active"></div>
+      <div class="ob-dot"></div>
+      <div class="ob-dot"></div>
+    </div>
+    <button class="ob-btn" id="ob-btn" onclick="obNext()">Próximo</button>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════
 // DATA
@@ -459,10 +578,282 @@ const DB = {
   setAdmin(v)       { v?sessionStorage.setItem('gfe_adm','1'):sessionStorage.removeItem('gfe_adm'); },
   currentPlayer()   { return this._g('currentPlayer', null); },
   setCurrentPlayer(v){ this._s('currentPlayer', v); },
+  onboardingDone()  { return this._g('onboardingDone', false); },
+  setOnboardingDone(){ this._s('onboardingDone', true); },
 };
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ══════════════════════════════════════
+// SUPABASE — banco de dados central
+// ══════════════════════════════════════
+const SUPA_URL='https://jvmgsedxwakzfpskvfpf.supabase.co';
+const SUPA_KEY='sb_publishable_HeNPn65BKSEuJx63GVTiGA_1d3yciE1';
+let supa=null;
+
+// Converte snake_case do banco → camelCase do app
+function sessionFromDB(s){
+  return {...s, mvpId:s.mvp_id, pairsReady:s.pairs_ready,
+    pairs:s.pairs||null, confirmed:s.confirmed||[], status:s.status||'pending'};
+}
+function matchFromDB(m){
+  return {...m, sessionId:m.session_id};
+}
+// Converte camelCase do app → snake_case do banco
+function sessionToDB(s){
+  return {id:s.id, date:s.date, confirmed:s.confirmed||[], mvp_id:s.mvpId||null,
+    status:s.status||'pending', pairs:s.pairs||null, pairs_ready:s.pairsReady||false};
+}
+function matchToDB(m){
+  return {id:m.id, session_id:m.sessionId||null, date:m.date,
+    team1:m.team1, team2:m.team2, games1:m.games1, games2:m.games2, winner:m.winner};
+}
+
+async function syncFromSupabase(){
+  if(!supa)return;
+  const [{data:players},{data:sessions},{data:matches}]=await Promise.all([
+    supa.from('players').select('*'),
+    supa.from('sessions').select('*').order('date',{ascending:false}),
+    supa.from('matches').select('*').order('date',{ascending:true}),
+  ]);
+  if(players&&players.length) DB._s('players',players);
+  if(sessions&&sessions.length) DB._s('sessions',sessions.map(sessionFromDB));
+  if(matches&&matches.length) DB._s('matches',matches.map(matchFromDB));
+}
+
+async function initSupabase(){
+  try{
+    supa=supabase.createClient(SUPA_URL,SUPA_KEY);
+    await syncFromSupabase();
+    // Realtime: recebe atualizações ao vivo de outros dispositivos
+    supa.channel('gfe-live')
+      .on('postgres_changes',{event:'*',schema:'public',table:'sessions'},()=>{
+        syncFromSupabase().then(()=>render());
+      })
+      .on('postgres_changes',{event:'*',schema:'public',table:'matches'},()=>{
+        syncFromSupabase().then(()=>{ recalcAllElo(); render(); });
+      })
+      .on('postgres_changes',{event:'*',schema:'public',table:'players'},()=>{
+        syncFromSupabase().then(()=>render());
+      })
+      .subscribe();
+    // Intercepta escritas do DB para também salvar no Supabase
+    const _sp=DB.setPlayers.bind(DB);
+    DB.setPlayers=v=>{ _sp(v); supa.from('players').upsert(v).then(({error})=>{ if(error)console.warn('supa players:',error); }); };
+    const _ss=DB.setSessions.bind(DB);
+    DB.setSessions=v=>{ _ss(v); supa.from('sessions').upsert(v.map(sessionToDB)).then(({error})=>{ if(error)console.warn('supa sessions:',error); }); };
+    const _sm=DB.setMatches.bind(DB);
+    DB.setMatches=v=>{ _sm(v); supa.from('matches').upsert(v.map(matchToDB)).then(({error})=>{ if(error)console.warn('supa matches:',error); }); };
+  } catch(e){ console.warn('Supabase init error:',e); }
+}
+
+// ══════════════════════════════════════
+// AUTH + LOGIN
+// ══════════════════════════════════════
+let loginMode='existing'; // 'existing' | 'new'
+let loginSelectedId=null;
+let loginPin='';
+let loginStep='pick'; // 'pick' | 'pin' | 'create_name' | 'create_pin'
+let loginNewName='';
+
+function showSplash(){
+  document.getElementById('gfe-splash').classList.remove('hidden');
+  // Aguarda mínimo 1.8s E sincronização com Supabase
+  Promise.all([
+    initSupabase(),
+    new Promise(r=>setTimeout(r,1800))
+  ]).then(()=>{
+    document.getElementById('gfe-splash').classList.add('hidden');
+    if(!DB.currentPlayer()) showLogin();
+    else render();
+  });
+}
+
+function showLogin(){
+  loginMode='existing'; loginSelectedId=null; loginPin=''; loginStep='pick'; loginNewName='';
+  document.getElementById('gfe-login').classList.remove('hidden');
+  renderLogin();
+}
+
+function hideLogin(){
+  document.getElementById('gfe-login').classList.add('hidden');
+}
+
+function setLoginMode(m){
+  loginMode=m; loginSelectedId=null; loginPin=''; loginStep=m==='new'?'create_name':'pick'; loginNewName='';
+  renderLogin();
+}
+
+function renderLogin(){
+  const el=document.getElementById('login-body');
+  const players=DB.players();
+
+  // Toggle tabs
+  const tabs=`<div class="login-toggle">
+    <button class="lt-btn ${loginMode==='existing'?'active':''}" onclick="setLoginMode('existing')">Já sou membro</button>
+    <button class="lt-btn ${loginMode==='new'?'active':''}" onclick="setLoginMode('new')">Criar conta</button>
+  </div>`;
+
+  if(loginMode==='existing'){
+    if(loginStep==='pick'){
+      const cards=players.map(p=>`
+        <div class="lp-card ${loginSelectedId===p.id?'sel':''}" onclick="loginSelectPlayer('${p.id}')">
+          <div class="lp-avatar">${initials(p.name)}</div>
+          <div class="lp-name">${esc(p.name.split(' ')[0])}</div>
+          <div class="lp-elo">ELO ${p.elo||1000}</div>
+        </div>`).join('');
+      el.innerHTML=`${tabs}
+        <div class="login-section-title">Quem é você?</div>
+        <div class="login-section-sub">SELECIONE SEU PERFIL</div>
+        <div class="lp-grid">${cards}</div>
+        ${loginSelectedId?`<button class="btn btn-p btn-full" onclick="loginGoPin()">Continuar →</button>`:''}`;
+    } else if(loginStep==='pin'){
+      const p=players.find(x=>x.id===loginSelectedId);
+      const hasPin=!!(p&&p.pin);
+      el.innerHTML=`${tabs}
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="width:60px;height:60px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:24px;color:var(--ink);margin:0 auto 10px">${initials(p?.name||'')}</div>
+          <div class="login-section-title">${esc(p?.name?.split(' ')[0]||'')}</div>
+          <div class="login-section-sub">${hasPin?'DIGITE SEU PIN':'CRIE SEU PIN DE ACESSO'}</div>
+        </div>
+        ${renderPinDots()}
+        ${renderNumpad()}
+        <button class="btn btn-s btn-full" style="margin-top:16px" onclick="loginStep='pick';loginPin='';renderLogin()">← Voltar</button>`;
+    }
+  } else {
+    if(loginStep==='create_name'){
+      el.innerHTML=`${tabs}
+        <div class="login-section-title">Novo jogador</div>
+        <div class="login-section-sub">COMO VOCÊ SE CHAMA?</div>
+        <input class="new-name-input" id="new-name-input" type="text" placeholder="Seu nome..." maxlength="20" value="${esc(loginNewName)}" oninput="loginNewName=this.value">
+        <button class="btn btn-p btn-full" onclick="loginGoCreatePin()">Continuar →</button>`;
+    } else if(loginStep==='create_pin'){
+      el.innerHTML=`${tabs}
+        <div class="login-section-title">${esc(loginNewName.split(' ')[0])}</div>
+        <div class="login-section-sub">CRIE SEU PIN DE 4 DÍGITOS</div>
+        ${renderPinDots()}
+        ${renderNumpad()}
+        <button class="btn btn-s btn-full" style="margin-top:16px" onclick="loginStep='create_name';loginPin='';renderLogin()">← Voltar</button>`;
+    }
+  }
+}
+
+function renderPinDots(){
+  return`<div class="pin-display" id="pin-display">
+    ${[0,1,2,3].map(i=>`<div class="pin-dot ${i<loginPin.length?'filled':''}" id="pd-${i}"></div>`).join('')}
+  </div>`;
+}
+
+function renderNumpad(){
+  const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  return`<div class="numpad">${keys.map(k=>{
+    if(k==='') return`<div class="nk empty"></div>`;
+    if(k==='⌫') return`<div class="nk del" onclick="pinKey('back')">⌫</div>`;
+    return`<div class="nk" onclick="pinKey('${k}')">${k}</div>`;
+  }).join('')}</div>`;
+}
+
+function loginSelectPlayer(id){
+  loginSelectedId=id; renderLogin();
+}
+
+function loginGoPin(){
+  if(!loginSelectedId)return;
+  loginStep='pin'; loginPin=''; renderLogin();
+}
+
+function loginGoCreatePin(){
+  loginNewName=(document.getElementById('new-name-input')?.value||loginNewName).trim();
+  if(!loginNewName){alert('Digite seu nome.');return;}
+  loginStep='create_pin'; loginPin=''; renderLogin();
+}
+
+function pinKey(k){
+  if(k==='back'){ loginPin=loginPin.slice(0,-1); }
+  else if(loginPin.length<4){ loginPin+=k; }
+  // Update dots without full re-render
+  [0,1,2,3].forEach(i=>{
+    const d=document.getElementById('pd-'+i);
+    if(d) d.className='pin-dot'+(i<loginPin.length?' filled':'');
+  });
+  if(loginPin.length===4) setTimeout(()=>pinSubmit(),120);
+}
+
+function pinSubmit(){
+  const players=DB.players();
+  if(loginMode==='existing'){
+    const p=players.find(x=>x.id===loginSelectedId);
+    if(!p)return;
+    if(!p.pin){
+      // First time: set PIN
+      p.pin=loginPin; DB.setPlayers(players);
+      loginSuccess(p.id);
+    } else if(p.pin===loginPin){
+      loginSuccess(p.id);
+    } else {
+      // Wrong PIN
+      loginPin='';
+      [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d){d.classList.add('shake');setTimeout(()=>d.classList.remove('shake'),350);} });
+      setTimeout(()=>{ [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d) d.className='pin-dot'; }); },400);
+    }
+  } else {
+    // Create new account
+    const existing=players.find(p=>p.name.toLowerCase()===loginNewName.toLowerCase());
+    let pid;
+    if(existing){ existing.pin=loginPin; DB.setPlayers(players); pid=existing.id; }
+    else{ const np={id:uid(),name:loginNewName,elo:1000,role:null,pin:loginPin}; players.push(np); DB.setPlayers(players); pid=np.id; }
+    loginSuccess(pid);
+  }
+}
+
+function loginSuccess(pid){
+  DB.setCurrentPlayer(pid);
+  hideLogin();
+  if(!DB.onboardingDone()){ showOnboarding(); }
+  else { render(); }
+}
+
+function logout(){
+  DB.setCurrentPlayer(null);
+  showLogin();
+}
+
+// ── ONBOARDING ──
+let obSlide=0;
+const OB_TOTAL=3;
+
+function showOnboarding(){
+  obSlide=0;
+  document.getElementById('gfe-onboarding').classList.remove('hidden');
+  updateOnboarding();
+}
+
+function obNext(){
+  if(obSlide<OB_TOTAL-1){
+    obSlide++;
+    updateOnboarding();
+  } else {
+    DB.setOnboardingDone();
+    document.getElementById('gfe-onboarding').classList.add('hidden');
+    render();
+  }
+}
+
+function updateOnboarding(){
+  const slides=document.getElementById('ob-slides');
+  if(slides) slides.style.transform=`translateX(-${obSlide*100}%)`;
+  // dots
+  document.querySelectorAll('.ob-dot').forEach((d,i)=>{
+    d.className='ob-dot'+(i===obSlide?' active':'');
+  });
+  // button text
+  const btn=document.getElementById('ob-btn');
+  if(btn) btn.textContent=obSlide===OB_TOTAL-1?'Vamos lá! 🎾':'Próximo';
+  // animate icon
+  const icons=document.querySelectorAll('.ob-icon');
+  if(icons[obSlide]){ icons[obSlide].style.animation='none'; void icons[obSlide].offsetWidth; icons[obSlide].style.animation='splashPop .4s cubic-bezier(.34,1.56,.64,1) both'; }
+}
 
 // ══════════════════════════════════════
 // HELPERS
@@ -635,6 +1026,7 @@ function render(){
   else if(page==='lista')  c.innerHTML=renderLista();
   else if(page==='historico') c.innerHTML=renderHistorico();
   else if(page==='ranking')   c.innerHTML=renderRanking();
+  else if(page==='config')    c.innerHTML=renderConfig();
 // update header subtitle with current player
   const cp=DB.currentPlayer();
   const hd=document.getElementById('hd-sub');
@@ -728,7 +1120,7 @@ function renderHome(){
         </div>
         ${player.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
       </div>
-      <button class="home-change-btn" onclick="showPlayerSelector()">TROCAR</button>
+      <button class="home-change-btn" onclick="nav('config')">⚙️</button>
     </div>
 
     <div class="metric-grid">
@@ -1235,9 +1627,11 @@ function renderSessionFlow(session){
         <span style="color:var(--n400)">${esc(lt)}</span>
       </div>`;
     }).join('');
+    const destHtml=sf._destaques?renderDestaques(sf._destaques,sf.sessionId):'';
     return`${activeHeader}
       <div class="alert alert-ok" style="margin-bottom:14px">✅ Sessão finalizada! ${sf.matches.length} partida${sf.matches.length!==1?'s':''} disputada${sf.matches.length!==1?'s':''}.</div>
-      <div class="eyebrow">Resumo</div>
+      ${destHtml}
+      <div class="eyebrow" style="margin-top:14px">Resultado completo</div>
       <div class="card" style="padding:10px 12px">${summary||'<p style="color:var(--n500);font-size:11px">Nenhuma partida.</p>'}</div>
     `;
   }
@@ -1356,8 +1750,121 @@ function finishSession(sessionId){
   if(!confirm('Finalizar a sessão agora?'))return;
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(s){ s.status='finished'; DB.setSessions(ss); }
-  if(sessionFlow) sessionFlow.phase='finished';
+  if(sessionFlow){ sessionFlow.phase='finished'; sessionFlow._destaques=buildDestaques(sessionId); }
   render();
+}
+
+function buildDestaques(sessionId){
+  const session=DB.sessions().find(s=>s.id===sessionId);
+  const sf=sessionFlow;
+  if(!session||!sf||!sf.matches||!sf.matches.length) return null;
+  const pairs=session.pairs;
+
+  // MVP: player with most wins across all flow matches
+  const winCount={};
+  sf.matches.forEach(m=>{
+    const winPair=m.winner===1?pairs[m.pair1Idx]:pairs[m.pair2Idx];
+    (winPair||[]).forEach(pid=>{ winCount[pid]=(winCount[pid]||0)+1; });
+  });
+  const mvpId=Object.entries(winCount).sort((a,b)=>b[1]-a[1])[0]?.[0];
+  const mvpWins=mvpId?winCount[mvpId]:0;
+
+  // Dupla dominante: pair with most wins
+  const pairWins={};
+  sf.matches.forEach(m=>{
+    const wi=m.winner===1?m.pair1Idx:m.pair2Idx;
+    pairWins[wi]=(pairWins[wi]||0)+1;
+  });
+  const domIdx=Object.entries(pairWins).sort((a,b)=>b[1]-a[1])[0];
+  const domPair=domIdx?pairs[parseInt(domIdx[0])]:null;
+  const domWins=domIdx?domIdx[1]:0;
+
+  // Partida mais disputada: smallest score gap
+  let closestMatch=null, closestGap=999;
+  sf.matches.forEach(m=>{
+    const gap=Math.abs((m.score1||0)-(m.score2||0));
+    if(gap<closestGap){ closestGap=gap; closestMatch=m; }
+  });
+
+  // Rei da Quadra: longest king run (tracked in sf.kingRun)
+  // We look at the pair that was on court the most consecutively
+  const streakMap={};
+  let cur=null, curLen=0;
+  sf.matches.forEach(m=>{
+    const wi=m.winner===1?m.pair1Idx:m.pair2Idx;
+    if(wi===cur){ curLen++; } else { cur=wi; curLen=1; }
+    if(!streakMap[wi]||streakMap[wi]<curLen) streakMap[wi]=curLen;
+  });
+  const reiIdx=Object.entries(streakMap).sort((a,b)=>b[1]-a[1])[0];
+  const reiPair=reiIdx?pairs[parseInt(reiIdx[0])]:null;
+  const reiStreak=reiIdx?reiIdx[1]:0;
+
+  return { mvpId, mvpWins, domPair, domWins, closestMatch, reiPair, reiStreak, pairs };
+}
+
+function renderDestaques(d, sessionId){
+  if(!d) return'';
+  const session=DB.sessions().find(s=>s.id===sessionId);
+  const dateLabel=session?fmtDate(session.date):'';
+
+  const mvpHtml=d.mvpId?`<div class="destaque-card">
+    <div class="dest-icon">🏅</div>
+    <div class="dest-body">
+      <div class="dest-label">MVP da Sessão</div>
+      <div class="dest-name">${esc(getName(d.mvpId))}</div>
+      <div class="dest-detail">${d.mvpWins} vitória${d.mvpWins!==1?'s':''} no dia</div>
+    </div>
+  </div>`:'';
+
+  const domHtml=d.domPair?`<div class="destaque-card">
+    <div class="dest-icon">👑</div>
+    <div class="dest-body">
+      <div class="dest-label">Dupla Dominante</div>
+      <div class="dest-name">${d.domPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}</div>
+      <div class="dest-detail">${d.domWins} vitória${d.domWins!==1?'s':''} juntos</div>
+    </div>
+  </div>`:'';
+
+  const reiHtml=d.reiPair&&d.reiStreak>1?`<div class="destaque-card">
+    <div class="dest-icon">🔥</div>
+    <div class="dest-body">
+      <div class="dest-label">Rei da Quadra</div>
+      <div class="dest-name">${d.reiPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}</div>
+      <div class="dest-detail">${d.reiStreak} vitórias seguidas</div>
+    </div>
+  </div>`:'';
+
+  let closedHtml='';
+  if(d.closestMatch){
+    const m=d.closestMatch;
+    const p1=d.pairs[m.pair1Idx].map(pid=>getName(pid).split(' ')[0]).join('+');
+    const p2=d.pairs[m.pair2Idx].map(pid=>getName(pid).split(' ')[0]).join('+');
+    closedHtml=`<div class="destaque-card">
+      <div class="dest-icon">⚡</div>
+      <div class="dest-body">
+        <div class="dest-label">Partida Mais Disputada</div>
+        <div class="dest-name">${esc(p1)} vs ${esc(p2)}</div>
+        <div class="dest-detail">Placar ${m.score1}–${m.score2}</div>
+      </div>
+    </div>`;
+  }
+
+  // WhatsApp share text
+  const wppText=encodeURIComponent(
+    `🎾 *GFE · Sessão ${dateLabel}*\n\n`+
+    (d.mvpId?`🏅 MVP: *${getName(d.mvpId)}* (${d.mvpWins}V)\n`:'') +
+    (d.domPair?`👑 Dupla: *${d.domPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}* (${d.domWins}V)\n`:'') +
+    (d.reiPair&&d.reiStreak>1?`🔥 Rei: *${d.reiPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}* (${d.reiStreak} seguidas)\n`:'') +
+    `\nJogado via Games For Evolution 🏆`
+  );
+
+  return`<div class="destaques-wrap">
+    <div class="eyebrow" style="margin-bottom:12px">Destaques da Sessão</div>
+    ${mvpHtml}${domHtml}${reiHtml}${closedHtml}
+    <a href="https://wa.me/?text=${wppText}" target="_blank" style="text-decoration:none">
+      <button class="wpp-btn">💬 Compartilhar no WhatsApp</button>
+    </a>
+  </div>`
 }
 
 function openListaDetail(id){ listaActiveId=id; render(); }
@@ -1431,6 +1938,76 @@ function removeFromList(sid,pid){
 }
 
 // ══════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════
+function renderConfig(){
+  const pid=DB.currentPlayer();
+  const player=getPlayer(pid);
+  const stats=playerStats(pid);
+  const ranked=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const pos=ranked.findIndex(p=>p.id===pid)+1;
+
+  const configRow=(icon,label,value,action)=>`
+    <div class="profile-row" style="cursor:${action?'pointer':'default'}" ${action?`onclick="${action}"`:''}>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-size:18px">${icon}</span>
+        <div class="pr-label">${label}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="pr-val" style="font-size:13px;color:var(--n300)">${value}</div>
+        ${action?'<span style="color:var(--n500);font-size:12px">›</span>':''}
+      </div>
+    </div>`;
+
+  return`
+    <div class="eyebrow">Meu perfil</div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+        <div style="width:56px;height:56px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:22px;color:var(--ink);flex-shrink:0">${initials(player?.name||'')}</div>
+        <div>
+          <div style="font-family:var(--font-h);font-size:20px;font-weight:700;text-transform:uppercase">${esc(player?.name||'')}</div>
+          ${player?.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
+        </div>
+      </div>
+      ${configRow('🏆','Ranking','#'+pos,'')}
+      ${configRow('⚡','ELO atual',player?.elo||1000,'')}
+      ${configRow('✅','Vitórias',stats.w,'')}
+      ${configRow('❌','Derrotas',stats.l,'')}
+    </div>
+
+    <div class="eyebrow">Conta</div>
+    <div class="card" style="margin-bottom:14px">
+      ${configRow('🔑','Alterar PIN','••••',"changePin()")}
+      ${configRow('👤','Trocar perfil','',`logout()`)}
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      ${configRow('📖','Ver onboarding novamente','',`replayOnboarding()`)}
+    </div>
+
+    <button class="btn btn-d btn-full" style="margin-top:4px" onclick="logout()">
+      Sair da conta
+    </button>
+    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">GFE v0.1 · Beach Tennis · Grupo</p>
+  `;
+}
+
+function changePin(){
+  const pid=DB.currentPlayer(); if(!pid)return;
+  loginSelectedId=pid; loginPin=''; loginStep='pin'; loginMode='existing';
+  document.getElementById('gfe-login').classList.remove('hidden');
+  renderLogin();
+  // Override: after new PIN set, go back to config
+  const _orig=loginSuccess;
+  // we just re-use the normal flow; user sets new PIN and returns home
+}
+
+function replayOnboarding(){
+  DB._s('onboardingDone', false);
+  showOnboarding();
+}
+
+// ══════════════════════════════════════
 // RANKING
 // ══════════════════════════════════════
 function renderRanking(){
@@ -1438,10 +2015,9 @@ function renderRanking(){
     <div class="tab-tog">
       <button class="${rankTab==='elo'?'active':''}" onclick="setRankTab('elo')">ELO</button>
       <button class="${rankTab==='duplas'?'active':''}" onclick="setRankTab('duplas')">Duplas</button>
-      <button class="${rankTab==='conv'?'active':''}" onclick="setRankTab('conv')">Convocação</button>
     </div>
-    ${rankTab==='elo'?renderEloTable():rankTab==='duplas'?renderDuplasTable():renderConvocacao()}
-    ${rankTab!=='conv'?`<div style="margin-top:16px"><div class="eyebrow">Últimas Partidas</div><div class="card">${renderMatchHist()}</div></div>`:''}`;
+    ${rankTab==='elo'?renderEloTable():renderDuplasTable()}
+    <div style="margin-top:16px"><div class="eyebrow">Últimas Partidas</div><div class="card">${renderMatchHist()}</div></div>`;
 }
 function setRankTab(t){rankTab=t;render();}
 
@@ -2112,15 +2688,8 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
   recalcAllElo();
 })();
 
-// If no player selected yet, show selector; otherwise go home
-if(!DB.currentPlayer()){
-  // Auto-select Daniel for demo purposes (first-time users will see selector)
-  const daniel=DB.players().find(p=>p.name==='Daniel');
-  if(daniel){ DB.setCurrentPlayer(daniel.id); render(); }
-  else showPlayerSelector();
-} else {
-  render();
-}
+// Init: splash → sync Supabase → login (se necessário) → app
+showSplash();
 </script>
 </body>
 </html>
