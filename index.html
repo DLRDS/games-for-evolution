@@ -652,6 +652,16 @@ async function initSupabase(){
   try{
     supa=supabase.createClient(SUPA_URL,SUPA_KEY);
     await syncFromSupabase();
+    // Se Supabase está vazio, sobe o seed local para o banco
+    const {data:sbCheck}=await supa.from('players').select('id').limit(1);
+    if(!sbCheck||sbCheck.length===0){
+      const localPlayers=DB.players();
+      const localSessions=DB.sessions();
+      const localMatches=DB.matches();
+      if(localPlayers.length>0) await supa.from('players').upsert(localPlayers);
+      if(localSessions.length>0) await supa.from('sessions').upsert(localSessions.map(sessionToDB));
+      if(localMatches.length>0) await supa.from('matches').upsert(localMatches.map(matchToDB));
+    }
     // Intercepta escritas do DB para também salvar no Supabase
     const _sp=DB.setPlayers.bind(DB);
     DB.setPlayers=v=>{ _sp(v); supa.from('players').upsert(v).then(({error})=>{ if(error)console.warn('supa players:',error); }); };
