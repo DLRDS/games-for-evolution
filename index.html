@@ -1287,6 +1287,26 @@ function renderListaIndex(){
     const badge=isActive?'<span class="sess-badge" style="background:rgba(255,102,0,.2);color:var(--orange);border:1px solid rgba(255,102,0,.4)">● EM ANDAMENTO</span>':isFinished?'<span class="sess-badge sess-badge-full">✅ FINALIZADA</span>':isUpcoming?(full?'<span class="sess-badge sess-badge-full">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>'):'<span class="sess-badge sess-badge-past">ENCERRADA</span>';
     const names=(s.confirmed||[]).map(getName).join(', ')||'Nenhum confirmado';
     const mvp=s.mvpId?` · MVP: ${getName(s.mvpId)}`:'';
+    const finishBtn=isActive&&isPresOrDono(DB.currentPlayer())
+      ?`<button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${s.id}')">⏹ Finalizar sessão</button>`
+      :'';
+    // Se tem botão de finalizar, card não é clicável — usa estrutura separada
+    if(finishBtn){
+      return`<div class="sess-card ${isUpcoming?'upcoming':''}">
+        <div onclick="openListaDetail('${s.id}')" style="cursor:pointer">
+          <div class="sess-card-header">
+            <div class="sess-day-big">${dayNum(s.date)}</div>
+            <div class="sess-card-info">
+              <div class="sess-card-date">${fmtDateLong(s.date)}</div>
+              <div class="sess-card-meta">${cnt}/8 confirmados${mvp}</div>
+            </div>
+            ${badge}
+          </div>
+          <div class="sess-names">${esc(names)}</div>
+        </div>
+        ${finishBtn}
+      </div>`;
+    }
     return`<div class="sess-card ${isUpcoming?'upcoming':''}" onclick="openListaDetail('${s.id}')">
       <div class="sess-card-header">
         <div class="sess-day-big">${dayNum(s.date)}</div>
@@ -1423,18 +1443,17 @@ function renderPairManager(session){
   // Este dispositivo é dono do controle?
   const isOwner = sessionFlow && sessionFlow.sessionId===session.id && sessionFlow._owner;
 
-  // Dono: mostra tela de controle completa
+  // Organizador: mostra tela de controle completa
   if(isOwner && sessionFlow.phase!=='editing'){
     return renderSessionFlow(session);
   }
 
-  // Espectador: outro dispositivo está controlando
-  // Mostra placar ao vivo se há jogo em andamento
-  if(!isOwner && (session.liveScore || session.flowState)){
+  // Não é organizador: sempre mostra visão de espectador/participante
+  if(!isOwner){
     return renderSpectator(session);
   }
 
-  // Sem flow ainda: mostra montagem de duplas
+  // Sem flow ainda (organizador antes de iniciar): mostra montagem de duplas
 
   // If pairs are already saved (pairsReady), show saved pairs + start button
   if(session.pairsReady&&session.pairs&&session.pairs.every(p=>p[0]&&p[1])){
@@ -1571,20 +1590,19 @@ function renderSpectator(session){
     </div>`;
   }).join('');
 
+  const finishBtnHtml=isPresOrDono(DB.currentPlayer())
+    ?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">⏹ Encerrar sessão</button>'
+    :'';
+
   return`
     <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO AO VIVO · ESPECTADOR</div></div>
     ${scoreBlock}
     <div class="eyebrow">Grupo da sessão</div>
     <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:10px">
-      ${pairRows||`<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>`}
+      ${pairRows||'<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>'}
     </div>
     <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>
-    '+(isPresOrDono(DB.currentPlayer())?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">⏹ Encerrar sessão</button>':'')+`
-  `;
-}
-      </div>
-    </div>
-    <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">Atualiza automaticamente em tempo real</p>`;
+  `+finishBtnHtml;
 }
 
 function selectPoolChip(pid){
