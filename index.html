@@ -611,6 +611,8 @@ const DB = {
   setCurrentPlayer(v){ this._s('currentPlayer', v); },
   onboardingDone()  { return this._g('onboardingDone', false); },
   setOnboardingDone(){ this._s('onboardingDone', true); },
+  groupName()       { return this._g('groupName', null); },
+  setGroupName(v)   { this._s('groupName', v); },
 };
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -763,7 +765,7 @@ function _checkLiveSession(){
   if(sessionFlow) return; // é o organizador, não faz nada
   const pid=DB.currentPlayer();
   if(!pid) return;
-  const activeSess=DB.sessions().find(s=>
+  const activeSess=groupSessions().find(s=>
     s.status==='active' &&
     (s.liveScore||s.flowState) &&
     (s.confirmed||[]).includes(pid)
@@ -776,7 +778,7 @@ function _checkLiveSession(){
 
 function _updateLiveBadge(){
   const pid=DB.currentPlayer();
-  const activeSess=DB.sessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
+  const activeSess=groupSessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
   const badge=document.getElementById('live-badge');
   if(!badge) return;
   if(activeSess){ badge.style.display='flex'; }
@@ -804,7 +806,9 @@ async function showSplash(){
   try{ const {data}=await supa.auth.getSession(); session=data?.session||null; }catch(e){}
   if(session&&session.user){
     await ensureProfile(session.user);
-    if(DB.currentPlayer()){ render(); return; }
+    const p=getPlayer(DB.currentPlayer());
+    if(p&&p.group_id){ await ensureGroupName(); render(); return; }
+    if(p){ showGroupSetup(); return; }
   }
   DB.setCurrentPlayer(null);
   showLogin();
@@ -817,12 +821,94 @@ async function ensureProfile(user){
   let p=players.find(x=>x.user_id===user.id);
   if(!p){
     const nm=cleanName(user.user_metadata?.name||(user.email||'').split('@')[0]||'Jogador');
-    const role=(user.email||'').toLowerCase()===OWNER_EMAIL?'dono':null;
-    p={id:uid(),name:nm,elo:1000,role,user_id:user.id,group_id:'gfe'};
+    p={id:uid(),name:nm,elo:1000,role:null,user_id:user.id,group_id:null};
     players.push(p);
     DB.setPlayers(players);
   }
   DB.setCurrentPlayer(p.id);
+}
+
+// ── GRUPO: helpers de escopo (cada pessoa vê só os dados do seu grupo) ──
+function myGroupId(){ return getPlayer(DB.currentPlayer())?.group_id || null; }
+function groupPlayers(){ const g=myGroupId(); return DB.players().filter(p=>p.group_id===g); }
+function groupSessions(){ const g=myGroupId(); return DB.sessions().filter(s=>s.group_id===g); }
+function groupMatches(){ const g=myGroupId(); return DB.matches().filter(m=>m.group_id===g); }
+function genGroupCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
+
+async function ensureGroupName(){
+  const g=myGroupId(); if(!g) return;
+  if(DB.groupName()) return;
+  try{ const {data}=await supa.from('groups').select('name').eq('id',g).maybeSingle(); if(data?.name) DB.setGroupName(data.name); }catch(e){}
+}
+
+// ── TELA: criar ou entrar em um grupo (aparece quando a conta não tem grupo) ──
+let groupSetupMode='choose'; // 'choose' | 'create' | 'join'
+function showGroupSetup(){
+  groupSetupMode='choose';
+  document.getElementById('gfe-login').classList.remove('hidden');
+  renderGroupSetup();
+}
+function hideGroupSetup(){ document.getElementById('gfe-login').classList.add('hidden'); }
+function setGroupSetupMode(m){ groupSetupMode=m; renderGroupSetup(); }
+function groupSetupError(msg){ const e=document.getElementById('gs-msg'); if(e) e.textContent=msg||''; }
+function renderGroupSetup(){
+  const el=document.getElementById('login-body');
+  if(groupSetupMode==='create'){
+    el.innerHTML=`
+      <div class="login-section-title">Criar grupo</div>
+      <div class="login-section-sub">VOCÊ SERÁ O DONO</div>
+      <div class="ig"><label>Nome do grupo</label><input id="gs-name" type="text" maxlength="30" placeholder="Ex.: Beach Tennis dos amigos"></div>
+      <div id="gs-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+      <button class="btn btn-p btn-full" id="gs-btn" style="font-size:15px;padding:13px" onclick="createGroup(document.getElementById('gs-name').value)">Criar e entrar</button>
+      <button class="btn btn-s btn-full" style="margin-top:8px" onclick="setGroupSetupMode('choose')">${icon('arrowLeft',14)} Voltar</button>`;
+  } else if(groupSetupMode==='join'){
+    el.innerHTML=`
+      <div class="login-section-title">Entrar em grupo</div>
+      <div class="login-section-sub">DIGITE O CÓDIGO QUE TE PASSARAM</div>
+      <div class="ig"><label>Código do grupo</label><input id="gs-code" type="text" maxlength="8" style="text-transform:uppercase;letter-spacing:2px" placeholder="Ex.: ABC123" oninput="this.value=this.value.toUpperCase()"></div>
+      <div id="gs-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+      <button class="btn btn-p btn-full" id="gs-btn" style="font-size:15px;padding:13px" onclick="joinGroup(document.getElementById('gs-code').value)">Entrar no grupo</button>
+      <button class="btn btn-s btn-full" style="margin-top:8px" onclick="setGroupSetupMode('choose')">${icon('arrowLeft',14)} Voltar</button>`;
+  } else {
+    el.innerHTML=`
+      <div class="login-section-title">Quase lá!</div>
+      <div class="login-section-sub">VOCÊ AINDA NÃO ESTÁ EM UM GRUPO</div>
+      <button class="btn btn-p btn-full" style="margin-bottom:10px;font-size:15px;padding:13px" onclick="setGroupSetupMode('create')">Criar um grupo</button>
+      <button class="btn btn-s btn-full" style="font-size:15px;padding:13px" onclick="setGroupSetupMode('join')">Entrar com um código</button>`;
+  }
+}
+
+async function createGroup(name){
+  const nm=cleanName(name);
+  if(!nm){ groupSetupError('Dê um nome ao grupo.'); return; }
+  const btn=document.getElementById('gs-btn'); if(btn){ btn.disabled=true; btn.textContent='Criando...'; }
+  const code=genGroupCode();
+  let userId=null;
+  try{ userId=(await supa.auth.getUser()).data.user?.id||null; }catch(e){}
+  const {error}=await supa.from('groups').insert({id:code,name:nm,created_by:userId});
+  if(error){ groupSetupError('Não foi possível criar agora. Tente de novo.'); if(btn){ btn.disabled=false; btn.textContent='Criar e entrar'; } return; }
+  const players=DB.players(); const p=players.find(x=>x.id===DB.currentPlayer());
+  if(p){ p.group_id=code; p.role='dono'; DB.setPlayers(players); }
+  DB.setGroupName(nm);
+  enterAppAfterGroup();
+}
+
+async function joinGroup(code){
+  const c=(code||'').trim().toUpperCase();
+  if(!c){ groupSetupError('Digite o código do grupo.'); return; }
+  const btn=document.getElementById('gs-btn'); if(btn){ btn.disabled=true; btn.textContent='Entrando...'; }
+  const {data,error}=await supa.from('groups').select('id,name').eq('id',c).maybeSingle();
+  if(error||!data){ groupSetupError('Grupo não encontrado. Confira o código.'); if(btn){ btn.disabled=false; btn.textContent='Entrar no grupo'; } return; }
+  const players=DB.players(); const p=players.find(x=>x.id===DB.currentPlayer());
+  if(p){ p.group_id=data.id; p.role=null; DB.setPlayers(players); }
+  DB.setGroupName(data.name);
+  enterAppAfterGroup();
+}
+
+function enterAppAfterGroup(){
+  hideGroupSetup();
+  if(!DB.onboardingDone()){ showOnboarding(); }
+  else { render(); }
 }
 
 function showLogin(){
@@ -916,6 +1002,9 @@ async function doSignup(){
 
 function finishAuth(){
   hideLogin();
+  const p=getPlayer(DB.currentPlayer());
+  if(!p||!p.group_id){ showGroupSetup(); return; }
+  ensureGroupName();
   if(!DB.onboardingDone()){ showOnboarding(); }
   else { render(); }
 }
@@ -925,6 +1014,12 @@ async function logout(){
   try{ await supa.auth.signOut(); }catch(e){}
   DB.setCurrentPlayer(null);
   showLogin();
+}
+
+function copyGroupCode(){
+  const code=myGroupId(); if(!code) return;
+  try{ navigator.clipboard.writeText(code).then(()=>alert('Código copiado: '+code),()=>alert('Código do grupo: '+code)); }
+  catch(e){ alert('Código do grupo: '+code); }
 }
 
 async function changePassword(){
@@ -957,8 +1052,12 @@ function obNext(){
 }
 
 function updateOnboarding(){
-  const slides=document.getElementById('ob-slides');
-  if(slides) slides.style.transform=`translateX(-${obSlide*100}%)`;
+  // Mostra só a tela atual (mais confiável que o deslize horizontal)
+  const slidesEl=document.getElementById('ob-slides');
+  if(slidesEl) slidesEl.style.transform='none';
+  document.querySelectorAll('.ob-slide').forEach((s,i)=>{
+    s.style.display = i===obSlide ? 'flex' : 'none';
+  });
   // dots
   document.querySelectorAll('.ob-dot').forEach((d,i)=>{
     d.className='ob-dot'+(i===obSlide?' active':'');
@@ -990,7 +1089,7 @@ function initials(name){ return name?name.split(' ').map(w=>w[0]).join('').slice
 
 function getOrCreateSession(date){
   let ss=DB.sessions(); let s=ss.find(x=>x.date===date);
-  if(!s){ s={id:uid(),date,confirmed:[],mvpId:null}; ss.push(s); DB.setSessions(ss); }
+  if(!s){ s={id:uid(),date,confirmed:[],mvpId:null,group_id:myGroupId()}; ss.push(s); DB.setSessions(ss); }
   return s;
 }
 
@@ -1119,7 +1218,7 @@ function generateRoundRobin(playerIds){
 // CONVOCAÇÃO
 // ══════════════════════════════════════
 function buildConvocacao(){
-  const players=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const players=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   // snake draft pairs: 1+8, 2+7, 3+6, 4+5 (balanced)
   const pairs=[];
   let lo=0,hi=players.length-1;
@@ -1134,7 +1233,7 @@ let page='home', rankTab='elo', histFilter=null, rrState=null, mvpSessionId=null
 let histRevealed=new Set(); // dias do histórico com placares revelados (escondidos por padrão)
 
 function goToLive(){
-  const activeSess=DB.sessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
+  const activeSess=groupSessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
   if(!activeSess) return;
   page='lista';
   listaActiveId=activeSess.id;
@@ -1172,7 +1271,7 @@ function render(){
 // PLAYER SELECTOR
 // ══════════════════════════════════════
 function showPlayerSelector(){
-  const players=DB.players();
+  const players=groupPlayers();
   const grid=document.getElementById('ps-grid');
   grid.innerHTML=players.map(p=>{
     const stats=playerStats(p.id);
@@ -1208,7 +1307,7 @@ function renderHome(){
   const pct=total>0?Math.round(stats.w/total*100):0;
 
   // Ranking position
-  const ranked=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const ranked=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   const pos=ranked.findIndex(p=>p.id===pid)+1;
   const posLabel=`#${pos}`;
 
@@ -1316,7 +1415,7 @@ function renderLista(){
 
 function renderListaIndex(){
   const today=new Date().toISOString().slice(0,10);
-  const sessions=DB.sessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const sessions=groupSessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
   const upcoming=sessions.filter(s=>s.date>=today);
   const past=sessions.filter(s=>s.date<today);
 
@@ -2206,7 +2305,7 @@ function openNewSessionModal(){
 function createSession(){
   const date=document.getElementById('ns-date').value;
   if(!date){alert('Selecione uma data.');return;}
-  const s={id:uid(),date,confirmed:[],mvpId:null};
+  const s={id:uid(),date,confirmed:[],mvpId:null,group_id:myGroupId()};
   const ss=DB.sessions(); ss.push(s); DB.setSessions(ss);
   closeModal('modal-new-session');
   listaActiveId=s.id;
@@ -2222,7 +2321,7 @@ function deleteSession(id){
 
 let selectedChipId=null;
 function openConfirmModal(sessionId){
-  const players=DB.players();
+  const players=groupPlayers();
   const session=DB.sessions().find(s=>s.id===sessionId);
   const confirmed=session?.confirmed||[];
   const chips=players.filter(p=>!confirmed.includes(p.id))
@@ -2251,8 +2350,8 @@ function confirmPresenca(){
     const nm=cleanName(txt);
     if(!nm){alert('Digite um nome válido.');return;}
     let players=DB.players();
-    let p=players.find(x=>x.name.toLowerCase()===nm.toLowerCase());
-    if(!p){p={id:uid(),name:nm,elo:1000};players.push(p);DB.setPlayers(players);}
+    let p=players.find(x=>x.name.toLowerCase()===nm.toLowerCase()&&x.group_id===myGroupId());
+    if(!p){p={id:uid(),name:nm,elo:1000,group_id:myGroupId()};players.push(p);DB.setPlayers(players);}
     if(!s.confirmed.includes(p.id))s.confirmed.push(p.id);
   } else {alert('Selecione ou digite seu nome.');return;}
   DB.setSessions(ss); selectedChipId=null; closeModal('modal-confirm'); render();
@@ -2271,7 +2370,7 @@ function renderConfig(){
   const pid=DB.currentPlayer();
   const player=getPlayer(pid);
   const stats=playerStats(pid);
-  const ranked=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const ranked=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   const pos=ranked.findIndex(p=>p.id===pid)+1;
 
   const configRow=(ic,label,value,action)=>`
@@ -2302,6 +2401,24 @@ function renderConfig(){
       ${configRow(icon('x',16),'Derrotas',stats.l,'')}
     </div>
 
+    <div class="eyebrow">Meu grupo</div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0">
+          <span style="color:var(--orange);display:flex">${icon('users',18)}</span>
+          <div style="font-family:var(--font-h);font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(DB.groupName()||'Meu grupo')}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px">
+        <div style="flex:1">
+          <div class="pr-label">Código para convidar</div>
+          <div style="font-family:var(--font-m);font-size:18px;font-weight:700;letter-spacing:3px;color:var(--orange)">${esc(myGroupId()||'—')}</div>
+        </div>
+        <button class="btn btn-s btn-sm" onclick="copyGroupCode()">Copiar</button>
+      </div>
+      <div class="hint" style="margin-top:8px">Passe este código para alguém entrar no seu grupo.</div>
+    </div>
+
     <div class="eyebrow">Conta</div>
     <div class="card" style="margin-bottom:14px">
       ${configRow(icon('key',16),'Alterar senha','',"changePassword()")}
@@ -2327,7 +2444,7 @@ function openGrupoManager(){
 }
 
 function renderGrupo(){
-  const players=DB.players().slice().sort((a,b)=>{
+  const players=groupPlayers().slice().sort((a,b)=>{
     const order={dono:0,presidente:1,vice:2};
     return (order[a.role]??3)-(order[b.role]??3);
   });
@@ -2414,10 +2531,10 @@ function removeFromGroup(pid){
 function confirmAddPlayer(){
   const name=cleanName(document.getElementById('add-player-name').value);
   if(!name){ alert('Digite um nome válido.'); return; }
-  const existing=DB.players().find(p=>p.name.toLowerCase()===name.toLowerCase());
+  const existing=DB.players().find(p=>p.name.toLowerCase()===name.toLowerCase()&&p.group_id===myGroupId());
   if(existing){ alert('Jogador já existe no grupo.'); return; }
   const players=DB.players();
-  players.push({id:uid(),name,elo:1000,role:null});
+  players.push({id:uid(),name,elo:1000,role:null,group_id:myGroupId()});
   DB.setPlayers(players);
   closeModal('modal-add-player');
   render();
@@ -2443,7 +2560,7 @@ function renderRanking(){
 function setRankTab(t){rankTab=t;render();}
 
 function renderEloTable(){
-  const players=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const players=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   if(!players.length)return`<div class="empty"><div class="ei">${icon('trophy',34)}</div><p>Nenhum jogador ainda.</p></div>`;
   const rows=players.map((p,i)=>{
     const st=playerStats(p.id);
@@ -2475,7 +2592,7 @@ function renderDuplasTable(){
   const map={};
   function key(t){return[...t].sort().join('|');}
   function dname(t){return t.map(getName).join(' + ');}
-  DB.matches().forEach(m=>{
+  groupMatches().forEach(m=>{
     const[wt,lt]=m.winner===1?[m.team1,m.team2]:[m.team2,m.team1];
     const[gw,gl]=m.winner===1?[m.games1,m.games2]:[m.games2,m.games1];
     const wk=key(wt),lk=key(lt);
@@ -2531,7 +2648,7 @@ function renderConvocacao(){
 }
 
 function renderMatchHist(){
-  const matches=DB.matches().slice().reverse().slice(0,8);
+  const matches=groupMatches().slice().reverse().slice(0,8);
   if(!matches.length)return`<div class="empty"><p>Nenhuma partida ainda.</p></div>`;
   return matches.map(m=>{
     const t1=m.team1.map(getName).join(' & '), t2=m.team2.map(getName).join(' & ');
@@ -2607,9 +2724,9 @@ function openProfile(pid){
 // HISTÓRICO
 // ══════════════════════════════════════
 function renderHistorico(){
-  const players=DB.players();
-  const sessions=DB.sessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
-  const allMatches=DB.matches();
+  const players=groupPlayers();
+  const sessions=groupSessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const allMatches=groupMatches();
   if(!sessions.length)return`<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão ainda.</p></div>`;
 
   const chips=`<div class="fchip${!histFilter?' active':''}" onclick="setHistFilter(null)">Todos</div>`
@@ -2723,7 +2840,7 @@ function renderLiveInner(){
 
 // ── SETUP ──
 function buildSetup(){
-  const players=DB.players();
+  const players=groupPlayers();
   const opts=`<option value="">— Selecionar —</option>`+players.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');
 
   return`
@@ -2970,7 +3087,7 @@ function saveLiveMatch(){
   const sessionId=sessionFlow?sessionFlow.sessionId:null;
   const date=new Date().toISOString().slice(0,10);
   const matches=DB.matches();
-  matches.push({id:uid(),sessionId,date,team1:m.team1,team2:m.team2,games1:g1,games2:g2,winner:m.winner});
+  matches.push({id:uid(),sessionId,date,team1:m.team1,team2:m.team2,games1:g1,games2:g2,winner:m.winner,group_id:myGroupId()});
   DB.setMatches(matches);
   recalcAllElo();
 
