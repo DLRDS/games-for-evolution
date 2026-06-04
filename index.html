@@ -1116,6 +1116,7 @@ function buildConvocacao(){
 // NAVIGATION
 // ══════════════════════════════════════
 let page='home', rankTab='elo', histFilter=null, rrState=null, mvpSessionId=null, selectedMvpId=null;
+let histRevealed=new Set(); // dias do histórico com placares revelados (escondidos por padrão)
 
 function goToLive(){
   const activeSess=DB.sessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
@@ -2656,6 +2657,17 @@ function renderHistorico(){
 
     const mvpHtml=s.mvpId?`<span class="mvp-badge">🏅 MVP ${esc(getName(s.mvpId))}</span> `:'';
 
+    // Placares escondidos por padrão — botão revela/oculta por dia
+    const revealed=histRevealed.has(s.id);
+    let matchesSection;
+    if(!matches.length){
+      matchesSection=`<div class="no-matches">Sem partidas nesta sessão.</div>`;
+    } else if(revealed){
+      matchesSection=`<button class="btn btn-s btn-sm btn-full" style="margin-bottom:8px" onclick="toggleHistMatches('${s.id}')">🙈 Ocultar placares</button>${cards}`;
+    } else {
+      matchesSection=`<button class="btn btn-s btn-sm btn-full" onclick="toggleHistMatches('${s.id}')">👁 Ver ${matches.length} placar${matches.length!==1?'es':''}</button>`;
+    }
+
     return`<div class="sess-block">
       <div class="sess-bh">
         <div class="sb-day">${dayNum(s.date)}</div>
@@ -2667,13 +2679,14 @@ function renderHistorico(){
         ${isLatest?'<div class="latest-badge">ÚLTIMO</div>':''}
       </div>
       ${statRow}
-      ${cards||`<div class="no-matches">Sem partidas nesta sessão.</div>`}
+      ${matchesSection}
     </div>`;
   }).filter(Boolean).join('');
 
   return`<div class="filter-wrap">${chips}</div>${blocks||`<div class="empty"><p>Nenhuma partida encontrada.</p></div>`}`;
 }
 function setHistFilter(pid){histFilter=histFilter===pid?null:pid;render();}
+function toggleHistMatches(sid){ if(histRevealed.has(sid)) histRevealed.delete(sid); else histRevealed.add(sid); render(); }
 
 // ══════════════════════════════════════
 // (admin removed)
