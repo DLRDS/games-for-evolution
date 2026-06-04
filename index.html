@@ -447,6 +447,15 @@
     .dest-detail{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
     .wpp-btn{width:100%;padding:14px;border-radius:10px;border:none;background:#25D366;color:#fff;font-family:var(--font-h);font-size:16px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:.5px;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
     .wpp-btn:active{opacity:.85;}
+
+    /* ÍCONES SVG próprios */
+    .ico{display:inline-block;vertical-align:-.16em;flex-shrink:0;}
+    .btn .ico{vertical-align:-.18em;margin-right:2px;}
+    .nb .ic{display:flex;align-items:center;justify-content:center;height:22px;}
+    .nb .ic .ico{vertical-align:0;}
+    .nb.active .ico{color:var(--orange);}
+    .dest-icon .ico,.ei .ico{vertical-align:0;}
+    .role-badge .ico{vertical-align:-.15em;}
   </style>
 </head>
 <body>
@@ -463,12 +472,12 @@
   </header>
   <main id="content"></main>
   <nav>
-    <button class="nb active" onclick="nav('home')" id="nav-home"><span class="ic">🏠</span>Home</button>
-    <button class="nb" onclick="nav('lista')" id="nav-lista"><span class="ic">📋</span>Lista</button>
-    <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic">📅</span>Histórico</button>
-    <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic">🏆</span>Ranking</button>
-    <button class="nb" onclick="nav('config')" id="nav-config"><span class="ic">⚙️</span>Config</button>
-    <button class="nb" onclick="nav('grupo')" id="nav-grupo" style="display:none"><span class="ic">🔑</span>Grupo</button>
+    <button class="nb active" onclick="nav('home')" id="nav-home"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.7L12 3l9 6.7"/><path d="M5 9v11h14V9"/></svg></span>Home</button>
+    <button class="nb" onclick="nav('lista')" id="nav-lista"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg></span>Lista</button>
+    <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Histórico</button>
+    <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a2 2 0 0 0 0 4h.7"/><path d="M17 6h3a2 2 0 0 1 0 4h-.7"/><path d="M9 21h6"/><path d="M12 17v4"/></svg></span>Ranking</button>
+    <button class="nb" onclick="nav('config')" id="nav-config"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.5 7.5 0 0 0 .1-2l1.7-1.3-1.7-3-2 .8a7.5 7.5 0 0 0-1.7-1l-.3-2.1H10l-.3 2.1a7.5 7.5 0 0 0-1.7 1l-2-.8-1.7 3L6 11a7.5 7.5 0 0 0 0 2l-1.7 1.3 1.7 3 2-.8a7.5 7.5 0 0 0 1.7 1l.3 2.1h3.8l.3-2.1a7.5 7.5 0 0 0 1.7-1l2 .8 1.7-3z"/></svg></span>Config</button>
+    <button class="nb" onclick="nav('grupo')" id="nav-grupo" style="display:none"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 5l3 3"/><path d="M18.5 2.5l3 3"/></svg></span>Grupo</button>
   </nav>
 </div>
 
@@ -490,7 +499,7 @@
 <!-- MODAL: Nova Sessão -->
 <div class="modal-ov hidden" id="modal-new-session">
   <div class="modal">
-    <div class="modal-title">📅 Nova Sessão</div>
+    <div class="modal-title"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Nova Sessão</div>
     <div class="ig"><label>Data</label><input type="date" id="ns-date"></div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-new-session')">Cancelar</button>
@@ -525,7 +534,7 @@
 <!-- MODAL: Adicionar jogador ao grupo (dono) -->
 <div class="modal-ov hidden" id="modal-add-player">
   <div class="modal">
-    <div class="modal-title">➕ Adicionar ao Grupo</div>
+    <div class="modal-title"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Adicionar ao Grupo</div>
     <div class="ig"><label>Nome do jogador</label><input type="text" id="add-player-name" placeholder="Nome completo..." maxlength="30"></div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-add-player')">Cancelar</button>
@@ -554,17 +563,17 @@
 <div id="gfe-onboarding" class="hidden">
   <div class="ob-slides" id="ob-slides">
     <div class="ob-slide">
-      <div class="ob-icon">📋</div>
+      <div class="ob-icon"><svg class="ico" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="var(--orange)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg></div>
       <div class="ob-title">Confirme sua presença</div>
       <div class="ob-desc">Veja quem vai jogar, entre na lista e acompanhe em <span class="ob-highlight">tempo real</span> as confirmações da sessão.</div>
     </div>
     <div class="ob-slide">
-      <div class="ob-icon">🎾</div>
+      <div class="ob-icon"><svg class="ico" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="var(--orange)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3.5 8.5c5.5 1.2 11.5 1.2 17 0"/><path d="M3.5 15.5c5.5-1.2 11.5-1.2 17 0"/></svg></div>
       <div class="ob-title">Jogue e marque pontos</div>
       <div class="ob-desc">Placar ao vivo, tiebreak automático, <span class="ob-highlight">Rei da Quadra</span> e Rodízio Completo — o court no seu celular.</div>
     </div>
     <div class="ob-slide">
-      <div class="ob-icon">🏆</div>
+      <div class="ob-icon"><svg class="ico" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke="var(--orange)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a2 2 0 0 0 0 4h.7"/><path d="M17 6h3a2 2 0 0 1 0 4h-.7"/><path d="M9 21h6"/><path d="M12 17v4"/></svg></div>
       <div class="ob-title">Suba no ranking</div>
       <div class="ob-desc">Sistema de <span class="ob-highlight">ELO</span> recalculado a cada partida. Seu histórico, sequências e evolução sempre à mão.</div>
     </div>
@@ -609,6 +618,50 @@ const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>
 // Remove caracteres perigosos de nomes digitados (proteção contra injeção de código).
 // Mantém letras com acento (á, ç, ã...) e espaços; tira < > " ' ` \ & e limita o tamanho.
 function cleanName(s){ return String(s||'').replace(/[<>"'`&\\]/g,'').replace(/\s+/g,' ').trim().slice(0,30); }
+
+// ══════════════════════════════════════
+// ÍCONES — conjunto próprio do app (SVG traço, herda a cor do tema)
+// ══════════════════════════════════════
+const ICONS={
+  home:'<path d="M3 9.7L12 3l9 6.7"/><path d="M5 9v11h14V9"/>',
+  list:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  trophy:'<path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a2 2 0 0 0 0 4h.7"/><path d="M17 6h3a2 2 0 0 1 0 4h-.7"/><path d="M9 21h6"/><path d="M12 17v4"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.5 7.5 0 0 0 .1-2l1.7-1.3-1.7-3-2 .8a7.5 7.5 0 0 0-1.7-1l-.3-2.1H10l-.3 2.1a7.5 7.5 0 0 0-1.7 1l-2-.8-1.7 3L6 11a7.5 7.5 0 0 0 0 2l-1.7 1.3 1.7 3 2-.8a7.5 7.5 0 0 0 1.7 1l.3 2.1h3.8l.3-2.1a7.5 7.5 0 0 0 1.7-1l2 .8 1.7-3z"/>',
+  key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 5l3 3"/><path d="M18.5 2.5l3 3"/>',
+  crown:'<path d="M4 18h16"/><path d="M4 18L2.5 7l5.5 4L12 4l4 7 5.5-4L20 18z"/>',
+  star:'<path d="M12 2.5l2.9 6 6.6.7-4.9 4.5 1.4 6.5L12 16.9 6 20.2l1.4-6.5L2.5 9.2l6.6-.7z"/>',
+  zap:'<polygon points="13 2 4 13 11 13 10 22 20 11 13 11 13 2"/>',
+  flame:'<path d="M12 2.5c2.5 3 4 5.5 4 8.5a4 4 0 0 1-8 0c0-1 .4-2 1-2.8C8 9 6.5 11 6.5 14a5.5 5.5 0 0 0 11 0c0-4.5-3-7.5-5.5-11.5z"/>',
+  medal:'<circle cx="12" cy="14" r="6"/><path d="M8.5 8.5L6 2h4l2 4 2-4h4l-2.5 6.5"/>',
+  user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.2 3.8-6.5 8-6.5s8 2.3 8 6.5"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20.5c0-3.6 3-5.6 6.5-5.6s6.5 2 6.5 5.6"/><path d="M16 4.7a3.5 3.5 0 0 1 0 6.6"/><path d="M18 14.9c2.4.5 3.5 2.4 3.5 5.6"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  stop:'<rect x="5" y="5" width="14" height="14" rx="2.5"/>',
+  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h7"/>',
+  edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  cycle:'<polyline points="17 2 21 6 17 10"/><path d="M3 12V10a4 4 0 0 1 4-4h14"/><polyline points="7 22 3 18 7 14"/><path d="M21 12v2a4 4 0 0 1-4 4H3"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  x:'<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
+  arrowLeft:'<line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>',
+  arrowRight:'<line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>',
+  backspace:'<path d="M21 5H8L2 12l6 7h13a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><line x1="18" y1="9.5" x2="12.5" y2="15"/><line x1="12.5" y1="9.5" x2="18" y2="15"/>',
+  undo:'<polyline points="9 13 4 8 9 3"/><path d="M4 8h11a5.5 5.5 0 0 1 0 11h-2"/>',
+  flag:'<line x1="5" y1="21" x2="5" y2="4"/><path d="M5 4h13l-2.5 4.5L18 13H5"/>',
+  eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff:'<path d="M9.6 4.3A10.6 10.6 0 0 1 12 4c6 0 10 7.5 10 7.5a19 19 0 0 1-3.3 3.9"/><path d="M6.3 6.4A19 19 0 0 0 2 11.5S6 19 12 19a10.4 10.4 0 0 0 4.2-.9"/><line x1="2" y1="2" x2="22" y2="22"/>',
+  book:'<path d="M2 4.5h6.5A3 3 0 0 1 12 7v13a2.6 2.6 0 0 0-3-2.3H2z"/><path d="M22 4.5h-6.5A3 3 0 0 0 12 7v13a2.6 2.6 0 0 1 3-2.3h7z"/>',
+  chat:'<path d="M21 11.5a8.4 8.4 0 0 1-12.5 7.3L3 20.5l1.7-5.4A8.4 8.4 0 1 1 21 11.5z"/>',
+  trendDown:'<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+  trendUp:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  ball:'<circle cx="12" cy="12" r="9"/><path d="M4 8c4.5 1 11.5 1 16 0"/><path d="M4 16c4.5-1 11.5-1 16 0"/>',
+  play:'<polygon points="6 4 20 12 6 20 6 4"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 4 1.8c0 1.7-2.5 2-2.5 3.7"/><circle cx="12" cy="17.5" r=".6"/>',
+};
+function icon(name,size){
+  size=size||16;
+  return `<svg class="ico" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]||''}</svg>`;
+}
 
 // ── PROTEÇÃO DE PIN ──
 // Em vez de guardar o PIN em texto puro (que qualquer um conseguiria ler no banco),
@@ -845,7 +898,7 @@ function renderNumpad(){
   const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
   return`<div class="numpad">${keys.map(k=>{
     if(k==='') return`<div class="nk empty"></div>`;
-    if(k==='⌫') return`<div class="nk del" onclick="pinKey('back')">⌫</div>`;
+    if(k==='⌫') return`<div class="nk del" onclick="pinKey('back')">${icon('backspace',22)}</div>`;
     return`<div class="nk" onclick="pinKey('${k}')">${k}</div>`;
   }).join('')}</div>`;
 }
@@ -950,7 +1003,7 @@ function updateOnboarding(){
   });
   // button text
   const btn=document.getElementById('ob-btn');
-  if(btn) btn.textContent=obSlide===OB_TOTAL-1?'Vamos lá! 🎾':'Próximo';
+  if(btn) btn.textContent=obSlide===OB_TOTAL-1?'Vamos lá!':'Próximo';
   // animate icon
   const icons=document.querySelectorAll('.ob-icon');
   if(icons[obSlide]){ icons[obSlide].style.animation='none'; void icons[obSlide].offsetWidth; icons[obSlide].style.animation='splashPop .4s cubic-bezier(.34,1.56,.64,1) both'; }
@@ -1006,9 +1059,9 @@ function getEloFromList(list,id){ return list.find(p=>p.id===id)?.elo??1000; }
 
 function roleBadge(pid){
   const p=getPlayer(pid); if(!p?.role)return'';
-  if(p.role==='dono')       return`<span class="role-badge" style="background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">🔑 Dono</span>`;
-  if(p.role==='presidente') return`<span class="role-badge role-pres">👑 Presidente</span>`;
-  if(p.role==='vice')       return`<span class="role-badge role-vice">⭐ Vice</span>`;
+  if(p.role==='dono')       return`<span class="role-badge" style="background:rgba(139,92,246,.15);color:#a78bfa;border:1px solid rgba(139,92,246,.3)">${icon('key',11)} Dono</span>`;
+  if(p.role==='presidente') return`<span class="role-badge role-pres">${icon('crown',11)} Presidente</span>`;
+  if(p.role==='vice')       return`<span class="role-badge role-vice">${icon('star',11)} Vice</span>`;
   return'';
 }
 
@@ -1150,7 +1203,7 @@ function render(){
 // update header subtitle with current player
   const cp=DB.currentPlayer();
   const hd=document.getElementById('hd-sub');
-  if(hd) hd.textContent = cp ? `Olá, ${getName(cp).split(' ')[0]} 👋` : 'Beach Tennis · GFE';
+  if(hd) hd.textContent = cp ? `Olá, ${getName(cp).split(' ')[0]}` : 'Beach Tennis · GFE';
 }
 
 // ══════════════════════════════════════
@@ -1183,10 +1236,10 @@ function selectPlayer(id){
 // ══════════════════════════════════════
 function renderHome(){
   const pid=DB.currentPlayer();
-  if(!pid) return`<div class="empty"><div class="ei">👤</div><p>Selecione seu perfil</p><button class="btn btn-p" style="margin-top:14px" onclick="showPlayerSelector()">Selecionar</button></div>`;
+  if(!pid) return`<div class="empty"><div class="ei">${icon('user',34)}</div><p>Selecione seu perfil</p><button class="btn btn-p" style="margin-top:14px" onclick="showPlayerSelector()">Selecionar</button></div>`;
 
   const player=getPlayer(pid);
-  if(!player) return`<div class="empty"><div class="ei">❓</div><p>Perfil não encontrado</p></div>`;
+  if(!player) return`<div class="empty"><div class="ei">${icon('help',34)}</div><p>Perfil não encontrado</p></div>`;
 
   const stats=playerStats(pid);
   const total=stats.w+stats.l;
@@ -1195,13 +1248,13 @@ function renderHome(){
   // Ranking position
   const ranked=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   const pos=ranked.findIndex(p=>p.id===pid)+1;
-  const posLabel=pos===1?'🥇':pos===2?'🥈':pos===3?'🥉':`#${pos}`;
+  const posLabel=`#${pos}`;
 
   // Streak
   let streakHtml='–';
   if(stats.streak>0){
     const isW=stats.streakType==='w';
-    streakHtml=`<span class="streak-badge ${isW?'streak-w':'streak-l'}">${isW?'🔥':'❄️'} ${stats.streak}</span>`;
+    streakHtml=`<span class="streak-badge ${isW?'streak-w':'streak-l'}">${isW?icon('flame',12):icon('trendDown',12)} ${stats.streak}</span>`;
   }
 
   // Last match
@@ -1240,7 +1293,7 @@ function renderHome(){
         </div>
         ${player.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
       </div>
-      <button class="home-change-btn" onclick="nav('config')">⚙️</button>
+      <button class="home-change-btn" onclick="nav('config')" style="display:flex;align-items:center">${icon('settings',15)}</button>
     </div>
 
     <div class="metric-grid">
@@ -1311,11 +1364,11 @@ function renderListaIndex(){
     const full=cnt>=8;
     const isActive=s.status==='active';
     const isFinished=s.status==='finished';
-    const badge=isActive?'<span class="sess-badge" style="background:rgba(255,102,0,.2);color:var(--orange);border:1px solid rgba(255,102,0,.4)">● EM ANDAMENTO</span>':isFinished?'<span class="sess-badge sess-badge-full">✅ FINALIZADA</span>':isUpcoming?(full?'<span class="sess-badge sess-badge-full">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>'):'<span class="sess-badge sess-badge-past">ENCERRADA</span>';
+    const badge=isActive?'<span class="sess-badge" style="background:rgba(255,102,0,.2);color:var(--orange);border:1px solid rgba(255,102,0,.4)">● EM ANDAMENTO</span>':isFinished?'<span class="sess-badge sess-badge-full">'+icon('check',12)+' FINALIZADA</span>':isUpcoming?(full?'<span class="sess-badge sess-badge-full">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>'):'<span class="sess-badge sess-badge-past">ENCERRADA</span>';
     const names=(s.confirmed||[]).map(getName).join(', ')||'Nenhum confirmado';
     const mvp=s.mvpId?` · MVP: ${getName(s.mvpId)}`:'';
     const finishBtn=isActive&&isPresOrDono(DB.currentPlayer())
-      ?`<button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${s.id}')">⏹ Finalizar sessão</button>`
+      ?`<button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${s.id}')">${icon('stop',14)} Finalizar sessão</button>`
       :'';
     // Se tem botão de finalizar, card não é clicável — usa estrutura separada
     if(finishBtn){
@@ -1354,7 +1407,7 @@ function renderListaIndex(){
     ? `<div class="eyebrow" style="margin-top:${upcoming.length?'16px':'0'}">Anteriores</div>${past.map(sessCard).join('')}`
     : '';
   const emptyHtml=!sessions.length
-    ? `<div class="empty"><div class="ei">📋</div><p>Nenhuma sessão criada ainda.<br>Crie a primeira!</p></div>`
+    ? `<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão criada ainda.<br>Crie a primeira!</p></div>`
     : '';
 
   return`
@@ -1393,11 +1446,11 @@ function renderListaDetail(sessionId){
       if(!tmpFlow._destaques) tmpFlow._destaques=buildDestaquesFromFlow(tmpFlow,session);
       if(tmpFlow._destaques){
         const d=tmpFlow._destaques;
-        return backBtn+dateHdr+`<div class="alert alert-ok" style="margin-bottom:14px">✅ Sessão finalizada!</div>`+renderDestaques(d,session.id);
+        return backBtn+dateHdr+`<div class="alert alert-ok" style="margin-bottom:14px">${icon('check',14)} Sessão finalizada!</div>`+renderDestaques(d,session.id);
       }
     }
     // Fallback: sessão finalizada sem dados de flow
-    return backBtn+dateHdr+`<div class="alert alert-ok">✅ Sessão finalizada em ${fmtDate(session.date)}</div>
+    return backBtn+dateHdr+`<div class="alert alert-ok">${icon('check',14)} Sessão finalizada em ${fmtDate(session.date)}</div>
       <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-top:8px">Confira o histórico para ver as partidas.</p>`;
   }
 
@@ -1417,7 +1470,7 @@ function renderListaDetail(sessionId){
           <div class="slot-name">${esc(getName(pid))}</div>
           ${rb?`<div style="margin-top:2px">${rb}</div>`:''}
         </div>
-        <button class="slot-rm" onclick="removeFromList('${session.id}','${pid}')">✕</button>
+        <button class="slot-rm" onclick="removeFromList('${session.id}','${pid}')">${icon('x',13)}</button>
       </div>`;
     } else {
       slots+=`<div class="slot slot-open" onclick="openConfirmModal('${session.id}')">
@@ -1429,13 +1482,13 @@ function renderListaDetail(sessionId){
 
   const alertHtml=spots===0
     ?`<div class="alert alert-ok" style="display:flex;align-items:center;justify-content:space-between">
-        <span>✅ Lista completa · 8/8</span>
+        <span>${icon('check',14)} Lista completa · 8/8</span>
       </div>`
     :spots===1?`<div class="alert alert-info">Última vaga disponível!</div>`
-    :canStart?`<div class="alert alert-warn">⚡ ${confirmed.length} confirmados · mínimo atingido</div>`:'';
+    :canStart?`<div class="alert alert-warn">${icon('zap',13)} ${confirmed.length} confirmados · mínimo atingido</div>`:'';
 
   const startBtn=canStart
-    ?`<button class="btn btn-p btn-full" style="margin-top:14px;font-size:15px;padding:13px" onclick="startSession('${session.id}')">🚀 Iniciar Sessão (${confirmed.length} jogadores)</button>`
+    ?`<button class="btn btn-p btn-full" style="margin-top:14px;font-size:15px;padding:13px" onclick="startSession('${session.id}')">${icon('play',14)} Iniciar Sessão (${confirmed.length} jogadores)</button>`
     :`<p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-top:10px;letter-spacing:.5px">Mínimo 4 jogadores para iniciar · ${confirmed.length}/4</p>`;
 
   return`${backBtn}${dateHdr}
@@ -1509,7 +1562,7 @@ function renderPairManager(session){
         if(pid){
           return`<div class="pair-player filled" onclick="removePairPlayer(${pi},${pos})">
             <div class="pair-player-name">${esc(getName(pid))}</div>
-            <button class="pair-player-rm" onclick="removePairPlayer(${pi},${pos});event.stopPropagation()">✕</button>
+            <button class="pair-player-rm" onclick="removePairPlayer(${pi},${pos});event.stopPropagation()">${icon('x',12)}</button>
           </div>`;
         } else {
           return`<div class="pair-player empty" onclick="assignToPair(${pi},${pos})">
@@ -1532,7 +1585,7 @@ function renderPairManager(session){
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <div class="eyebrow" style="margin:0">Duplas</div>
-      <button class="btn btn-s btn-sm" onclick="sugestaoElo('${session.id}')">⚡ Sugestão ELO</button>
+      <button class="btn btn-s btn-sm" onclick="sugestaoElo('${session.id}')">${icon('zap',13)} Sugestão ELO</button>
     </div>
     <div class="pair-slots">${pairCards}</div>
 
@@ -1540,7 +1593,7 @@ function renderPairManager(session){
       Toque num jogador do pool → toque num slot vazio para atribuir · Toque num jogador atribuído para remover
     </p>
 
-    ${allFilled?`<button class="btn btn-p btn-full" onclick="savePairs('${session.id}')">💾 Salvar Duplas</button>`:''}
+    ${allFilled?`<button class="btn btn-p btn-full" onclick="savePairs('${session.id}')">${icon('save',14)} Salvar Duplas</button>`:''}
     <button class="btn btn-s btn-full" style="margin-top:8px;margin-bottom:4px" onclick="resetPairs('${session.id}')">↺ Limpar Duplas</button>
   `;
 }
@@ -1563,7 +1616,7 @@ function renderSpectator(session){
              <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}</div>
              <div class="sets-sep" style="margin:0 4px">|</div>`;
     }).join('');
-    const tbBanner=ls.isTb?`<div style="text-align:center;padding:5px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;border-bottom:1px solid var(--n600)">⚡ TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
+    const tbBanner=ls.isTb?`<div style="text-align:center;padding:5px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;border-bottom:1px solid var(--n600)">${icon('zap',13)} TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
     scoreBlock=`
       <div class="eyebrow">Partida ao vivo</div>
       <div style="background:var(--n700);border:1px solid rgba(255,102,0,.4);border-radius:12px;overflow:hidden;margin-bottom:16px">
@@ -1591,11 +1644,11 @@ function renderSpectator(session){
   } else if(ls && ls.status==='finished'){
     const winNames=ls.winner===1?(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & '):(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
     scoreBlock=`<div class="alert alert-ok" style="margin-bottom:16px;text-align:center">
-      🏆 <strong>${esc(winNames)}</strong> venceu · Próxima partida em breve...
+      ${icon('trophy',14)} <strong>${esc(winNames)}</strong> venceu · Próxima partida em breve...
     </div>`;
   } else {
     scoreBlock=`<div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">
-      <div style="font-size:32px;margin-bottom:8px">🎾</div>
+      <div style="margin-bottom:8px;color:var(--orange)">${icon('ball',32)}</div>
       <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:1px">AGUARDANDO INÍCIO DA PARTIDA</div>
     </div>`;
   }
@@ -1618,7 +1671,7 @@ function renderSpectator(session){
   }).join('');
 
   const finishBtnHtml=isPresOrDono(DB.currentPlayer())
-    ?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">⏹ Encerrar sessão</button>'
+    ?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">'+icon('stop',14)+' Encerrar sessão</button>'
     :'';
 
   return`
@@ -1702,11 +1755,11 @@ function renderSavedPairs(session){
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <div class="eyebrow" style="margin:0">Duplas confirmadas</div>
-      <button class="btn btn-s btn-sm" onclick="editPairs('${session.id}')">✏️ Editar</button>
+      <button class="btn btn-s btn-sm" onclick="editPairs('${session.id}')">${icon('edit',13)} Editar</button>
     </div>
     <div class="pair-slots" style="margin-bottom:16px">${pairCards}</div>
-    <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" onclick="initSessionFlow('${session.id}')">🎾 Iniciar Jogos</button>
-    <button class="btn btn-d btn-sm" style="margin-top:10px;width:100%" onclick="finishSession('${session.id}')">⏹ Finalizar Sessão</button>
+    <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" onclick="initSessionFlow('${session.id}')">${icon('play',14)} Iniciar Jogos</button>
+    <button class="btn btn-d btn-sm" style="margin-top:10px;width:100%" onclick="finishSession('${session.id}')">${icon('stop',14)} Finalizar Sessão</button>
   `;
 }
 
@@ -1784,14 +1837,14 @@ function renderSessionFlow(session){
         background:${sf.rule==='rei'?'rgba(255,102,0,.12)':'var(--n700)'};
         border:1px solid ${sf.rule==='rei'?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-size:14px;font-weight:700;margin-bottom:3px">👑 Rei da Quadra</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('crown',15)} Rei da Quadra</div>
         <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">A dupla vencedora permanece em quadra até perder</div>
       </div>
       <div onclick="sf_set('rule','rodizio')" style="
         background:${sf.rule==='rodizio'?'rgba(255,102,0,.12)':'var(--n700)'};
         border:1px solid ${sf.rule==='rodizio'?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:14px;margin-bottom:16px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-size:14px;font-weight:700;margin-bottom:3px">🔄 Rodízio Completo</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('cycle',15)} Rodízio Completo</div>
         <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">Se ganhar de todas as duplas em sequência, as duas saem e as duas da fora entram</div>
       </div>
       ${sfFormatBar(sf)}
@@ -1807,7 +1860,7 @@ function renderSessionFlow(session){
         background:${sel?'rgba(255,102,0,.15)':'var(--n700)'};
         border:1px solid ${sel?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?'✓':''}</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
         <div style="font-size:13px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
       </div>`;
     }).join('');
@@ -1817,8 +1870,8 @@ function renderSessionFlow(session){
       <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:4px;letter-spacing:.5px">Selecione 2 duplas</p>
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" ${sf.pickSelected.length===2?'':'disabled'} onclick="startFlowMatch()">▶ Iniciar Partida</button>
-      <button class="btn btn-s btn-sm" style="margin-top:8px;width:100%" onclick="editPairsInFlow('${session.id}')">✏️ Editar Duplas</button>
-      <button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${session.id}')">⏹ Finalizar Sessão</button>
+      <button class="btn btn-s btn-sm" style="margin-top:8px;width:100%" onclick="editPairsInFlow('${session.id}')">${icon('edit',13)} Editar Duplas</button>
+      <button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${session.id}')">${icon('stop',14)} Finalizar Sessão</button>
     `;
   }
 
@@ -1828,7 +1881,7 @@ function renderSessionFlow(session){
     const kingStreak=sf.kingRun.length;
     const streakLabel=kingStreak>0?`<span style="font-family:var(--font-m);font-size:9px;color:var(--orange);margin-left:6px">${kingStreak} vitória${kingStreak>1?'s':''} seguida${kingStreak>1?'s':''}</span>`:'';
     const onCourtHtml=`<div class="alert alert-ok" style="margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
-      <span>👑 Em quadra:</span>
+      <span>${icon('crown',13)} Em quadra:</span>
       <strong>${cp.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</strong>
       ${streakLabel}
     </div>`;
@@ -1840,7 +1893,7 @@ function renderSessionFlow(session){
         background:${sel?'rgba(255,102,0,.15)':'var(--n700)'};
         border:1px solid ${sel?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?'✓':''}</div>
+        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
         <div style="font-size:13px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
       </div>`;
     }).join('');
@@ -1849,8 +1902,8 @@ function renderSessionFlow(session){
       ${oppChips}
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" ${sf.pickSelected.length===1?'':'disabled'} onclick="startFlowMatch()">▶ Iniciar Partida</button>
-      <button class="btn btn-s btn-sm" style="margin-top:8px;width:100%" onclick="editPairsInFlow('${session.id}')">✏️ Editar Duplas</button>
-      <button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${session.id}')">⏹ Finalizar Sessão</button>
+      <button class="btn btn-s btn-sm" style="margin-top:8px;width:100%" onclick="editPairsInFlow('${session.id}')">${icon('edit',13)} Editar Duplas</button>
+      <button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${session.id}')">${icon('stop',14)} Finalizar Sessão</button>
     `;
   }
 
@@ -1859,7 +1912,7 @@ function renderSessionFlow(session){
     const newPairs=sf._rotationPairs;
     return`${activeHeader}
       <div style="text-align:center;padding:20px 0 10px">
-        <div style="font-size:40px;margin-bottom:8px">🔄</div>
+        <div style="margin-bottom:8px;color:var(--orange)">${icon('cycle',38)}</div>
         <div style="font-family:var(--font-h);font-size:22px;font-weight:700;color:var(--orange);text-transform:uppercase">Rodízio!</div>
         <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:6px;letter-spacing:.5px">As duas duplas saem.<br>As que estavam de fora entram.</div>
       </div>
@@ -1888,7 +1941,7 @@ function renderSessionFlow(session){
     }).join('');
     const destHtml=sf._destaques?renderDestaques(sf._destaques,sf.sessionId):'';
     return`${activeHeader}
-      <div class="alert alert-ok" style="margin-bottom:14px">✅ Sessão finalizada! ${sf.matches.length} partida${sf.matches.length!==1?'s':''} disputada${sf.matches.length!==1?'s':''}.</div>
+      <div class="alert alert-ok" style="margin-bottom:14px">${icon('check',14)} Sessão finalizada! ${sf.matches.length} partida${sf.matches.length!==1?'s':''} disputada${sf.matches.length!==1?'s':''}.</div>
       ${destHtml}
       <div class="eyebrow" style="margin-top:14px">Resultado completo</div>
       <div class="card" style="padding:10px 12px">${summary||'<p style="color:var(--n500);font-size:11px">Nenhuma partida.</p>'}</div>
@@ -2120,7 +2173,7 @@ function renderDestaques(d, sessionId){
   const dateLabel=session?fmtDate(session.date):'';
 
   const mvpHtml=d.mvpId?`<div class="destaque-card">
-    <div class="dest-icon">🏅</div>
+    <div class="dest-icon" style="color:var(--gold)">${icon('medal',30)}</div>
     <div class="dest-body">
       <div class="dest-label">MVP da Sessão</div>
       <div class="dest-name">${esc(getName(d.mvpId))}</div>
@@ -2129,7 +2182,7 @@ function renderDestaques(d, sessionId){
   </div>`:'';
 
   const domHtml=d.domPair?`<div class="destaque-card">
-    <div class="dest-icon">👑</div>
+    <div class="dest-icon" style="color:var(--gold)">${icon('crown',30)}</div>
     <div class="dest-body">
       <div class="dest-label">Dupla Dominante</div>
       <div class="dest-name">${d.domPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}</div>
@@ -2138,7 +2191,7 @@ function renderDestaques(d, sessionId){
   </div>`:'';
 
   const reiHtml=d.reiPair&&d.reiStreak>1?`<div class="destaque-card">
-    <div class="dest-icon">🔥</div>
+    <div class="dest-icon" style="color:var(--orange)">${icon('flame',30)}</div>
     <div class="dest-body">
       <div class="dest-label">Rei da Quadra</div>
       <div class="dest-name">${d.reiPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}</div>
@@ -2152,7 +2205,7 @@ function renderDestaques(d, sessionId){
     const p1=d.pairs[m.pair1Idx].map(pid=>getName(pid).split(' ')[0]).join('+');
     const p2=d.pairs[m.pair2Idx].map(pid=>getName(pid).split(' ')[0]).join('+');
     closedHtml=`<div class="destaque-card">
-      <div class="dest-icon">⚡</div>
+      <div class="dest-icon" style="color:var(--orange)">${icon('zap',30)}</div>
       <div class="dest-body">
         <div class="dest-label">Partida Mais Disputada</div>
         <div class="dest-name">${esc(p1)} vs ${esc(p2)}</div>
@@ -2174,7 +2227,7 @@ function renderDestaques(d, sessionId){
     <div class="eyebrow" style="margin-bottom:12px">Destaques da Sessão</div>
     ${mvpHtml}${domHtml}${reiHtml}${closedHtml}
     <a href="https://wa.me/?text=${wppText}" target="_blank" style="text-decoration:none">
-      <button class="wpp-btn">💬 Compartilhar no WhatsApp</button>
+      <button class="wpp-btn">${icon('chat',16)} Compartilhar no WhatsApp</button>
     </a>
   </div>`
 }
@@ -2259,10 +2312,10 @@ function renderConfig(){
   const ranked=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   const pos=ranked.findIndex(p=>p.id===pid)+1;
 
-  const configRow=(icon,label,value,action)=>`
+  const configRow=(ic,label,value,action)=>`
     <div class="profile-row" style="cursor:${action?'pointer':'default'}" ${action?`onclick="${action}"`:''}>
       <div style="display:flex;align-items:center;gap:10px">
-        <span style="font-size:18px">${icon}</span>
+        <span style="color:var(--orange);display:flex">${ic}</span>
         <div class="pr-label">${label}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -2281,23 +2334,23 @@ function renderConfig(){
           ${player?.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
         </div>
       </div>
-      ${configRow('🏆','Ranking','#'+pos,'')}
-      ${configRow('⚡','ELO atual',player?.elo||1000,'')}
-      ${configRow('✅','Vitórias',stats.w,'')}
-      ${configRow('❌','Derrotas',stats.l,'')}
+      ${configRow(icon('trophy',16),'Ranking','#'+pos,'')}
+      ${configRow(icon('zap',16),'ELO atual',player?.elo||1000,'')}
+      ${configRow(icon('check',16),'Vitórias',stats.w,'')}
+      ${configRow(icon('x',16),'Derrotas',stats.l,'')}
     </div>
 
     <div class="eyebrow">Conta</div>
     <div class="card" style="margin-bottom:14px">
-      ${configRow('🔑','Alterar PIN','••••',"changePin()")}
-      ${configRow('👤','Trocar perfil','',`logout()`)}
+      ${configRow(icon('key',16),'Alterar PIN','••••',"changePin()")}
+      ${configRow(icon('user',16),'Trocar perfil','',`logout()`)}
     </div>
 
     <div class="card" style="margin-bottom:14px">
-      ${configRow('📖','Ver onboarding novamente','','replayOnboarding()')}
+      ${configRow(icon('book',16),'Ver onboarding novamente','','replayOnboarding()')}
     </div>
 
-    ${isDono(pid)?'<div class="eyebrow" style="margin-top:4px">Gerenciar grupo</div><div class="card" style="margin-bottom:14px">'+configRow('👥','Ver e editar jogadores','','openGrupoManager()')+'</div>':''}
+    ${isDono(pid)?'<div class="eyebrow" style="margin-top:4px">Gerenciar grupo</div><div class="card" style="margin-bottom:14px">'+configRow(icon('users',16),'Ver e editar jogadores','','openGrupoManager()')+'</div>':''}
 
     <button class="btn btn-d btn-full" style="margin-top:4px" onclick="logout()">
       Sair da conta
@@ -2344,10 +2397,10 @@ function openManagePlayer(pid){
   const p=getPlayer(pid);
   if(!p) return;
   const roles=[
-    {val:'dono',    label:'🔑 Dono',       desc:'Gerencia o grupo e todos os papéis'},
-    {val:'presidente',label:'👑 Presidente',desc:'Pode encerrar sessões'},
-    {val:'vice',    label:'⭐ Vice',        desc:'Vice-presidente do grupo'},
-    {val:null,      label:'👤 Membro',      desc:'Membro regular'},
+    {val:'dono',    ic:'key',  name:'Dono',       desc:'Gerencia o grupo e todos os papéis'},
+    {val:'presidente',ic:'crown',name:'Presidente',desc:'Pode encerrar sessões'},
+    {val:'vice',    ic:'star', name:'Vice',        desc:'Vice-presidente do grupo'},
+    {val:null,      ic:'user', name:'Membro',      desc:'Membro regular'},
   ];
   const opts=roles.map(r=>`
     <div onclick="setPlayerRole('${pid}','${r.val}')" style="
@@ -2355,12 +2408,12 @@ function openManagePlayer(pid){
       border:1px solid ${p.role===r.val?'var(--orange)':'var(--n600)'};
       background:${p.role===r.val?'rgba(255,102,0,.1)':'var(--n700)'};
       cursor:pointer;margin-bottom:8px;-webkit-tap-highlight-color:transparent">
-      <div style="font-size:20px">${r.label.split(' ')[0]}</div>
+      <div style="color:var(--orange);display:flex">${icon(r.ic,20)}</div>
       <div>
-        <div style="font-size:13px;font-weight:700">${r.label.split(' ').slice(1).join(' ')}</div>
+        <div style="font-size:13px;font-weight:700">${r.name}</div>
         <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);margin-top:2px">${r.desc}</div>
       </div>
-      ${p.role===r.val?`<div style="margin-left:auto;color:var(--orange);font-size:16px">✓</div>`:''}
+      ${p.role===r.val?`<div style="margin-left:auto;color:var(--orange);display:flex">${icon('check',16)}</div>`:''}
     </div>`).join('');
 
   document.getElementById('modal-manage-content').innerHTML=`
@@ -2439,7 +2492,7 @@ function setRankTab(t){rankTab=t;render();}
 
 function renderEloTable(){
   const players=DB.players().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
-  if(!players.length)return`<div class="empty"><div class="ei">🏆</div><p>Nenhum jogador ainda.</p></div>`;
+  if(!players.length)return`<div class="empty"><div class="ei">${icon('trophy',34)}</div><p>Nenhum jogador ainda.</p></div>`;
   const rows=players.map((p,i)=>{
     const st=playerStats(p.id);
     const total=st.w+st.l;
@@ -2480,7 +2533,7 @@ function renderDuplasTable(){
     map[lk].l++;map[lk].gw+=(gl||0);map[lk].gl+=(gw||0);
   });
   const data=Object.values(map).sort((a,b)=>b.w!==a.w?b.w-a.w:b.gw-a.gw);
-  if(!data.length)return`<div class="empty"><div class="ei">👥</div><p>Nenhuma partida ainda.</p></div>`;
+  if(!data.length)return`<div class="empty"><div class="ei">${icon('users',34)}</div><p>Nenhuma partida ainda.</p></div>`;
   const rows=data.map((p,i)=>{
     const total=p.w+p.l;const pct=total?Math.round(p.w/total*100):0;
     const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
@@ -2503,7 +2556,7 @@ function renderDuplasTable(){
 
 function renderConvocacao(){
   const pairs=buildConvocacao();
-  if(!pairs.length)return`<div class="empty"><div class="ei">⚔️</div><p>Cadastre jogadores para gerar a convocação.</p></div>`;
+  if(!pairs.length)return`<div class="empty"><div class="ei">${icon('users',34)}</div><p>Cadastre jogadores para gerar a convocação.</p></div>`;
   const pairCards=pairs.map((pair,i)=>{
     const avgElo=Math.round((pair[0].elo||1000+pair[1].elo||1000)/2);
     return`<div class="conv-pair">
@@ -2554,8 +2607,8 @@ function openProfile(pid){
   const total=st.w+st.l;
   const pct=total?Math.round(st.w/total*100):0;
   const streakHtml=st.streak>1?(st.streakType==='w'
-    ?`<span class="streak-badge streak-w" style="font-size:11px">🔥 ${st.streak} vitórias seguidas</span>`
-    :`<span class="streak-badge streak-l" style="font-size:11px">📉 ${st.streak} derrotas seguidas</span>`):'';
+    ?`<span class="streak-badge streak-w" style="font-size:11px">${icon('flame',12)} ${st.streak} vitórias seguidas</span>`
+    :`<span class="streak-badge streak-l" style="font-size:11px">${icon('trendDown',12)} ${st.streak} derrotas seguidas</span>`):'';
   const bpName=st.bestPartner?getName(st.bestPartner.id):'–';
   const bpWr=st.bestPartner?Math.round(st.bestPartner.wr*100):0;
   const nemName=st.nemesis?getName(st.nemesis.id):'–';
@@ -2605,7 +2658,7 @@ function renderHistorico(){
   const players=DB.players();
   const sessions=DB.sessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
   const allMatches=DB.matches();
-  if(!sessions.length)return`<div class="empty"><div class="ei">📅</div><p>Nenhuma sessão ainda.</p></div>`;
+  if(!sessions.length)return`<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão ainda.</p></div>`;
 
   const chips=`<div class="fchip${!histFilter?' active':''}" onclick="setHistFilter(null)">Todos</div>`
     +players.map(p=>`<div class="fchip${histFilter===p.id?' active':''}" onclick="setHistFilter('${p.id}')">${esc(p.name)}</div>`).join('');
@@ -2645,7 +2698,7 @@ function renderHistorico(){
           </div>
           <div class="mc-team r">${makePlayer(m.team2,t2n,!t1won)}</div>
         </div>
-        <div class="mc-winner">✓ ${esc(wTeam)}</div>
+        <div class="mc-winner">${icon('check',12)} ${esc(wTeam)}</div>
       </div>`;
     }).join('');
 
@@ -2655,7 +2708,7 @@ function renderHistorico(){
       <div class="psb"><div class="psb-v" style="color:var(--orange)">${st.gw}</div><div class="psb-l">Games+</div></div>
     </div>`:'';
 
-    const mvpHtml=s.mvpId?`<span class="mvp-badge">🏅 MVP ${esc(getName(s.mvpId))}</span> `:'';
+    const mvpHtml=s.mvpId?`<span class="mvp-badge">${icon('medal',11)} MVP ${esc(getName(s.mvpId))}</span> `:'';
 
     // Placares escondidos por padrão — botão revela/oculta por dia
     const revealed=histRevealed.has(s.id);
@@ -2663,9 +2716,9 @@ function renderHistorico(){
     if(!matches.length){
       matchesSection=`<div class="no-matches">Sem partidas nesta sessão.</div>`;
     } else if(revealed){
-      matchesSection=`<button class="btn btn-s btn-sm btn-full" style="margin-bottom:8px" onclick="toggleHistMatches('${s.id}')">🙈 Ocultar placares</button>${cards}`;
+      matchesSection=`<button class="btn btn-s btn-sm btn-full" style="margin-bottom:8px" onclick="toggleHistMatches('${s.id}')">${icon('eyeOff',14)} Ocultar placares</button>${cards}`;
     } else {
-      matchesSection=`<button class="btn btn-s btn-sm btn-full" onclick="toggleHistMatches('${s.id}')">👁 Ver ${matches.length} placar${matches.length!==1?'es':''}</button>`;
+      matchesSection=`<button class="btn btn-s btn-sm btn-full" onclick="toggleHistMatches('${s.id}')">${icon('eye',14)} Ver ${matches.length} placar${matches.length!==1?'es':''}</button>`;
     }
 
     return`<div class="sess-block">
@@ -2728,7 +2781,7 @@ function buildSetup(){
           <div class="live-setup-title">Nova Partida</div>
           <div class="live-setup-sub">AO VIVO · QUALQUER DIA</div>
         </div>
-        <button class="btn btn-s btn-sm" onclick="closeLive()">✕ Fechar</button>
+        <button class="btn btn-s btn-sm" onclick="closeLive()">${icon('x',14)} Fechar</button>
       </div>
 
       <div class="eyebrow">Formato</div>
@@ -2823,12 +2876,12 @@ function buildScoreboard(){
   const sL=m.completedSets.filter(s=>s.won!==(m.winner===1?2:1)).length;
   const finishedOverlay=m.status==='finished'?`
     <div class="live-finished">
-      <div class="finished-trophy">🏆</div>
+      <div class="finished-trophy" style="color:var(--gold)">${icon('trophy',52)}</div>
       <div class="finished-winner">${esc(winTeam.map(getName).join(' & '))}</div>
       <div class="finished-sub">VENCEU A PARTIDA</div>
       <div class="finished-score">${sW}·${sL}</div>
       <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-        <button class="btn btn-p btn-full" onclick="saveLiveMatch()">💾 Salvar no Histórico</button>
+        <button class="btn btn-p btn-full" onclick="saveLiveMatch()">${icon('save',14)} Salvar no Histórico</button>
         <button class="btn btn-s btn-full" onclick="discardLive()">Descartar</button>
       </div>
     </div>`:'';
@@ -2836,7 +2889,7 @@ function buildScoreboard(){
   return`
     <div class="live-header">
       <div class="live-status">
-        ${m.status==='playing'?'<div class="live-dot"></div><div class="live-label">AO VIVO</div>':'<div class="live-label" style="color:var(--success)">✓ ENCERRADA</div>'}
+        ${m.status==='playing'?'<div class="live-dot"></div><div class="live-label">AO VIVO</div>':'<div class="live-label" style="color:var(--success);display:flex;align-items:center;gap:4px">'+icon('check',12)+' ENCERRADA</div>'}
       </div>
       <div class="live-format">${setsLabel}</div>
       <div class="live-timer" id="live-clock">${fmtTimer(liveSeconds)}</div>
@@ -2850,7 +2903,7 @@ function buildScoreboard(){
       <span style="color:var(--orange)">${score2Ind||'○'}</span>
     </div>`:''}
 
-    ${inTb?`<div style="text-align:center;padding:4px 0 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;flex-shrink:0">⚡ TIEBREAK · PRIMEIRO A ${m.tiebreakPoints||7}</div>`:''}
+    ${inTb?`<div style="text-align:center;padding:4px 0 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;flex-shrink:0">${icon('zap',13)} TIEBREAK · PRIMEIRO A ${m.tiebreakPoints||7}</div>`:''}
     <div class="live-court" style="position:relative">
       <button class="live-side${t1winning?' winning':''}" onclick="addGame(1)" style="${inTb?'border-right:1px solid rgba(255,184,0,.3)':''}">
         <div class="live-team-names">${m.team1.map(getName).map(esc).join('<br>')}</div>
@@ -2867,8 +2920,8 @@ function buildScoreboard(){
 
     <div class="live-footer">
       <button class="btn btn-s" onclick="undoGame()" ${!m.history.length?'disabled':''}>↩ Desfazer</button>
-      ${m.status==='playing'?`<button class="btn btn-d" onclick="endMatchManual()">⚑ Encerrar</button>`
-        :`<button class="btn btn-p" onclick="saveLiveMatch()">💾 Salvar</button>`}
+      ${m.status==='playing'?`<button class="btn btn-d" onclick="endMatchManual()">${icon('flag',14)} Encerrar</button>`
+        :`<button class="btn btn-p" onclick="saveLiveMatch()">${icon('save',14)} Salvar</button>`}
     </div>`;
 }
 
@@ -2978,7 +3031,7 @@ function saveLiveMatch(){
   closeLive();
 
   if(cb){ cb(winner); }
-  else { render(); alert('Partida salva! ✅'); }
+  else { render(); alert('Partida salva!'); }
 }
 
 function discardLive(){
@@ -3003,7 +3056,7 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
 // PWA
 // ══════════════════════════════════════
 (function(){
-  const m={name:"Games For Evolution",short_name:"GFE",start_url:"./",display:"standalone",background_color:"#0D0D0D",theme_color:"#0D0D0D",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🎾%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
+  const m={name:"Games For Evolution",short_name:"GFE",start_url:"./",display:"standalone",background_color:"#0D0D0D",theme_color:"#0D0D0D",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230D0D0D'/%3E%3Ctext x='50' y='52' dominant-baseline='central' text-anchor='middle' font-family='Arial,sans-serif' font-size='33' font-weight='bold' fill='%23FF6600'%3EGFE%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
   const b=new Blob([JSON.stringify(m)],{type:'application/json'});
   const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);
 })();
