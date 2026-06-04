@@ -593,8 +593,8 @@
 // DATA
 // ══════════════════════════════════════
 const DB = {
-  _g(k,d){ try{return JSON.parse(localStorage.getItem('gfe4_'+k))??d;}catch{return d;} },
-  _s(k,v){ localStorage.setItem('gfe4_'+k,JSON.stringify(v)); },
+  _g(k,d){ try{return JSON.parse(localStorage.getItem('gfe5_'+k))??d;}catch{return d;} },
+  _s(k,v){ localStorage.setItem('gfe5_'+k,JSON.stringify(v)); },
   players()    { return this._g('players',[]); },
   setPlayers(v){ this._s('players',v); },
   sessions()   { return this._g('sessions',[]); },
@@ -726,16 +726,6 @@ async function initSupabase(){
   try{
     supa=supabase.createClient(SUPA_URL,SUPA_KEY);
     await syncFromSupabase();
-    // Se Supabase está vazio, sobe o seed local para o banco
-    const {data:sbCheck}=await supa.from('players').select('id').limit(1);
-    if(!sbCheck||sbCheck.length===0){
-      const localPlayers=DB.players();
-      const localSessions=DB.sessions();
-      const localMatches=DB.matches();
-      if(localPlayers.length>0) await supa.from('players').upsert(localPlayers);
-      if(localSessions.length>0) await supa.from('sessions').upsert(localSessions.map(sessionToDB));
-      if(localMatches.length>0) await supa.from('matches').upsert(localMatches.map(matchToDB));
-    }
     // Intercepta escritas do DB para também salvar no Supabase
     const _sp=DB.setPlayers.bind(DB);
     DB.setPlayers=v=>{ _sp(v); supa.from('players').upsert(v).then(({error})=>{ if(error)console.warn('supa players:',error); }); };
@@ -800,27 +790,43 @@ function stopPolling(){
 // ══════════════════════════════════════
 // AUTH + LOGIN
 // ══════════════════════════════════════
-let loginMode='existing'; // 'existing' | 'new'
-let loginSelectedId=null;
-let loginPin='';
-let loginStep='pick'; // 'pick' | 'pin' | 'create_name' | 'create_pin'
-let loginNewName='';
+let loginMode='login'; // 'login' | 'signup'
+let authBusy=false;
+const OWNER_EMAIL='righettidaniel@gmail.com'; // Daniel entra como dono automaticamente
 
-function showSplash(){
+async function showSplash(){
   document.getElementById('gfe-splash').classList.remove('hidden');
-  // Aguarda mínimo 1.8s E sincronização com Supabase
-  Promise.all([
-    initSupabase(),
-    new Promise(r=>setTimeout(r,1800))
-  ]).then(()=>{
-    document.getElementById('gfe-splash').classList.add('hidden');
-    if(!DB.currentPlayer()) showLogin();
-    else render();
-  });
+  // Aguarda mínimo 1.8s E inicialização do Supabase
+  await Promise.all([ initSupabase(), new Promise(r=>setTimeout(r,1800)) ]);
+  document.getElementById('gfe-splash').classList.add('hidden');
+  // Já existe uma sessão de login salva neste aparelho?
+  let session=null;
+  try{ const {data}=await supa.auth.getSession(); session=data?.session||null; }catch(e){}
+  if(session&&session.user){
+    await ensureProfile(session.user);
+    if(DB.currentPlayer()){ render(); return; }
+  }
+  DB.setCurrentPlayer(null);
+  showLogin();
+}
+
+// Garante que a conta logada tenha um perfil de jogador vinculado
+async function ensureProfile(user){
+  await syncFromSupabase();
+  const players=DB.players();
+  let p=players.find(x=>x.user_id===user.id);
+  if(!p){
+    const nm=cleanName(user.user_metadata?.name||(user.email||'').split('@')[0]||'Jogador');
+    const role=(user.email||'').toLowerCase()===OWNER_EMAIL?'dono':null;
+    p={id:uid(),name:nm,elo:1000,role,user_id:user.id,group_id:'gfe'};
+    players.push(p);
+    DB.setPlayers(players);
+  }
+  DB.setCurrentPlayer(p.id);
 }
 
 function showLogin(){
-  loginMode='existing'; loginSelectedId=null; loginPin=''; loginStep='pick'; loginNewName='';
+  loginMode='login';
   document.getElementById('gfe-login').classList.remove('hidden');
   renderLogin();
 }
@@ -830,147 +836,103 @@ function hideLogin(){
 }
 
 function setLoginMode(m){
-  loginMode=m; loginSelectedId=null; loginPin=''; loginStep=m==='new'?'create_name':'pick'; loginNewName='';
+  loginMode=m;
   renderLogin();
 }
 
 function renderLogin(){
   const el=document.getElementById('login-body');
-  const players=DB.players();
+  const isSignup=loginMode==='signup';
+  el.innerHTML=`
+    <div class="login-toggle">
+      <button class="lt-btn ${!isSignup?'active':''}" onclick="setLoginMode('login')">Entrar</button>
+      <button class="lt-btn ${isSignup?'active':''}" onclick="setLoginMode('signup')">Criar conta</button>
+    </div>
+    <div class="login-section-title">${isSignup?'Criar conta':'Bem-vindo de volta'}</div>
+    <div class="login-section-sub">${isSignup?'É RÁPIDO · COMECE A JOGAR':'ENTRE COM SEU EMAIL E SENHA'}</div>
+    ${isSignup?`<div class="ig"><label>Nome</label><input id="auth-name" type="text" maxlength="30" placeholder="Seu nome" autocomplete="name"></div>`:''}
+    <div class="ig"><label>Email</label><input id="auth-email" type="email" inputmode="email" placeholder="voce@email.com" autocomplete="email"></div>
+    <div class="ig"><label>Senha</label><input id="auth-pass" type="password" placeholder="${isSignup?'Crie uma senha (mín. 6)':'Sua senha'}" autocomplete="${isSignup?'new-password':'current-password'}"></div>
+    <div id="auth-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+    <button class="btn btn-p btn-full" id="auth-btn" style="font-size:15px;padding:13px" onclick="${isSignup?'doSignup()':'doLogin()'}">${isSignup?'Criar conta e entrar':'Entrar'}</button>`;
+  const pass=document.getElementById('auth-pass');
+  if(pass) pass.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); isSignup?doSignup():doLogin(); }});
+}
 
-  // Toggle tabs
-  const tabs=`<div class="login-toggle">
-    <button class="lt-btn ${loginMode==='existing'?'active':''}" onclick="setLoginMode('existing')">Já sou membro</button>
-    <button class="lt-btn ${loginMode==='new'?'active':''}" onclick="setLoginMode('new')">Criar conta</button>
-  </div>`;
+function authError(msg){ const m=document.getElementById('auth-msg'); if(m) m.textContent=msg||''; }
+function setAuthBusy(b){
+  authBusy=b;
+  const btn=document.getElementById('auth-btn');
+  if(btn){ btn.disabled=b; btn.style.opacity=b?'.6':''; btn.textContent=b?'Aguarde...':(loginMode==='signup'?'Criar conta e entrar':'Entrar'); }
+}
+function validEmail(e){ return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); }
+function traduzErroAuth(m){
+  m=String(m||'');
+  if(/invalid login credentials/i.test(m)) return 'Email ou senha incorretos.';
+  if(/already registered|already exists|user already/i.test(m)) return 'Esse email já tem conta. Toque em "Entrar".';
+  if(/password should be at least|at least 6/i.test(m)) return 'A senha precisa ter ao menos 6 caracteres.';
+  if(/unable to validate email|invalid email/i.test(m)) return 'Email inválido.';
+  if(/email not confirmed/i.test(m)) return 'Email ainda não confirmado.';
+  return 'Algo deu errado. Tente de novo.';
+}
 
-  if(loginMode==='existing'){
-    if(loginStep==='pick'){
-      const cards=players.map(p=>`
-        <div class="lp-card ${loginSelectedId===p.id?'sel':''}" onclick="loginSelectPlayer('${p.id}')">
-          <div class="lp-avatar">${initials(p.name)}</div>
-          <div class="lp-name">${esc(p.name.split(' ')[0])}</div>
-          <div class="lp-elo">ELO ${p.elo||1000}</div>
-        </div>`).join('');
-      el.innerHTML=`${tabs}
-        <div class="login-section-title">Quem é você?</div>
-        <div class="login-section-sub">SELECIONE SEU PERFIL</div>
-        <div class="lp-grid">${cards}</div>
-        ${loginSelectedId?`<button class="btn btn-p btn-full" onclick="loginGoPin()">Continuar →</button>`:''}`;
-    } else if(loginStep==='pin'){
-      const p=players.find(x=>x.id===loginSelectedId);
-      const hasPin=!!(p&&p.pin);
-      el.innerHTML=`${tabs}
-        <div style="text-align:center;margin-bottom:20px">
-          <div style="width:60px;height:60px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:24px;color:var(--ink);margin:0 auto 10px">${initials(p?.name||'')}</div>
-          <div class="login-section-title">${esc(p?.name?.split(' ')[0]||'')}</div>
-          <div class="login-section-sub">${hasPin?'DIGITE SEU PIN':'CRIE SEU PIN DE ACESSO'}</div>
-        </div>
-        ${renderPinDots()}
-        ${renderNumpad()}
-        <button class="btn btn-s btn-full" style="margin-top:16px" onclick="loginStep='pick';loginPin='';renderLogin()">← Voltar</button>`;
-    }
-  } else {
-    if(loginStep==='create_name'){
-      el.innerHTML=`${tabs}
-        <div class="login-section-title">Novo jogador</div>
-        <div class="login-section-sub">COMO VOCÊ SE CHAMA?</div>
-        <input class="new-name-input" id="new-name-input" type="text" placeholder="Seu nome..." maxlength="20" value="${esc(loginNewName)}" oninput="loginNewName=this.value">
-        <button class="btn btn-p btn-full" onclick="loginGoCreatePin()">Continuar →</button>`;
-    } else if(loginStep==='create_pin'){
-      el.innerHTML=`${tabs}
-        <div class="login-section-title">${esc(loginNewName.split(' ')[0])}</div>
-        <div class="login-section-sub">CRIE SEU PIN DE 4 DÍGITOS</div>
-        ${renderPinDots()}
-        ${renderNumpad()}
-        <button class="btn btn-s btn-full" style="margin-top:16px" onclick="loginStep='create_name';loginPin='';renderLogin()">← Voltar</button>`;
-    }
+async function doLogin(){
+  if(authBusy)return;
+  authError('');
+  const email=(document.getElementById('auth-email')?.value||'').trim().toLowerCase();
+  const pass=document.getElementById('auth-pass')?.value||'';
+  if(!email||!pass){ authError('Preencha email e senha.'); return; }
+  setAuthBusy(true);
+  const {data,error}=await supa.auth.signInWithPassword({email,password:pass});
+  if(error){ setAuthBusy(false); authError(traduzErroAuth(error.message)); return; }
+  await ensureProfile(data.user);
+  setAuthBusy(false);
+  finishAuth();
+}
+
+async function doSignup(){
+  if(authBusy)return;
+  authError('');
+  const name=cleanName(document.getElementById('auth-name')?.value||'');
+  const email=(document.getElementById('auth-email')?.value||'').trim().toLowerCase();
+  const pass=document.getElementById('auth-pass')?.value||'';
+  if(!name){ authError('Digite seu nome.'); return; }
+  if(!validEmail(email)){ authError('Digite um email válido.'); return; }
+  if(pass.length<6){ authError('A senha precisa ter ao menos 6 caracteres.'); return; }
+  setAuthBusy(true);
+  const {data,error}=await supa.auth.signUp({email,password:pass,options:{data:{name}}});
+  if(error){ setAuthBusy(false); authError(traduzErroAuth(error.message)); return; }
+  let user=data.user;
+  // Com "Confirmar email" desligado, o cadastro já volta logado. Caso não, faz login.
+  if(!data.session){
+    const {data:d2,error:e2}=await supa.auth.signInWithPassword({email,password:pass});
+    if(e2){ setAuthBusy(false); authError('Conta criada! Agora toque em "Entrar".'); loginMode='login'; renderLogin(); return; }
+    user=d2.user;
   }
+  await ensureProfile(user);
+  setAuthBusy(false);
+  finishAuth();
 }
 
-function renderPinDots(){
-  return`<div class="pin-display" id="pin-display">
-    ${[0,1,2,3].map(i=>`<div class="pin-dot ${i<loginPin.length?'filled':''}" id="pd-${i}"></div>`).join('')}
-  </div>`;
-}
-
-function renderNumpad(){
-  const keys=['1','2','3','4','5','6','7','8','9','','0','⌫'];
-  return`<div class="numpad">${keys.map(k=>{
-    if(k==='') return`<div class="nk empty"></div>`;
-    if(k==='⌫') return`<div class="nk del" onclick="pinKey('back')">${icon('backspace',22)}</div>`;
-    return`<div class="nk" onclick="pinKey('${k}')">${k}</div>`;
-  }).join('')}</div>`;
-}
-
-function loginSelectPlayer(id){
-  loginSelectedId=id; renderLogin();
-}
-
-function loginGoPin(){
-  if(!loginSelectedId)return;
-  loginStep='pin'; loginPin=''; renderLogin();
-}
-
-function loginGoCreatePin(){
-  loginNewName=(document.getElementById('new-name-input')?.value||loginNewName).trim();
-  if(!loginNewName){alert('Digite seu nome.');return;}
-  loginStep='create_pin'; loginPin=''; renderLogin();
-}
-
-function pinKey(k){
-  if(k==='back'){ loginPin=loginPin.slice(0,-1); }
-  else if(loginPin.length<4){ loginPin+=k; }
-  // Update dots without full re-render
-  [0,1,2,3].forEach(i=>{
-    const d=document.getElementById('pd-'+i);
-    if(d) d.className='pin-dot'+(i<loginPin.length?' filled':'');
-  });
-  if(loginPin.length===4) setTimeout(()=>pinSubmit(),120);
-}
-
-async function pinSubmit(){
-  const players=DB.players();
-  if(loginMode==='existing'){
-    const p=players.find(x=>x.id===loginSelectedId);
-    if(!p)return;
-    if(!p.pin){
-      // Primeira vez: define o PIN (guardado embaralhado)
-      p.pin=await hashPin(loginPin); DB.setPlayers(players);
-      loginSuccess(p.id);
-    } else if(await pinMatches(p.pin,loginPin)){
-      // Se o PIN guardado ainda era texto puro (conta antiga), atualiza para a versão embaralhada
-      if(!String(p.pin).startsWith('h$')){ p.pin=await hashPin(loginPin); DB.setPlayers(players); }
-      loginSuccess(p.id);
-    } else {
-      // PIN errado
-      loginPin='';
-      [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d){d.classList.add('shake');setTimeout(()=>d.classList.remove('shake'),350);} });
-      setTimeout(()=>{ [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d) d.className='pin-dot'; }); },400);
-    }
-  } else {
-    // Cria conta nova (nome limpo + PIN embaralhado)
-    const cleanNewName=cleanName(loginNewName);
-    if(!cleanNewName){ alert('Digite um nome válido.'); loginStep='create_name'; renderLogin(); return; }
-    const existing=players.find(p=>p.name.toLowerCase()===cleanNewName.toLowerCase());
-    const hashed=await hashPin(loginPin);
-    let pid;
-    if(existing){ existing.pin=hashed; DB.setPlayers(players); pid=existing.id; }
-    else{ const np={id:uid(),name:cleanNewName,elo:1000,role:null,pin:hashed}; players.push(np); DB.setPlayers(players); pid=np.id; }
-    loginSuccess(pid);
-  }
-}
-
-function loginSuccess(pid){
-  DB.setCurrentPlayer(pid);
+function finishAuth(){
   hideLogin();
   if(!DB.onboardingDone()){ showOnboarding(); }
   else { render(); }
 }
 
-function logout(){
+async function logout(){
+  if(!confirm('Sair da conta?'))return;
+  try{ await supa.auth.signOut(); }catch(e){}
   DB.setCurrentPlayer(null);
   showLogin();
+}
+
+async function changePassword(){
+  const np=prompt('Nova senha (mínimo 6 caracteres):');
+  if(np==null) return;
+  if(np.length<6){ alert('A senha precisa ter ao menos 6 caracteres.'); return; }
+  const {error}=await supa.auth.updateUser({password:np});
+  alert(error?'Não foi possível alterar agora. Tente sair e entrar de novo.':'Senha alterada com sucesso!');
 }
 
 // ── ONBOARDING ──
@@ -2342,8 +2304,8 @@ function renderConfig(){
 
     <div class="eyebrow">Conta</div>
     <div class="card" style="margin-bottom:14px">
-      ${configRow(icon('key',16),'Alterar PIN','••••',"changePin()")}
-      ${configRow(icon('user',16),'Trocar perfil','',`logout()`)}
+      ${configRow(icon('key',16),'Alterar senha','',"changePassword()")}
+      ${configRow(icon('user',16),'Sair da conta','',`logout()`)}
     </div>
 
     <div class="card" style="margin-bottom:14px">
@@ -2459,16 +2421,6 @@ function confirmAddPlayer(){
   DB.setPlayers(players);
   closeModal('modal-add-player');
   render();
-}
-
-function changePin(){
-  const pid=DB.currentPlayer(); if(!pid)return;
-  loginSelectedId=pid; loginPin=''; loginStep='pin'; loginMode='existing';
-  document.getElementById('gfe-login').classList.remove('hidden');
-  renderLogin();
-  // Override: after new PIN set, go back to config
-  const _orig=loginSuccess;
-  // we just re-use the normal flow; user sets new PIN and returns home
 }
 
 function replayOnboarding(){
@@ -3064,23 +3016,7 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
 // ══════════════════════════════════════
 // SEED + INIT
 // ══════════════════════════════════════
-(function seed(){
-  if(DB.players().length>0)return;
-  const defs=[
-    {name:'Pedro',   role:'presidente'},
-    {name:'Gabriel', role:'vice'},
-    {name:'Daniel',  role:'dono'},
-    {name:'Luis Fernando'},
-    {name:'Flávio'},
-    {name:'Fabio'},
-    {name:'Vitor'},
-    {name:'Leoni'},
-  ];
-  DB.setPlayers(defs.map(d=>({id:uid(),name:d.name,elo:1000,role:d.role||null})));
-})();
-
-
-// Init: splash → sync Supabase → login (se necessário) → app
+// Init: splash → sync Supabase → verifica sessão → login (se necessário) → app
 showSplash();
 </script>
 </body>
