@@ -606,6 +606,27 @@ const DB = {
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+// Remove caracteres perigosos de nomes digitados (proteção contra injeção de código).
+// Mantém letras com acento (á, ç, ã...) e espaços; tira < > " ' ` \ & e limita o tamanho.
+function cleanName(s){ return String(s||'').replace(/[<>"'`&\\]/g,'').replace(/\s+/g,' ').trim().slice(0,30); }
+
+// ── PROTEÇÃO DE PIN ──
+// Em vez de guardar o PIN em texto puro (que qualquer um conseguiria ler no banco),
+// guardamos uma "impressão digital" embaralhada (hash). Não dá para voltar do hash ao PIN.
+async function hashPin(pin){
+  try{
+    const data=new TextEncoder().encode('gfe_pin_v1::'+pin);
+    const buf=await crypto.subtle.digest('SHA-256',data);
+    return 'h$'+Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  }catch(e){ return 'h$'+pin; } // fallback raríssimo (navegador muito antigo / sem https)
+}
+// Confere se o PIN digitado bate com o guardado. Aceita PINs antigos em texto puro
+// (de antes desta atualização) para ninguém ficar travado fora da conta.
+async function pinMatches(stored, raw){
+  if(stored==null||stored==='') return null; // ainda não tem PIN definido
+  if(String(stored).startsWith('h$')) return stored===await hashPin(raw);
+  return String(stored)===String(raw); // PIN antigo em texto puro
+}
 
 // ══════════════════════════════════════
 // SUPABASE — banco de dados central
@@ -855,29 +876,34 @@ function pinKey(k){
   if(loginPin.length===4) setTimeout(()=>pinSubmit(),120);
 }
 
-function pinSubmit(){
+async function pinSubmit(){
   const players=DB.players();
   if(loginMode==='existing'){
     const p=players.find(x=>x.id===loginSelectedId);
     if(!p)return;
     if(!p.pin){
-      // First time: set PIN
-      p.pin=loginPin; DB.setPlayers(players);
+      // Primeira vez: define o PIN (guardado embaralhado)
+      p.pin=await hashPin(loginPin); DB.setPlayers(players);
       loginSuccess(p.id);
-    } else if(p.pin===loginPin){
+    } else if(await pinMatches(p.pin,loginPin)){
+      // Se o PIN guardado ainda era texto puro (conta antiga), atualiza para a versão embaralhada
+      if(!String(p.pin).startsWith('h$')){ p.pin=await hashPin(loginPin); DB.setPlayers(players); }
       loginSuccess(p.id);
     } else {
-      // Wrong PIN
+      // PIN errado
       loginPin='';
       [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d){d.classList.add('shake');setTimeout(()=>d.classList.remove('shake'),350);} });
       setTimeout(()=>{ [0,1,2,3].forEach(i=>{ const d=document.getElementById('pd-'+i); if(d) d.className='pin-dot'; }); },400);
     }
   } else {
-    // Create new account
-    const existing=players.find(p=>p.name.toLowerCase()===loginNewName.toLowerCase());
+    // Cria conta nova (nome limpo + PIN embaralhado)
+    const cleanNewName=cleanName(loginNewName);
+    if(!cleanNewName){ alert('Digite um nome válido.'); loginStep='create_name'; renderLogin(); return; }
+    const existing=players.find(p=>p.name.toLowerCase()===cleanNewName.toLowerCase());
+    const hashed=await hashPin(loginPin);
     let pid;
-    if(existing){ existing.pin=loginPin; DB.setPlayers(players); pid=existing.id; }
-    else{ const np={id:uid(),name:loginNewName,elo:1000,role:null,pin:loginPin}; players.push(np); DB.setPlayers(players); pid=np.id; }
+    if(existing){ existing.pin=hashed; DB.setPlayers(players); pid=existing.id; }
+    else{ const np={id:uid(),name:cleanNewName,elo:1000,role:null,pin:hashed}; players.push(np); DB.setPlayers(players); pid=np.id; }
     loginSuccess(pid);
   }
 }
@@ -2004,7 +2030,7 @@ function persistFlowState(sessionId){
   if(!supa)return;
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(!s||!sessionFlow)return;
-  const {_destaques,...flowClean}=sessionFlow;
+  const {_destaques,_owner,...flowClean}=sessionFlow;
   s.flowState=flowClean;
   DB._s('sessions',ss);
   supa.from('sessions').update({flow_state:flowClean}).eq('id',sessionId)
@@ -2206,9 +2232,11 @@ function confirmPresenca(){
   if(selectedChipId){
     if(!s.confirmed.includes(selectedChipId))s.confirmed.push(selectedChipId);
   } else if(txt){
+    const nm=cleanName(txt);
+    if(!nm){alert('Digite um nome válido.');return;}
     let players=DB.players();
-    let p=players.find(x=>x.name.toLowerCase()===txt.toLowerCase());
-    if(!p){p={id:uid(),name:txt,elo:1000};players.push(p);DB.setPlayers(players);}
+    let p=players.find(x=>x.name.toLowerCase()===nm.toLowerCase());
+    if(!p){p={id:uid(),name:nm,elo:1000};players.push(p);DB.setPlayers(players);}
     if(!s.confirmed.includes(p.id))s.confirmed.push(p.id);
   } else {alert('Selecione ou digite seu nome.');return;}
   DB.setSessions(ss); selectedChipId=null; closeModal('modal-confirm'); render();
@@ -2368,8 +2396,8 @@ function removeFromGroup(pid){
 }
 
 function confirmAddPlayer(){
-  const name=document.getElementById('add-player-name').value.trim();
-  if(!name){ alert('Digite o nome.'); return; }
+  const name=cleanName(document.getElementById('add-player-name').value);
+  if(!name){ alert('Digite um nome válido.'); return; }
   const existing=DB.players().find(p=>p.name.toLowerCase()===name.toLowerCase());
   if(existing){ alert('Jogador já existe no grupo.'); return; }
   const players=DB.players();
