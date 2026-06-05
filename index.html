@@ -796,6 +796,12 @@ let loginMode='login'; // 'login' | 'signup'
 let authBusy=false;
 const OWNER_EMAIL='righettidaniel@gmail.com'; // Daniel entra como dono automaticamente
 
+// Convite por link: ?join=CODIGO na URL
+let pendingInvite=null;
+try{ const _j=new URLSearchParams(location.search).get('join'); if(_j) pendingInvite=_j.trim().toUpperCase(); }catch(e){}
+function clearInviteUrl(){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+function inviteLink(){ return location.origin+location.pathname+'?join='+(myGroupId()||''); }
+
 async function showSplash(){
   document.getElementById('gfe-splash').classList.remove('hidden');
   // Aguarda mínimo 1.8s E inicialização do Supabase
@@ -807,8 +813,8 @@ async function showSplash(){
   if(session&&session.user){
     await ensureProfile(session.user);
     const p=getPlayer(DB.currentPlayer());
-    if(p&&p.group_id){ await ensureGroupName(); render(); return; }
-    if(p){ showGroupSetup(); return; }
+    if(p&&p.group_id){ if(pendingInvite){ pendingInvite=null; clearInviteUrl(); } await ensureGroupName(); render(); return; }
+    if(p){ if(pendingInvite){ handlePendingInvite(); } else { showGroupSetup(); } return; }
   }
   DB.setCurrentPlayer(null);
   showLogin();
@@ -912,6 +918,16 @@ function enterAppAfterGroup(){
   else { render(); }
 }
 
+// Chegou por um link de convite: abre a tela de grupo no modo "entrar" e já tenta entrar
+function handlePendingInvite(){
+  const code=pendingInvite; pendingInvite=null; clearInviteUrl();
+  groupSetupMode='join';
+  document.getElementById('gfe-login').classList.remove('hidden');
+  renderGroupSetup();
+  const inp=document.getElementById('gs-code'); if(inp) inp.value=code;
+  joinGroup(code);
+}
+
 function showLogin(){
   loginMode='login';
   document.getElementById('gfe-login').classList.remove('hidden');
@@ -1004,7 +1020,7 @@ async function doSignup(){
 function finishAuth(){
   hideLogin();
   const p=getPlayer(DB.currentPlayer());
-  if(!p||!p.group_id){ showGroupSetup(); return; }
+  if(!p||!p.group_id){ if(pendingInvite){ handlePendingInvite(); } else { showGroupSetup(); } return; }
   ensureGroupName();
   if(!DB.onboardingDone()){ showOnboarding(); }
   else { render(); }
@@ -1021,6 +1037,14 @@ function copyGroupCode(){
   const code=myGroupId(); if(!code) return;
   try{ navigator.clipboard.writeText(code).then(()=>alert('Código copiado: '+code),()=>alert('Código do grupo: '+code)); }
   catch(e){ alert('Código do grupo: '+code); }
+}
+
+function copyInviteLink(){
+  const link=inviteLink();
+  const msg=`Bora jogar Beach Tennis? Entre no nosso grupo no GFE por aqui: ${link}`;
+  if(navigator.share){ navigator.share({title:'Convite GFE',text:msg,url:link}).catch(()=>{}); return; }
+  try{ navigator.clipboard.writeText(link).then(()=>alert('Link de convite copiado!'),()=>alert('Link de convite:\n'+link)); }
+  catch(e){ alert('Link de convite:\n'+link); }
 }
 
 async function changePassword(){
@@ -2404,20 +2428,20 @@ function renderConfig(){
 
     <div class="eyebrow">Meu grupo</div>
     <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px">
-        <div style="display:flex;align-items:center;gap:10px;min-width:0">
-          <span style="color:var(--orange);display:flex">${icon('users',18)}</span>
-          <div style="font-family:var(--font-h);font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(DB.groupName()||'Meu grupo')}</div>
-        </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${isPresOrDono(pid)?'12px':'0'}">
+        <span style="color:var(--orange);display:flex">${icon('users',18)}</span>
+        <div style="font-family:var(--font-h);font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(DB.groupName()||'Meu grupo')}</div>
       </div>
-      <div style="display:flex;align-items:center;gap:10px;background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px">
+      ${isPresOrDono(pid)?`
+      <button class="btn btn-p btn-full" onclick="copyInviteLink()">${icon('chat',15)} Convidar por link</button>
+      <div style="display:flex;align-items:center;gap:10px;background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px;margin-top:8px">
         <div style="flex:1">
-          <div class="pr-label">Código para convidar</div>
+          <div class="pr-label">Código do grupo</div>
           <div style="font-family:var(--font-m);font-size:18px;font-weight:700;letter-spacing:3px;color:var(--orange)">${esc(myGroupId()||'—')}</div>
         </div>
         <button class="btn btn-s btn-sm" onclick="copyGroupCode()">Copiar</button>
       </div>
-      <div class="hint" style="margin-top:8px">Passe este código para alguém entrar no seu grupo.</div>
+      <div class="hint" style="margin-top:8px">Mande o link no WhatsApp — a pessoa entra direto ao se cadastrar. Ou passe o código.</div>`:''}
     </div>
 
     <div class="eyebrow">Conta</div>
