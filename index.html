@@ -500,6 +500,7 @@
 <div class="modal-ov hidden" id="modal-new-session">
   <div class="modal">
     <div class="modal-title"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Nova Sessão</div>
+    <div class="ig"><label>Nome (opcional)</label><input type="text" id="ns-name" maxlength="40" placeholder="Ex.: Quinta dos campeões"></div>
     <div class="ig"><label>Data</label><input type="date" id="ns-date"></div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-new-session')">Cancelar</button>
@@ -709,13 +710,13 @@ function matchFromDB(m){
 }
 // Converte camelCase do app → snake_case do banco
 function sessionToDB(s){
-  return {id:s.id, date:s.date, confirmed:s.confirmed||[], mvp_id:s.mvpId||null,
+  return {id:s.id, date:s.date, name:s.name||null, confirmed:s.confirmed||[], mvp_id:s.mvpId||null,
     status:s.status||'pending', pairs:s.pairs||null, pairs_ready:s.pairsReady||false,
-    flow_state:s.flowState||null, live_score:s.liveScore||null};
+    flow_state:s.flowState||null, live_score:s.liveScore||null, group_id:s.group_id||null};
 }
 function matchToDB(m){
   return {id:m.id, session_id:m.sessionId||null, date:m.date,
-    team1:m.team1, team2:m.team2, games1:m.games1, games2:m.games2, winner:m.winner};
+    team1:m.team1, team2:m.team2, games1:m.games1, games2:m.games2, winner:m.winner, group_id:m.group_id||null};
 }
 
 async function syncFromSupabase(){
@@ -1501,6 +1502,8 @@ function renderListaIndex(){
     const badge=isActive?'<span class="sess-badge" style="background:rgba(255,102,0,.2);color:var(--orange);border:1px solid rgba(255,102,0,.4)">● EM ANDAMENTO</span>':isFinished?'<span class="sess-badge sess-badge-full">'+icon('check',12)+' FINALIZADA</span>':isUpcoming?(full?'<span class="sess-badge sess-badge-full">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>'):'<span class="sess-badge sess-badge-past">ENCERRADA</span>';
     const names=(s.confirmed||[]).map(getName).join(', ')||'Nenhum confirmado';
     const mvp=s.mvpId?` · MVP: ${getName(s.mvpId)}`:'';
+    const titleLine=s.name?esc(s.name):fmtDateLong(s.date);
+    const metaLine=(s.name?fmtDateLong(s.date)+' · ':'')+cnt+'/8 confirmados'+mvp;
     const finishBtn=isActive&&isPresOrDono(DB.currentPlayer())
       ?`<button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${s.id}')">${icon('stop',14)} Finalizar sessão</button>`
       :'';
@@ -1511,8 +1514,8 @@ function renderListaIndex(){
           <div class="sess-card-header">
             <div class="sess-day-big">${dayNum(s.date)}</div>
             <div class="sess-card-info">
-              <div class="sess-card-date">${fmtDateLong(s.date)}</div>
-              <div class="sess-card-meta">${cnt}/8 confirmados${mvp}</div>
+              <div class="sess-card-date">${titleLine}</div>
+              <div class="sess-card-meta">${metaLine}</div>
             </div>
             ${badge}
           </div>
@@ -1525,8 +1528,8 @@ function renderListaIndex(){
       <div class="sess-card-header">
         <div class="sess-day-big">${dayNum(s.date)}</div>
         <div class="sess-card-info">
-          <div class="sess-card-date">${fmtDateLong(s.date)}</div>
-          <div class="sess-card-meta">${cnt}/8 confirmados${mvp}</div>
+          <div class="sess-card-date">${titleLine}</div>
+          <div class="sess-card-meta">${metaLine}</div>
         </div>
         ${badge}
       </div>
@@ -1559,7 +1562,7 @@ function renderListaDetail(sessionId){
   const backBtn=`<div class="sess-detail-header"><button class="back-btn" onclick="closeListaDetail()">← Sessões</button></div>`;
   const dateHdr=`<div style="text-align:center;margin-bottom:16px">
     <div class="sess-num">${dayNum(session.date)}</div>
-    <div class="sess-lbl">Sessão · ${fmtDate(session.date)}</div>
+    <div class="sess-lbl">${session.name?esc(session.name):'Sessão · '+fmtDate(session.date)}</div>
     <div class="sess-dt">${fmtDateLong(session.date)}</div>
   </div>`;
 
@@ -2372,13 +2375,15 @@ function closeListaDetail(){ listaActiveId=null; render(); }
 function openNewSessionModal(){
   const today=new Date().toISOString().slice(0,10);
   document.getElementById('ns-date').value=today;
+  const nm=document.getElementById('ns-name'); if(nm) nm.value='';
   openModal('modal-new-session');
 }
 
 function createSession(){
   const date=document.getElementById('ns-date').value;
   if(!date){alert('Selecione uma data.');return;}
-  const s={id:uid(),date,confirmed:[],mvpId:null,group_id:myGroupId()};
+  const name=cleanName(document.getElementById('ns-name')?.value||'').slice(0,40);
+  const s={id:uid(),date,name:name||null,confirmed:[],mvpId:null,group_id:myGroupId()};
   const ss=DB.sessions(); ss.push(s); DB.setSessions(ss);
   closeModal('modal-new-session');
   listaActiveId=s.id;
@@ -2880,8 +2885,8 @@ function renderHistorico(){
       <div class="sess-bh">
         <div class="sb-day">${dayNum(s.date)}</div>
         <div class="sb-info">
-          <div class="sb-date">${fmtDateLong(s.date)}</div>
-          <div class="sb-meta">${confirmed.length} confirmados · ${matches.length} partida${matches.length!==1?'s':''}</div>
+          <div class="sb-date">${s.name?esc(s.name):fmtDateLong(s.date)}</div>
+          <div class="sb-meta">${s.name?fmtDate(s.date)+' · ':''}${confirmed.length} confirmados · ${matches.length} partida${matches.length!==1?'s':''}</div>
           ${mvpHtml?`<div style="margin-top:4px">${mvpHtml}</div>`:''}
         </div>
         ${isLatest?'<div class="latest-badge">ÚLTIMO</div>':''}
