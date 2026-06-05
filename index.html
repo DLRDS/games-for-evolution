@@ -593,8 +593,8 @@
 // DATA
 // ══════════════════════════════════════
 const DB = {
-  _g(k,d){ try{return JSON.parse(localStorage.getItem('gfe5_'+k))??d;}catch{return d;} },
-  _s(k,v){ localStorage.setItem('gfe5_'+k,JSON.stringify(v)); },
+  _g(k,d){ try{return JSON.parse(localStorage.getItem('gfe6_'+k))??d;}catch{return d;} },
+  _s(k,v){ localStorage.setItem('gfe6_'+k,JSON.stringify(v)); },
   players()    { return this._g('players',[]); },
   setPlayers(v){ this._s('players',v); },
   sessions()   { return this._g('sessions',[]); },
@@ -897,11 +897,12 @@ async function joinGroup(code){
   const c=(code||'').trim().toUpperCase();
   if(!c){ groupSetupError('Digite o código do grupo.'); return; }
   const btn=document.getElementById('gs-btn'); if(btn){ btn.disabled=true; btn.textContent='Entrando...'; }
-  const {data,error}=await supa.from('groups').select('id,name').eq('id',c).maybeSingle();
-  if(error||!data){ groupSetupError('Grupo não encontrado. Confira o código.'); if(btn){ btn.disabled=false; btn.textContent='Entrar no grupo'; } return; }
+  const {data,error}=await supa.rpc('join_group',{p_code:c});
+  const grp=Array.isArray(data)?data[0]:data;
+  if(error||!grp){ groupSetupError('Grupo não encontrado. Confira o código.'); if(btn){ btn.disabled=false; btn.textContent='Entrar no grupo'; } return; }
   const players=DB.players(); const p=players.find(x=>x.id===DB.currentPlayer());
-  if(p){ p.group_id=data.id; p.role=null; DB.setPlayers(players); }
-  DB.setGroupName(data.name);
+  if(p){ p.group_id=grp.gid; p.role=null; DB.setPlayers(players); }
+  DB.setGroupName(grp.gname);
   enterAppAfterGroup();
 }
 
