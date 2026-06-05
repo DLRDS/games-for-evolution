@@ -613,6 +613,14 @@ const DB = {
   setOnboardingDone(){ this._s('onboardingDone', true); },
   groupName()       { return this._g('groupName', null); },
   setGroupName(v)   { this._s('groupName', v); },
+  authUserId()      { return this._g('authUserId', null); },
+  setAuthUserId(v)  { this._s('authUserId', v); },
+  myName()          { return this._g('myName', null); },
+  setMyName(v)      { this._s('myName', v); },
+  activeGroup()     { return this._g('activeGroup', null); },
+  setActiveGroup(v) { this._s('activeGroup', v); },
+  groupNames()      { return this._g('groupNames', {}); },
+  setGroupNames(v)  { this._s('groupNames', v); },
 };
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -813,48 +821,79 @@ async function showSplash(){
   if(session&&session.user){
     await ensureProfile(session.user);
     const p=getPlayer(DB.currentPlayer());
-    if(p&&p.group_id){ if(pendingInvite){ pendingInvite=null; clearInviteUrl(); } await ensureGroupName(); render(); return; }
+    if(p&&p.group_id){ if(pendingInvite){ pendingInvite=null; clearInviteUrl(); } await loadMyGroups(); render(); return; }
     if(p){ if(pendingInvite){ handlePendingInvite(); } else { showGroupSetup(); } return; }
   }
   DB.setCurrentPlayer(null);
   showLogin();
 }
 
-// Garante que a conta logada tenha um perfil de jogador vinculado
+// Vincula a conta logada aos seus perfis de jogador (um por grupo) e escolhe o grupo ativo
 async function ensureProfile(user){
   await syncFromSupabase();
-  const players=DB.players();
-  let p=players.find(x=>x.user_id===user.id);
-  if(!p){
-    const nm=cleanName(user.user_metadata?.name||(user.email||'').split('@')[0]||'Jogador');
-    p={id:uid(),name:nm,elo:1000,role:null,user_id:user.id,group_id:null};
-    players.push(p);
-    DB.setPlayers(players);
-  }
-  DB.setCurrentPlayer(p.id);
+  DB.setAuthUserId(user.id);
+  DB.setMyName(cleanName(user.user_metadata?.name||(user.email||'').split('@')[0]||'Jogador'));
+  const mine=DB.players().filter(p=>p.user_id===user.id);
+  if(!mine.length){ DB.setCurrentPlayer(null); DB.setActiveGroup(null); return; }
+  let row=mine.find(p=>p.group_id===DB.activeGroup()) || mine[0];
+  DB.setCurrentPlayer(row.id);
+  DB.setActiveGroup(row.group_id);
 }
 
-// ── GRUPO: helpers de escopo (cada pessoa vê só os dados do seu grupo) ──
+// ── GRUPO: helpers de escopo (cada pessoa vê só os dados do grupo ativo) ──
 function myGroupId(){ return getPlayer(DB.currentPlayer())?.group_id || null; }
 function groupPlayers(){ const g=myGroupId(); return DB.players().filter(p=>p.group_id===g); }
 function groupSessions(){ const g=myGroupId(); return DB.sessions().filter(s=>s.group_id===g); }
 function groupMatches(){ const g=myGroupId(); return DB.matches().filter(m=>m.group_id===g); }
 function genGroupCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; let s=''; for(let i=0;i<6;i++) s+=c[Math.floor(Math.random()*c.length)]; return s; }
 
-async function ensureGroupName(){
-  const g=myGroupId(); if(!g) return;
-  if(DB.groupName()) return;
-  try{ const {data}=await supa.from('groups').select('name').eq('id',g).maybeSingle(); if(data?.name) DB.setGroupName(data.name); }catch(e){}
+// Meus grupos (todos os perfis de jogador ligados à minha conta)
+function myPlayerRows(){ const u=DB.authUserId(); return DB.players().filter(p=>p.user_id===u); }
+function myGroupsList(){ const names=DB.groupNames()||{}; return myPlayerRows().map(p=>({groupId:p.group_id, playerId:p.id, role:p.role, name:names[p.group_id]||p.group_id})); }
+
+function setActiveGroup(gid){
+  const row=myPlayerRows().find(p=>p.group_id===gid);
+  if(!row) return;
+  DB.setCurrentPlayer(row.id);
+  DB.setActiveGroup(gid);
+  const names=DB.groupNames()||{};
+  DB.setGroupName(names[gid]||gid);
+}
+function switchGroup(gid){ setActiveGroup(gid); nav('home'); }
+
+// Busca os nomes de todos os meus grupos (a regra do banco devolve só os meus)
+async function loadMyGroups(){
+  try{
+    const {data}=await supa.from('groups').select('id,name');
+    if(data&&data.length){
+      const m=DB.groupNames()||{}; data.forEach(g=>{ m[g.id]=g.name; }); DB.setGroupNames(m);
+      const active=myGroupId(); if(active&&m[active]) DB.setGroupName(m[active]);
+    }
+  }catch(e){}
 }
 
-// ── TELA: criar ou entrar em um grupo (aparece quando a conta não tem grupo) ──
+async function leaveGroup(){
+  const row=getPlayer(DB.currentPlayer()); if(!row) return;
+  if(!confirm('Sair deste grupo? Seu histórico e ranking neste grupo serão perdidos.')) return;
+  try{ await supa.from('players').delete().eq('id',row.id); }catch(e){}
+  const players=DB.players().filter(p=>p.id!==row.id);
+  DB.setPlayers(players);
+  const mine=players.filter(p=>p.user_id===DB.authUserId());
+  if(mine.length){ setActiveGroup(mine[0].group_id); nav('home'); }
+  else { DB.setCurrentPlayer(null); DB.setActiveGroup(null); DB.setGroupName(null); showGroupSetup(false); }
+}
+
+// ── TELA: criar ou entrar em um grupo ──
 let groupSetupMode='choose'; // 'choose' | 'create' | 'join'
-function showGroupSetup(){
+let groupSetupCancelable=false;
+function showGroupSetup(canCancel){
+  groupSetupCancelable=!!canCancel;
   groupSetupMode='choose';
   document.getElementById('gfe-login').classList.remove('hidden');
   renderGroupSetup();
 }
 function hideGroupSetup(){ document.getElementById('gfe-login').classList.add('hidden'); }
+function cancelGroupSetup(){ hideGroupSetup(); render(); }
 function setGroupSetupMode(m){ groupSetupMode=m; renderGroupSetup(); }
 function groupSetupError(msg){ const e=document.getElementById('gs-msg'); if(e) e.textContent=msg||''; }
 function renderGroupSetup(){
@@ -877,10 +916,11 @@ function renderGroupSetup(){
       <button class="btn btn-s btn-full" style="margin-top:8px" onclick="setGroupSetupMode('choose')">${icon('arrowLeft',14)} Voltar</button>`;
   } else {
     el.innerHTML=`
-      <div class="login-section-title">Quase lá!</div>
-      <div class="login-section-sub">VOCÊ AINDA NÃO ESTÁ EM UM GRUPO</div>
+      <div class="login-section-title">${groupSetupCancelable?'Outro grupo':'Quase lá!'}</div>
+      <div class="login-section-sub">${groupSetupCancelable?'CRIE OU ENTRE EM MAIS UM GRUPO':'VOCÊ AINDA NÃO ESTÁ EM UM GRUPO'}</div>
       <button class="btn btn-p btn-full" style="margin-bottom:10px;font-size:15px;padding:13px" onclick="setGroupSetupMode('create')">Criar um grupo</button>
-      <button class="btn btn-s btn-full" style="font-size:15px;padding:13px" onclick="setGroupSetupMode('join')">Entrar com um código</button>`;
+      <button class="btn btn-s btn-full" style="font-size:15px;padding:13px" onclick="setGroupSetupMode('join')">Entrar com um código</button>
+      ${groupSetupCancelable?`<button class="btn btn-s btn-full" style="margin-top:18px" onclick="cancelGroupSetup()">Cancelar</button>`:''}`;
   }
 }
 
@@ -889,26 +929,34 @@ async function createGroup(name){
   if(!nm){ groupSetupError('Dê um nome ao grupo.'); return; }
   const btn=document.getElementById('gs-btn'); if(btn){ btn.disabled=true; btn.textContent='Criando...'; }
   const code=genGroupCode();
-  let userId=null;
-  try{ userId=(await supa.auth.getUser()).data.user?.id||null; }catch(e){}
+  const userId=DB.authUserId();
   const {error}=await supa.from('groups').insert({id:code,name:nm,created_by:userId});
   if(error){ groupSetupError('Não foi possível criar agora. Tente de novo.'); if(btn){ btn.disabled=false; btn.textContent='Criar e entrar'; } return; }
-  const players=DB.players(); const p=players.find(x=>x.id===DB.currentPlayer());
-  if(p){ p.group_id=code; p.role='dono'; DB.setPlayers(players); }
-  DB.setGroupName(nm);
+  // cria meu perfil de jogador NESTE grupo (vira dono)
+  const players=DB.players(); const newId=uid();
+  players.push({id:newId,name:DB.myName()||'Jogador',elo:1000,role:'dono',user_id:userId,group_id:code});
+  DB.setPlayers(players);
+  const names=DB.groupNames()||{}; names[code]=nm; DB.setGroupNames(names);
+  DB.setCurrentPlayer(newId); DB.setActiveGroup(code); DB.setGroupName(nm);
   enterAppAfterGroup();
 }
 
 async function joinGroup(code){
   const c=(code||'').trim().toUpperCase();
   if(!c){ groupSetupError('Digite o código do grupo.'); return; }
+  // já sou membro deste grupo? só troca pra ele
+  const already=myPlayerRows().find(p=>p.group_id===c);
+  if(already){ setActiveGroup(c); enterAppAfterGroup(); return; }
   const btn=document.getElementById('gs-btn'); if(btn){ btn.disabled=true; btn.textContent='Entrando...'; }
-  const {data,error}=await supa.rpc('join_group',{p_code:c});
+  const {data,error}=await supa.rpc('group_info',{p_code:c});
   const grp=Array.isArray(data)?data[0]:data;
   if(error||!grp){ groupSetupError('Grupo não encontrado. Confira o código.'); if(btn){ btn.disabled=false; btn.textContent='Entrar no grupo'; } return; }
-  const players=DB.players(); const p=players.find(x=>x.id===DB.currentPlayer());
-  if(p){ p.group_id=grp.gid; p.role=null; DB.setPlayers(players); }
-  DB.setGroupName(grp.gname);
+  // cria meu perfil de jogador NESTE grupo (membro)
+  const players=DB.players(); const newId=uid();
+  players.push({id:newId,name:DB.myName()||'Jogador',elo:1000,role:null,user_id:DB.authUserId(),group_id:grp.gid});
+  DB.setPlayers(players);
+  const names=DB.groupNames()||{}; names[grp.gid]=grp.gname; DB.setGroupNames(names);
+  DB.setCurrentPlayer(newId); DB.setActiveGroup(grp.gid); DB.setGroupName(grp.gname);
   enterAppAfterGroup();
 }
 
@@ -1021,7 +1069,7 @@ function finishAuth(){
   hideLogin();
   const p=getPlayer(DB.currentPlayer());
   if(!p||!p.group_id){ if(pendingInvite){ handlePendingInvite(); } else { showGroupSetup(); } return; }
-  ensureGroupName();
+  loadMyGroups();
   if(!DB.onboardingDone()){ showOnboarding(); }
   else { render(); }
 }
@@ -2426,9 +2474,21 @@ function renderConfig(){
       ${configRow(icon('x',16),'Derrotas',stats.l,'')}
     </div>
 
-    <div class="eyebrow">Meu grupo</div>
+    <div class="eyebrow">Meus grupos</div>
     <div class="card" style="margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${isPresOrDono(pid)?'12px':'0'}">
+      ${myGroupsList().map(g=>`
+        <div onclick="switchGroup('${g.groupId}')" style="display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;${g.groupId===myGroupId()?'background:rgba(255,102,0,.08)':''}">
+          <span style="color:${g.groupId===myGroupId()?'var(--orange)':'var(--n400)'};display:flex">${icon('users',16)}</span>
+          <div style="flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(g.name)}</div>
+          ${g.role?roleBadge(g.playerId):''}
+          ${g.groupId===myGroupId()?`<span style="color:var(--orange);display:flex">${icon('check',16)}</span>`:''}
+        </div>`).join('')}
+      <button class="btn btn-s btn-full" style="margin-top:10px" onclick="showGroupSetup(true)">${icon('plus',14)} Entrar em outro grupo</button>
+    </div>
+
+    <div class="eyebrow">Grupo atual</div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
         <span style="color:var(--orange);display:flex">${icon('users',18)}</span>
         <div style="font-family:var(--font-h);font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(DB.groupName()||'Meu grupo')}</div>
       </div>
@@ -2442,6 +2502,7 @@ function renderConfig(){
         <button class="btn btn-s btn-sm" onclick="copyGroupCode()">Copiar</button>
       </div>
       <div class="hint" style="margin-top:8px">Mande o link no WhatsApp — a pessoa entra direto ao se cadastrar. Ou passe o código.</div>`:''}
+      <button class="btn btn-s btn-full" style="margin-top:12px;color:var(--danger)" onclick="leaveGroup()">Sair deste grupo</button>
     </div>
 
     <div class="eyebrow">Conta</div>
