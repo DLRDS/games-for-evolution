@@ -622,6 +622,8 @@ const DB = {
   setActiveGroup(v) { this._s('activeGroup', v); },
   groupNames()      { return this._g('groupNames', {}); },
   setGroupNames(v)  { this._s('groupNames', v); },
+  challenges()      { return this._g('challenges', []); },
+  setChallenges(v)  { this._s('challenges', v); },
 };
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -729,6 +731,8 @@ async function syncFromSupabase(){
   if(players&&players.length) DB._s('players',players);
   if(sessions&&sessions.length) DB._s('sessions',sessions.map(sessionFromDB));
   if(matches&&matches.length) DB._s('matches',matches.map(matchFromDB));
+  // Desafios em separado: se a tabela ainda não existir, não quebra o resto
+  try{ const {data:challenges}=await supa.from('challenges').select('*'); if(challenges) DB._s('challenges',challenges); }catch(e){}
 }
 
 let _pollTimer=null;
@@ -744,6 +748,8 @@ async function initSupabase(){
     DB.setSessions=v=>{ _ss(v); supa.from('sessions').upsert(v.map(sessionToDB)).then(({error})=>{ if(error)console.warn('supa sessions:',error); }); };
     const _sm=DB.setMatches.bind(DB);
     DB.setMatches=v=>{ _sm(v); supa.from('matches').upsert(v.map(matchToDB)).then(({error})=>{ if(error)console.warn('supa matches:',error); }); };
+    const _sc=DB.setChallenges.bind(DB);
+    DB.setChallenges=v=>{ _sc(v); supa.from('challenges').upsert(v).then(({error})=>{ if(error)console.warn('supa challenges:',error); }); };
     // Polling: sincroniza com o banco a cada 3s (garante atualização entre dispositivos)
     startPolling();
     document.addEventListener('visibilitychange',()=>{
@@ -756,9 +762,9 @@ function startPolling(){
   if(_pollTimer)return;
   _pollTimer=setInterval(async()=>{
     if(document.hidden||!supa)return;
-    const prev=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
+    const prev=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players(),c:DB.challenges()});
     await syncFromSupabase();
-    const next=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players()});
+    const next=JSON.stringify({s:DB.sessions(),m:DB.matches().length,p:DB.players(),c:DB.challenges()});
     if(prev!==next){
       recalcAllElo();
       // Auto-navegar para sessão ao vivo se espectador
@@ -1172,6 +1178,19 @@ function getOrCreateSession(date){
 // ══════════════════════════════════════
 const ELO_K=32;
 function expectedScore(a,b){ return 1/(1+Math.pow(10,(b-a)/400)); }
+
+// Simulação de ranking: quanto cada time ganha/perde de ELO conforme o resultado
+function eloStakes(team1,team2){
+  const t1=team1.filter(Boolean), t2=team2.filter(Boolean);
+  if(!t1.length||!t2.length) return null;
+  const avgA=t1.reduce((s,id)=>s+getElo(id),0)/t1.length;
+  const avgB=t2.reduce((s,id)=>s+getElo(id),0)/t2.length;
+  const expA=expectedScore(avgA,avgB);
+  return {
+    t1Win:Math.round(ELO_K*(1-expA)),  t1Lose:-Math.round(ELO_K*expA),
+    t2Win:Math.round(ELO_K*expA),      t2Lose:-Math.round(ELO_K*(1-expA)),
+  };
+}
 
 function recalcAllElo(){
   // reset all players to 1000, replay all matches in order
@@ -2640,15 +2659,89 @@ function replayOnboarding(){
 // RANKING
 // ══════════════════════════════════════
 function renderRanking(){
-  return`
+  const tabs=`
     <div class="tab-tog">
       <button class="${rankTab==='elo'?'active':''}" onclick="setRankTab('elo')">ELO</button>
       <button class="${rankTab==='duplas'?'active':''}" onclick="setRankTab('duplas')">Duplas</button>
-    </div>
-    ${rankTab==='elo'?renderEloTable():renderDuplasTable()}
-    <div style="margin-top:16px"><div class="eyebrow">Últimas Partidas</div><div class="card">${renderMatchHist()}</div></div>`;
+      <button class="${rankTab==='desafios'?'active':''}" onclick="setRankTab('desafios')">Desafios</button>
+    </div>`;
+  if(rankTab==='desafios') return tabs+renderDesafios();
+  return tabs
+    +(rankTab==='elo'?renderEloTable():renderDuplasTable())
+    +`<div style="margin-top:16px"><div class="eyebrow">Últimas Partidas</div><div class="card">${renderMatchHist()}</div></div>`;
 }
 function setRankTab(t){rankTab=t;render();}
+
+// ── DESAFIOS (ladder) ──
+function groupChallenges(){ const g=myGroupId(); return DB.challenges().filter(c=>c.group_id===g); }
+function challengePoints(pid){ let p=0; groupChallenges().forEach(c=>{ if(c.status!=='done')return; if(c.winner===pid)p+=3; else if(c.from_id===pid||c.to_id===pid)p+=1; }); return p; }
+function createChallenge(toId){
+  const me=DB.currentPlayer(); if(!me||!toId||toId===me)return;
+  const open=groupChallenges().some(c=>(c.status==='pending'||c.status==='accepted')&&((c.from_id===me&&c.to_id===toId)||(c.from_id===toId&&c.to_id===me)));
+  if(open){ alert('Já existe um desafio em aberto com esse jogador.'); return; }
+  const list=DB.challenges();
+  list.push({id:uid(),group_id:myGroupId(),from_id:me,to_id:toId,status:'pending',winner:null,created_at:new Date().toISOString()});
+  DB.setChallenges(list); render();
+}
+function _patchChallenge(id,patch){ const list=DB.challenges(); const c=list.find(x=>x.id===id); if(!c)return; Object.assign(c,patch); DB.setChallenges(list); render(); }
+function acceptChallenge(id){ _patchChallenge(id,{status:'accepted'}); }
+function declineChallenge(id){ _patchChallenge(id,{status:'declined'}); }
+function resolveChallenge(id,winnerId){ _patchChallenge(id,{status:'done',winner:winnerId}); }
+function cancelChallenge(id){
+  if(!confirm('Cancelar este desafio?'))return;
+  DB.setChallenges(DB.challenges().filter(c=>c.id!==id));
+  if(supa) supa.from('challenges').delete().eq('id',id).then(()=>{});
+  render();
+}
+
+function renderDesafios(){
+  const me=DB.currentPlayer();
+  const ch=groupChallenges();
+  const incoming=ch.filter(c=>c.to_id===me&&c.status==='pending');
+  const outgoing=ch.filter(c=>c.from_id===me&&c.status==='pending');
+  const active=ch.filter(c=>c.status==='accepted'&&(c.from_id===me||c.to_id===me));
+  const board=groupPlayers().map(p=>({p,pts:challengePoints(p.id)})).filter(x=>x.pts>0).sort((a,b)=>b.pts-a.pts);
+  const others=groupPlayers().filter(p=>p.id!==me);
+  let html='';
+  if(incoming.length||outgoing.length){
+    html+=`<div class="eyebrow">Pendentes</div><div class="card" style="margin-bottom:14px">`;
+    html+=incoming.map(c=>`<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--n600)">
+      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">${esc(getName(c.from_id))} te desafiou</div>
+      <button class="btn btn-g btn-sm" onclick="acceptChallenge('${c.id}')">Aceitar</button>
+      <button class="btn btn-s btn-sm" onclick="declineChallenge('${c.id}')">Recusar</button>
+    </div>`).join('');
+    html+=outgoing.map(c=>`<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--n600)">
+      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">Você desafiou ${esc(getName(c.to_id))} <span style="color:var(--n500);font-family:var(--font-m);font-size:10px">· aguardando</span></div>
+      <button class="btn btn-s btn-sm" onclick="cancelChallenge('${c.id}')">Cancelar</button>
+    </div>`).join('');
+    html+=`</div>`;
+  }
+  if(active.length){
+    html+=`<div class="eyebrow">Para jogar</div><div class="card" style="margin-bottom:14px">`;
+    html+=active.map(c=>`<div style="padding:8px 0;border-bottom:1px solid var(--n600)">
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">${esc(getName(c.from_id))} vs ${esc(getName(c.to_id))}</div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-family:var(--font-m);font-size:10px;color:var(--n400)">Quem venceu?</span>
+        <button class="btn btn-s btn-sm" onclick="resolveChallenge('${c.id}','${c.from_id}')">${esc(getName(c.from_id).split(' ')[0])}</button>
+        <button class="btn btn-s btn-sm" onclick="resolveChallenge('${c.id}','${c.to_id}')">${esc(getName(c.to_id).split(' ')[0])}</button>
+      </div>
+    </div>`).join('');
+    html+=`</div>`;
+  }
+  html+=`<div class="eyebrow">Placar de Desafios</div><div class="card" style="margin-bottom:14px">`;
+  html+= board.length? board.map((x,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(63,59,53,.5)">
+      <div class="rpos ${i===0?'p1':i===1?'p2':i===2?'p3':''}" style="font-size:18px">${i+1}</div>
+      <div style="flex:1;font-size:13px;font-weight:600">${esc(x.p.name)}</div>
+      <div class="elo-val">${x.pts}</div><div class="sl">pts</div>
+    </div>`).join('') : `<div class="no-matches">Ainda não há desafios concluídos. Vencer vale 3 pts, jogar vale 1.</div>`;
+  html+=`</div>`;
+  html+=`<div class="eyebrow">Desafiar</div><div class="card">`;
+  html+= others.length? others.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--n600)">
+      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">${esc(p.name)} <span style="font-family:var(--font-m);font-size:10px;color:var(--n400)">· ${challengePoints(p.id)} pts</span></div>
+      <button class="btn btn-p btn-sm" onclick="createChallenge('${p.id}')">Desafiar</button>
+    </div>`).join('') : `<div class="no-matches">Sem outros jogadores no grupo ainda.</div>`;
+  html+=`</div>`;
+  return html;
+}
 
 function renderEloTable(){
   const players=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
@@ -3015,6 +3108,10 @@ function buildScoreboard(){
   const t1names=m.team1.map(getName).join('\n');
   const t2names=m.team2.map(getName).join('\n');
 
+  // simulação de ranking (ELO em jogo)
+  const stk=eloStakes(m.team1,m.team2);
+  const stakeLine=(win,lose)=>stk?`<div style="font-family:var(--font-m);font-size:9px;letter-spacing:.5px;margin-bottom:8px"><span style="color:var(--success)">▲${win>=0?'+':''}${win}</span> <span style="color:var(--n500)">/</span> <span style="color:var(--danger)">▼${lose}</span></div>`:'';
+
   // sets pills
   const setsPills=m.completedSets.map(s=>{
     const t1w=s.won===1;
@@ -3067,11 +3164,13 @@ function buildScoreboard(){
     <div class="live-court" style="position:relative">
       <button class="live-side${t1winning?' winning':''}" onclick="addGame(1)" style="${inTb?'border-right:1px solid rgba(255,184,0,.3)':''}">
         <div class="live-team-names">${m.team1.map(getName).map(esc).join('<br>')}</div>
+        ${stakeLine(stk?.t1Win,stk?.t1Lose)}
         <div class="live-game-score" style="${inTb?'color:var(--gold)':''}">${disp1}</div>
         <div class="live-tap-hint">${inTb?'▲ TOQUE PARA PONTO':'▲ TOQUE PARA GAME'}</div>
       </button>
       <button class="live-side${t2winning?' winning':''}" onclick="addGame(2)" style="${inTb?'border-left:none':''}">
         <div class="live-team-names">${m.team2.map(getName).map(esc).join('<br>')}</div>
+        ${stakeLine(stk?.t2Win,stk?.t2Lose)}
         <div class="live-game-score" style="${inTb?'color:var(--gold)':''}">${disp2}</div>
         <div class="live-tap-hint">${inTb?'▲ TOQUE PARA PONTO':'▲ TOQUE PARA GAME'}</div>
       </button>
