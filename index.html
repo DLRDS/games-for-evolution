@@ -1436,6 +1436,40 @@ function renderHome(){
   // Form dots
   const formHtml=`<div style="display:flex;gap:5px;align-items:center">${stats.form.length?formDots(stats.form):'<span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">Sem jogos</span>'}</div>`;
 
+  // Acontecendo agora / Sessões abertas
+  const today=new Date().toISOString().slice(0,10);
+  const sess=groupSessions();
+  const liveSess=sess.filter(s=>s.status==='active'&&(s.liveScore||s.flowState));
+  const openSess=sess.filter(s=>s.status!=='active'&&s.status!=='finished'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
+  const liveCard=s=>`<div class="sess-card" style="border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.06)" onclick="goToSession('${s.id}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:9px;height:9px;border-radius:50%;background:var(--danger);animation:pulse 1.4s infinite;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:var(--font-m);font-size:9px;color:var(--danger);font-weight:700;letter-spacing:1.5px">AO VIVO</div>
+          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name?esc(s.name):fmtDateLong(s.date)}</div>
+        </div>
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--orange)">Assistir ›</span>
+      </div>
+    </div>`;
+  const openCard=s=>{
+    const cnt=(s.confirmed||[]).length, full=cnt>=8, mine=(s.confirmed||[]).includes(pid);
+    const badge=mine?'<span class="sess-badge sess-badge-full">CONFIRMADO</span>':full?'<span class="sess-badge sess-badge-past">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>';
+    return`<div class="sess-card" onclick="goToSession('${s.id}')">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="sess-day-big" style="font-size:26px;min-width:34px">${dayNum(s.date)}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name?esc(s.name):fmtDateLong(s.date)}</div>
+          <div class="sess-card-meta">${cnt}/8 confirmados${mine?' · você está dentro':''}</div>
+        </div>
+        ${badge}
+      </div>
+    </div>`;
+  };
+  let activity='';
+  if(liveSess.length) activity+=`<div class="home-section"><div class="eyebrow">Acontecendo agora</div>${liveSess.map(liveCard).join('')}</div>`;
+  if(openSess.length) activity+=`<div class="home-section"><div class="eyebrow">Sessões abertas</div>${openSess.slice(0,4).map(openCard).join('')}</div>`;
+  if(!liveSess.length&&!openSess.length) activity+=`<div class="home-section"><div class="card" style="display:flex;align-items:center;gap:10px;padding:12px 14px"><span style="color:var(--n400);font-size:12px;flex:1">Nenhuma sessão aberta no momento.</span><button class="btn btn-p btn-sm" onclick="nav('lista')">Criar sessão</button></div></div>`;
+
   return`
     <div class="home-hero">
       <div class="home-avatar">${initials(player.name)}</div>
@@ -1449,6 +1483,8 @@ function renderHome(){
       </div>
       <button class="home-change-btn" onclick="nav('config')" style="display:flex;align-items:center">${icon('settings',15)}</button>
     </div>
+
+    ${activity}
 
     <div class="metric-grid">
       <div class="metric-box">
@@ -2389,6 +2425,7 @@ function renderDestaques(d, sessionId){
 }
 
 function openListaDetail(id){ listaActiveId=id; render(); }
+function goToSession(id){ page='lista'; listaActiveId=id; document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active')); document.getElementById('nav-lista')?.classList.add('active'); window.scrollTo(0,0); render(); }
 function closeListaDetail(){ listaActiveId=null; render(); }
 
 function openNewSessionModal(){
