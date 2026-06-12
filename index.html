@@ -703,7 +703,7 @@ let supa=null;
 
 // Converte snake_case do banco → camelCase do app
 function sessionFromDB(s){
-  return {...s, mvpId:s.mvp_id, pairsReady:s.pairs_ready,
+  return {...s, mvpId:s.mvp_id, pairsReady:s.pairs_ready, organizerId:s.organizer_id||null,
     pairs:s.pairs||null, confirmed:s.confirmed||[], status:s.status||'pending',
     flowState:s.flow_state||null, liveScore:s.live_score||null};
 }
@@ -714,7 +714,8 @@ function matchFromDB(m){
 function sessionToDB(s){
   return {id:s.id, date:s.date, name:s.name||null, confirmed:s.confirmed||[], mvp_id:s.mvpId||null,
     status:s.status||'pending', pairs:s.pairs||null, pairs_ready:s.pairsReady||false,
-    flow_state:s.flowState||null, live_score:s.liveScore||null, group_id:s.group_id||null};
+    flow_state:s.flowState||null, live_score:s.liveScore||null, group_id:s.group_id||null,
+    organizer_id:s.organizerId||null};
 }
 function matchToDB(m){
   return {id:m.id, session_id:m.sessionId||null, date:m.date,
@@ -1705,15 +1706,26 @@ function startSession(sessionId){
   if(!s)return;
   const nPairs=Math.floor((s.confirmed||[]).length/2);
   s.status='active';
+  s.organizerId=DB.currentPlayer(); // quem inicia controla a sessão
   s.pairs=Array.from({length:nPairs},()=>[null,null]);
   DB.setSessions(ss);
+  // marca este dispositivo como o controlador, no modo de montar duplas
+  sessionFlow={sessionId, _owner:true, phase:'editing'};
   pairsState=null; selectedPoolChip=null;
   render();
 }
 
 function renderPairManager(session){
-  // Este dispositivo é dono do controle?
-  const isOwner = sessionFlow && sessionFlow.sessionId===session.id && sessionFlow._owner;
+  const me=DB.currentPlayer();
+  // Se EU sou o organizador desta sessão mas perdi o controle em memória
+  // (ex.: recarreguei a página), reconstruo o controle a partir do que está salvo.
+  if(session.organizerId && session.organizerId===me && (!sessionFlow || sessionFlow.sessionId!==session.id)){
+    sessionFlow = session.flowState ? {...session.flowState, sessionId:session.id, _owner:true}
+                                    : {sessionId:session.id, _owner:true, phase:'editing'};
+  }
+  // Este dispositivo é dono do controle? (e, se a sessão tem organizador definido, preciso ser ele)
+  const isOwner = sessionFlow && sessionFlow.sessionId===session.id && sessionFlow._owner
+    && (!session.organizerId || session.organizerId===me);
 
   // Organizador: mostra tela de controle completa
   if(isOwner && sessionFlow.phase!=='editing'){
@@ -1731,11 +1743,31 @@ function renderPairManager(session){
   if(session.pairsReady&&session.pairs&&session.pairs.every(p=>p[0]&&p[1])){
     return renderSavedPairs(session);
   }
-  // pairsState is the live editing state (not yet saved to DB)
-  const pairs=pairsState||JSON.parse(JSON.stringify(session.pairs||[[null,null],[null,null],[null,null],[null,null]]));
-  if(!pairsState) pairsState=pairs;
-
   const confirmed=session.confirmed||[];
+  // o número de duplas acompanha quem confirmou (2 jogadores por dupla)
+  const nPairs=Math.floor(confirmed.length/2);
+
+  // precisa de pelo menos 4 jogadores (2 duplas) para jogar
+  if(nPairs<2){
+    return`
+    <div class="sess-active-header">
+      <div class="sess-active-dot"></div>
+      <div class="sess-active-label">SESSÃO EM ANDAMENTO</div>
+    </div>
+    <div class="alert alert-warn">Confirme pelo menos 4 jogadores para montar as duplas. Agora há ${confirmed.length}.</div>
+    <button class="btn btn-p btn-full" onclick="openConfirmModal('${session.id}')">${icon('plus',14)} Adicionar jogadores</button>
+    <button class="btn btn-d btn-sm" style="margin-top:8px;width:100%" onclick="finishSession('${session.id}')">${icon('stop',14)} Finalizar Sessão</button>
+    `;
+  }
+
+  // pairsState é o estado de edição (ainda não salvo). Número de duplas adaptado ao total.
+  const savedValid=Array.isArray(session.pairs)&&session.pairs.length&&session.pairs.every(p=>Array.isArray(p));
+  const defaultPairs=Array.from({length:nPairs},()=>[null,null]);
+  const pairs=pairsState||JSON.parse(JSON.stringify(savedValid?session.pairs:defaultPairs));
+  if(!pairsState) pairsState=pairs;
+  // se entraram mais jogadores, abre vagas de dupla para eles
+  while(pairs.length<nPairs) pairs.push([null,null]);
+
   const assigned=pairs.flat().filter(Boolean);
   const pool=confirmed.filter(id=>!assigned.includes(id));
 
@@ -1772,7 +1804,10 @@ function renderPairManager(session){
       <div class="sess-active-label">SESSÃO EM ANDAMENTO</div>
     </div>
 
-    <div class="eyebrow">Jogadores disponíveis</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="eyebrow" style="margin:0">Jogadores disponíveis</div>
+      <button class="btn btn-s btn-sm" onclick="openConfirmModal('${session.id}')">${icon('plus',13)} Adicionar</button>
+    </div>
     <div class="pair-pool" id="pair-pool">${poolChips}</div>
 
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -1956,12 +1991,12 @@ function renderSavedPairs(session){
 }
 
 function editPairs(sessionId){
-  // Reset pairs state to current saved pairs for editing
+  // Volta a editar as duplas salvas, mantendo o controle do organizador
   const s=DB.sessions().find(x=>x.id===sessionId);
-  pairsState=s?JSON.parse(JSON.stringify(s.pairs)):[[null,null],[null,null],[null,null],[null,null]];
+  pairsState=s&&Array.isArray(s.pairs)?JSON.parse(JSON.stringify(s.pairs)):null;
   const ss=DB.sessions(); const sess=ss.find(x=>x.id===sessionId);
-  if(sess){ sess.pairsReady=false; DB.setSessions(ss); }
-  sessionFlow=null;
+  if(sess){ sess.pairsReady=false; sess.flowState=null; DB.setSessions(ss); }
+  sessionFlow={sessionId, _owner:true, phase:'editing'};
   render();
 }
 
@@ -2023,6 +2058,8 @@ function renderSessionFlow(session){
 
   // ── PICK RULE ──
   if(sf.phase==='pick_rule'){
+    // Rodízio só faz sentido com 3+ duplas (precisa de duplas "de fora")
+    if(n<3 && sf.rule==='rodizio'){ sf.rule='rei'; }
     return`${activeHeader}
       <div class="eyebrow">Regra da sessão</div>
       <div onclick="sf_set('rule','rei')" style="
@@ -2032,13 +2069,13 @@ function renderSessionFlow(session){
         <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('crown',15)} Rei da Quadra</div>
         <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">A dupla vencedora permanece em quadra até perder</div>
       </div>
-      <div onclick="sf_set('rule','rodizio')" style="
+      ${n>=3?`<div onclick="sf_set('rule','rodizio')" style="
         background:${sf.rule==='rodizio'?'rgba(255,102,0,.12)':'var(--n700)'};
         border:1px solid ${sf.rule==='rodizio'?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:14px;margin-bottom:16px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('cycle',15)} Rodízio Completo</div>
         <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">Se ganhar de todas as duplas em sequência, as duas saem e as duas da fora entram</div>
-      </div>
+      </div>`:`<div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:16px;letter-spacing:.3px">O Rodízio Completo fica disponível com 3 duplas ou mais (6+ jogadores).</div>`}
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" onclick="sf_confirmRule()">Confirmar e escolher duplas →</button>
     `;
