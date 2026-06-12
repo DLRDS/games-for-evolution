@@ -1338,7 +1338,7 @@ function goToLive(){
 
 function nav(p){
   page=p;
-  if(p!=='lista'){ listaActiveId=null; pairsState=null; selectedPoolChip=null; /* keep sessionFlow alive so it survives tab switch */ }
+  if(p!=='lista'){ listaActiveId=null; pairsState=null; selectedPoolChip=null; selectedSlot=null; /* keep sessionFlow alive so it survives tab switch */ }
   document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
   document.getElementById('nav-'+p)?.classList.add('active');
   window.scrollTo(0,0);
@@ -1698,6 +1698,7 @@ function renderListaDetail(sessionId){
 // ── PAIR MANAGER + SESSION FLOW ──
 let pairsState=null;
 let selectedPoolChip=null;
+let selectedSlot=null; // {pi,pos} de um jogador "pego" para trocar/mover
 let sessionFlow=null;  // { sessionId, onCourtIdx, pickSelected:[], matches:[], phase:'pick_first'|'pick_opponent'|'finished' }
 let liveSessionCallback=null; // called after saveLiveMatch if session flow active
 
@@ -1711,7 +1712,7 @@ function startSession(sessionId){
   DB.setSessions(ss);
   // marca este dispositivo como o controlador, no modo de montar duplas
   sessionFlow={sessionId, _owner:true, phase:'editing'};
-  pairsState=null; selectedPoolChip=null;
+  pairsState=null; selectedPoolChip=null; selectedSlot=null;
   render();
 }
 
@@ -1784,7 +1785,8 @@ function renderPairManager(session){
       ${[0,1].map(pos=>{
         const pid=pair[pos];
         if(pid){
-          return`<div class="pair-player filled" onclick="removePairPlayer(${pi},${pos})">
+          const isSel=selectedSlot&&selectedSlot.pi===pi&&selectedSlot.pos===pos;
+          return`<div class="pair-player filled${isSel?' has-focus':''}" style="${isSel?'border-color:var(--orange);background:rgba(255,102,0,.2)':''}" onclick="tapAssigned(${pi},${pos})">
             <div class="pair-player-name">${esc(getName(pid))}</div>
             <button class="pair-player-rm" onclick="removePairPlayer(${pi},${pos});event.stopPropagation()">${icon('x',12)}</button>
           </div>`;
@@ -1817,7 +1819,7 @@ function renderPairManager(session){
     <div class="pair-slots">${pairCards}</div>
 
     <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-bottom:12px;letter-spacing:.5px">
-      Toque num jogador do pool → toque num slot vazio para atribuir · Toque num jogador atribuído para remover
+      Toque num jogador para pegá-lo, depois toque em outro para trocar de lugar, ou num espaço vazio para mover. O × remove.
     </p>
 
     ${allFilled?`<button class="btn btn-p btn-full" onclick="savePairs('${session.id}')">${icon('save',14)} Salvar Duplas</button>`:''}
@@ -1913,21 +1915,46 @@ function renderSpectator(session){
 }
 
 function selectPoolChip(pid){
+  selectedSlot=null;
   selectedPoolChip=selectedPoolChip===pid?null:pid;
   render();
 }
 
-function assignToPair(pairIdx,pos){
-  if(!selectedPoolChip)return;
+// Toque num jogador já atribuído: substitui (se tiver um do pool selecionado),
+// troca (se já tiver outro jogador "pego"), ou "pega" ele para trocar/mover.
+function tapAssigned(pi,pos){
   if(!pairsState)return;
-  pairsState[pairIdx][pos]=selectedPoolChip;
-  selectedPoolChip=null;
-  render();
+  if(selectedPoolChip){
+    pairsState[pi][pos]=selectedPoolChip; // o anterior volta pro pool automaticamente
+    selectedPoolChip=null; selectedSlot=null; render(); return;
+  }
+  if(selectedSlot){
+    if(selectedSlot.pi===pi&&selectedSlot.pos===pos){ selectedSlot=null; render(); return; } // soltar
+    const a=pairsState[selectedSlot.pi][selectedSlot.pos];
+    pairsState[selectedSlot.pi][selectedSlot.pos]=pairsState[pi][pos];
+    pairsState[pi][pos]=a;
+    selectedSlot=null; render(); return;
+  }
+  selectedSlot={pi,pos}; render();
+}
+
+function assignToPair(pairIdx,pos){
+  if(!pairsState)return;
+  if(selectedPoolChip){
+    pairsState[pairIdx][pos]=selectedPoolChip;
+    selectedPoolChip=null; selectedSlot=null; render(); return;
+  }
+  if(selectedSlot){
+    pairsState[pairIdx][pos]=pairsState[selectedSlot.pi][selectedSlot.pos];
+    pairsState[selectedSlot.pi][selectedSlot.pos]=null;
+    selectedSlot=null; render(); return;
+  }
 }
 
 function removePairPlayer(pairIdx,pos){
   if(!pairsState)return;
   pairsState[pairIdx][pos]=null;
+  selectedSlot=null;
   render();
 }
 
@@ -1942,7 +1969,7 @@ function sugestaoElo(sessionId){
   let lo=0,hi=sorted.length-1,pi=0;
   while(lo<hi&&pi<nPairs){ newPairs[pi]=[sorted[lo],sorted[hi]]; lo++;hi--;pi++; }
   pairsState=newPairs;
-  selectedPoolChip=null;
+  selectedPoolChip=null; selectedSlot=null;
   render();
 }
 
@@ -1952,6 +1979,14 @@ function savePairs(sessionId){
   s.pairs=JSON.parse(JSON.stringify(pairsState));
   s.pairsReady=true;
   DB.setSessions(ss);
+  selectedSlot=null; selectedPoolChip=null;
+  // se estávamos editando no meio dos jogos, volta para onde paramos
+  if(sessionFlow&&sessionFlow._resumePhase){
+    sessionFlow.phase=sessionFlow._resumePhase;
+    delete sessionFlow._resumePhase;
+    sessionFlow.pickSelected=[];
+    persistFlowState(sessionId);
+  }
   render();
 }
 
@@ -1959,7 +1994,7 @@ function resetPairs(sessionId){
   const s=sessionId?DB.sessions().find(x=>x.id===sessionId):null;
   const nPairs=s?Math.floor((s.confirmed||[]).length/2):4;
   pairsState=Array.from({length:nPairs},()=>[null,null]);
-  selectedPoolChip=null;
+  selectedPoolChip=null; selectedSlot=null;
   render();
 }
 
@@ -2282,12 +2317,18 @@ function _launchFlowMatch(session, p1Idx, p2Idx){
 }
 
 function editPairsInFlow(sessionId){
-  // Keep session flow but go to pair editor
+  // Vai para o editor de duplas mantendo o fluxo; ao salvar, retoma de onde parou
   const s=DB.sessions().find(x=>x.id===sessionId);
-  pairsState=s?JSON.parse(JSON.stringify(s.pairs)):[[null,null],[null,null],[null,null],[null,null]];
+  pairsState=s&&Array.isArray(s.pairs)?JSON.parse(JSON.stringify(s.pairs)):null;
   const ss=DB.sessions(); const sess=ss.find(x=>x.id===sessionId);
   if(sess){ sess.pairsReady=false; DB.setSessions(ss); }
-  // Don't reset sessionFlow — it will resume when pairs re-saved
+  if(sessionFlow){
+    if(!sessionFlow._resumePhase&&sessionFlow.phase!=='editing') sessionFlow._resumePhase=sessionFlow.phase;
+    sessionFlow.phase='editing'; sessionFlow._owner=true; sessionFlow.sessionId=sessionId;
+  } else {
+    sessionFlow={sessionId,_owner:true,phase:'editing'};
+  }
+  selectedSlot=null; selectedPoolChip=null;
   render();
 }
 
