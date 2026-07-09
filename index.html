@@ -544,6 +544,30 @@
   </div>
 </div>
 
+<!-- MODAL: Registrar jogo (diário pessoal) -->
+<div class="modal-ov hidden" id="modal-manual-game">
+  <div class="modal">
+    <div class="modal-title">Registrar jogo</div>
+    <div class="ig"><label>Data</label><input type="date" id="mg-date"></div>
+    <div class="ig"><label>Sua dupla</label><input type="text" id="mg-mypair" placeholder="Ex.: Você e Pedro" maxlength="40"></div>
+    <div class="ig"><label>Dupla adversária</label><input type="text" id="mg-opppair" placeholder="Ex.: João e Marcos" maxlength="40"></div>
+    <div id="mg-format"></div>
+    <div class="ig"><label id="mg-score-label">Placar (games)</label>
+      <div class="score-row">
+        <input type="number" id="mg-my" inputmode="numeric" min="0" max="99" placeholder="Você">
+        <div class="score-sep">×</div>
+        <input type="number" id="mg-opp" inputmode="numeric" min="0" max="99" placeholder="Eles">
+      </div>
+    </div>
+    <div class="ig"><label>Observação (opcional)</label><input type="text" id="mg-note" placeholder="Ex.: pós-treino de sexta" maxlength="60"></div>
+    <div id="mg-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 4px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-s" onclick="closeModal('modal-manual-game')">Cancelar</button>
+      <button class="btn btn-p" onclick="saveManualGame()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- SPLASH -->
 <div id="gfe-splash" class="hidden">
   <div class="splash-logo">GFE</div>
@@ -624,6 +648,8 @@ const DB = {
   setGroupNames(v)  { this._s('groupNames', v); },
   challenges()      { return this._g('challenges', []); },
   setChallenges(v)  { this._s('challenges', v); },
+  manualGames()     { return this._g('manualGames', []); },
+  setManualGames(v) { this._s('manualGames', v); },
 };
 
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
@@ -1325,6 +1351,9 @@ function buildConvocacao(){
 // ══════════════════════════════════════
 let page='home', rankTab='elo', histFilter=null, rrState=null, mvpSessionId=null, selectedMvpId=null;
 let histRevealed=new Set(); // dias do histórico com placares revelados (escondidos por padrão)
+let histTab='sessoes'; // 'sessoes' | 'evolucao'
+let manualMode='games'; // formato do jogo manual: 'games' | 'tiebreak'
+let manualTarget=6;     // 4/6 (games) ou 7/10 (tiebreak)
 
 function goToLive(){
   const activeSess=groupSessions().find(s=>s.status==='active'&&(s.liveScore||s.flowState));
@@ -3023,10 +3052,15 @@ function openProfile(pid){
 // HISTÓRICO
 // ══════════════════════════════════════
 function renderHistorico(){
+  const toggle=`<div class="tab-tog">
+    <button class="${histTab==='sessoes'?'active':''}" onclick="setHistTab('sessoes')">Sessões</button>
+    <button class="${histTab==='evolucao'?'active':''}" onclick="setHistTab('evolucao')">Minha Evolução</button>
+  </div>`;
+  if(histTab==='evolucao') return toggle+renderMinhaEvolucao();
   const players=groupPlayers();
   const sessions=groupSessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
   const allMatches=groupMatches();
-  if(!sessions.length)return`<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão ainda.</p></div>`;
+  if(!sessions.length)return toggle+`<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão ainda.</p></div>`;
 
   const chips=`<div class="fchip${!histFilter?' active':''}" onclick="setHistFilter(null)">Todos</div>`
     +players.map(p=>`<div class="fchip${histFilter===p.id?' active':''}" onclick="setHistFilter('${p.id}')">${esc(p.name)}</div>`).join('');
@@ -3104,10 +3138,153 @@ function renderHistorico(){
     </div>`;
   }).filter(Boolean).join('');
 
-  return`<div class="filter-wrap">${chips}</div>${blocks||`<div class="empty"><p>Nenhuma partida encontrada.</p></div>`}`;
+  return toggle+`<div class="filter-wrap">${chips}</div>${blocks||`<div class="empty"><p>Nenhuma partida encontrada.</p></div>`}`;
 }
 function setHistFilter(pid){histFilter=histFilter===pid?null:pid;render();}
+function setHistTab(t){histTab=t;render();}
 function toggleHistMatches(sid){ if(histRevealed.has(sid)) histRevealed.delete(sid); else histRevealed.add(sid); render(); }
+
+// ══════════════════════════════════════
+// MINHA EVOLUÇÃO (diário pessoal de jogos, separado do grupo)
+// ══════════════════════════════════════
+function myManualGames(){
+  const u=DB.authUserId();
+  return DB.manualGames().filter(g=>g.user===u);
+}
+
+function renderMinhaEvolucao(){
+  const games=myManualGames().slice().sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  const asc=games.slice().reverse();
+  const w=games.filter(g=>g.result==='win').length;
+  const l=games.length-w;
+  const pct=games.length?Math.round(w/games.length*100):0;
+  // sequência atual
+  let streak=0, st=null;
+  for(const g of games){ if(st===null){st=g.result;streak=1;} else if(g.result===st){streak++;} else break; }
+  const streakHtml=streak>0?`<span class="streak-badge ${st==='win'?'streak-w':'streak-l'}">${st==='win'?icon('flame',12):icon('trendDown',12)} ${streak}</span>`:'–';
+
+  const stats=`
+    <div class="metric-grid">
+      <div class="metric-box"><div class="metric-val green">${w}</div><div class="metric-tag">Vitórias</div></div>
+      <div class="metric-box"><div class="metric-val red">${l}</div><div class="metric-tag">Derrotas</div></div>
+      <div class="metric-box"><div class="metric-val orange">${pct}%</div><div class="metric-tag">Aproveit.</div></div>
+      <div class="metric-box"><div class="metric-val" style="font-size:20px;padding-top:4px">${streakHtml}</div><div class="metric-tag">Sequência</div></div>
+    </div>`;
+
+  const chart=evolutionChart(asc);
+
+  const list=games.map(g=>{
+    const won=g.result==='win';
+    const modeLbl=g.mode==='tiebreak'?'tiebreak':'games';
+    return`<div class="match-card">
+      <div class="lm-header" style="margin-bottom:6px">
+        <div class="lm-date">${fmtDate(g.date)}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="lm-result ${won?'win':'loss'}">${won?'VITÓRIA':'DERROTA'}</span>
+          <button class="slot-rm" onclick="deleteManualGame('${g.id}')">${icon('x',13)}</button>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div style="flex:1;font-size:12px;font-weight:600">${esc(g.myPair||'Minha dupla')}</div>
+        <div style="font-family:var(--font-d);font-size:20px;color:var(--orange)">${g.myScore}–${g.oppScore}</div>
+        <div style="flex:1;font-size:12px;font-weight:600;text-align:right;color:var(--n300)">${esc(g.oppPair||'Adversária')}</div>
+      </div>
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:4px;letter-spacing:.5px">${modeLbl}${g.note?' · '+esc(g.note):''}</div>
+    </div>`;
+  }).join('');
+
+  return`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div class="eyebrow" style="margin:0">Meu diário de jogos</div>
+      <button class="btn btn-p btn-sm" onclick="openManualGameModal()">${icon('plus',13)} Registrar jogo</button>
+    </div>
+    ${games.length?stats:''}
+    ${chart}
+    ${games.length
+      ? `<div class="eyebrow" style="margin-top:14px">Jogos registrados</div>${list}`
+      : `<div class="empty"><div class="ei">${icon('trendUp',34)}</div><p>Registre seus jogos (pós-treino, amistosos...) para acompanhar sua evolução aqui.</p></div>`}
+  `;
+}
+
+// Gráfico simples (SVG) da forma recente: % de vitórias nos últimos 5 jogos, ao longo do tempo
+function evolutionChart(asc){
+  if(asc.length<2) return '';
+  const K=5, pts=[];
+  asc.forEach((g,i)=>{
+    const slice=asc.slice(Math.max(0,i-K+1),i+1);
+    const wins=slice.filter(x=>x.result==='win').length;
+    pts.push(Math.round(wins/slice.length*100));
+  });
+  const W=300,H=90,pad=8,n=pts.length;
+  const x=i=>pad+(n===1?0:(i/(n-1))*(W-2*pad));
+  const y=v=>pad+(1-v/100)*(H-2*pad);
+  const line=pts.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  const y50=y(50).toFixed(1);
+  return`
+    <div class="card" style="padding:12px 10px 8px">
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.8px;margin-bottom:6px;padding-left:2px">EVOLUÇÃO · % de vitórias (janela de 5 jogos)</div>
+      <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="none" style="display:block">
+        <line x1="${pad}" y1="${y50}" x2="${W-pad}" y2="${y50}" stroke="var(--n600)" stroke-width="1" stroke-dasharray="3 3"/>
+        <polyline fill="none" stroke="var(--orange)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${line}"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-family:var(--font-m);font-size:8px;color:var(--n500);margin-top:2px;padding:0 2px">
+        <span>mais antigo</span><span>agora: ${pts[pts.length-1]}%</span>
+      </div>
+    </div>`;
+}
+
+// ── MODAL: registrar jogo manual ──
+function openManualGameModal(){
+  manualMode='games'; manualTarget=6;
+  const d=document.getElementById('mg-date'); if(d) d.value=new Date().toISOString().slice(0,10);
+  ['mg-mypair','mg-opppair','mg-my','mg-opp','mg-note'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const msg=document.getElementById('mg-msg'); if(msg) msg.textContent='';
+  renderManualFormat();
+  openModal('modal-manual-game');
+}
+function setManualMode(m){
+  manualMode=m;
+  manualTarget = m==='games'?6:10;
+  const lbl=document.getElementById('mg-score-label'); if(lbl) lbl.textContent = m==='games'?'Placar (games)':'Placar (pontos do tiebreak)';
+  renderManualFormat();
+}
+function setManualTarget(v){ manualTarget=v; renderManualFormat(); }
+function renderManualFormat(){
+  const el=document.getElementById('mg-format'); if(!el) return;
+  const optBtn=(val,label,active,fn)=>`<button type="button" onclick="${fn}(${val})" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${active?'var(--orange)':'var(--n600)'};background:${active?'rgba(255,102,0,.12)':'var(--n700)'};color:${active?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
+  const modeBtn=(val,label)=>`<button type="button" onclick="setManualMode('${val}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${manualMode===val?'var(--orange)':'var(--n600)'};background:${manualMode===val?'rgba(255,102,0,.12)':'var(--n700)'};color:${manualMode===val?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
+  const targets = manualMode==='games' ? [[4,'Até 4'],[6,'Até 6']] : [[7,'7 pontos'],[10,'10 pontos']];
+  el.innerHTML=`
+    <div class="ig"><label>Formato</label>
+      <div style="display:flex;gap:8px">${modeBtn('games','Games')}${modeBtn('tiebreak','Tiebreak')}</div>
+    </div>
+    <div class="ig"><label>${manualMode==='games'?'Até quantos games':'Pontos do tiebreak'}</label>
+      <div style="display:flex;gap:8px">${targets.map(t=>optBtn(t[0],t[1],manualTarget===t[0],'setManualTarget')).join('')}</div>
+    </div>`;
+}
+function saveManualGame(){
+  const msg=document.getElementById('mg-msg'); const err=t=>{ if(msg) msg.textContent=t; };
+  const date=document.getElementById('mg-date').value;
+  if(!date){ err('Escolha a data.'); return; }
+  const myPair=cleanName(document.getElementById('mg-mypair').value)||'Minha dupla';
+  const oppPair=cleanName(document.getElementById('mg-opppair').value)||'Adversária';
+  const myScore=parseInt(document.getElementById('mg-my').value,10);
+  const oppScore=parseInt(document.getElementById('mg-opp').value,10);
+  if(isNaN(myScore)||isNaN(oppScore)){ err('Preencha o placar dos dois lados.'); return; }
+  if(myScore===oppScore){ err('O placar não pode dar empate.'); return; }
+  const note=cleanName(document.getElementById('mg-note').value).slice(0,60);
+  const g={ id:uid(), user:DB.authUserId(), date, myPair, oppPair,
+    mode:manualMode, target:manualTarget, myScore, oppScore,
+    result:myScore>oppScore?'win':'loss', note, created_at:new Date().toISOString() };
+  const list=DB.manualGames(); list.push(g); DB.setManualGames(list);
+  closeModal('modal-manual-game');
+  render();
+}
+function deleteManualGame(id){
+  if(!confirm('Apagar este jogo?'))return;
+  DB.setManualGames(DB.manualGames().filter(g=>g.id!==id));
+  render();
+}
 
 // ══════════════════════════════════════
 // (admin removed)
