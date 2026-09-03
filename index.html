@@ -1866,7 +1866,10 @@ function renderSpectator(session){
   if(ls && ls.status!=='finished'){
     const t1names=(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
     const t2names=(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
-    const winning1=ls.t1>ls.t2, winning2=ls.t2>ls.t1;
+    const isPts=ls.scoring==='points'&&!ls.isTb;
+    const SPTS=['0','15','30','40'];
+    const bigA=isPts?SPTS[Math.min(ls.p1||0,3)]:ls.t1, bigB=isPts?SPTS[Math.min(ls.p2||0,3)]:ls.t2;
+    const winning1=isPts?(ls.p1||0)>(ls.p2||0):ls.t1>ls.t2, winning2=isPts?(ls.p2||0)>(ls.p1||0):ls.t2>ls.t1;
     const setsPills=(ls.completedSets||[]).map(s=>{
       const t1w=s.won===1;
       return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}</div>
@@ -1891,11 +1894,13 @@ function renderSpectator(session){
         <div style="display:grid;grid-template-columns:1fr 1fr">
           <div style="padding:18px 12px;text-align:center;border-right:1px solid var(--n600);background:${winning1?'rgba(255,102,0,.06)':''}">
             <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t1names)}</div>
-            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':winning1?'var(--orange)':'var(--lente)'}">${ls.t1}</div>
+            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':isPts?'var(--orange)':winning1?'var(--orange)':'var(--lente)'}">${bigA}</div>
+            ${isPts?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:4px;letter-spacing:.5px">${ls.games1||0} game${(ls.games1||0)!==1?'s':''}</div>`:''}
           </div>
           <div style="padding:18px 12px;text-align:center;background:${winning2?'rgba(255,102,0,.06)':''}">
             <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t2names)}</div>
-            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':winning2?'var(--orange)':'var(--lente)'}">${ls.t2}</div>
+            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':isPts?'var(--orange)':winning2?'var(--orange)':'var(--lente)'}">${bigB}</div>
+            ${isPts?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:4px;letter-spacing:.5px">${ls.games2||0} game${(ls.games2||0)!==1?'s':''}</div>`:''}
           </div>
         </div>
       </div>`;
@@ -2415,6 +2420,7 @@ function persistLiveScore(sessionId){
     t1:inTb?(cur.tb1||0):cur.t1, t2:inTb?(cur.tb2||0):cur.t2,
     completedSets:liveMatch.completedSets,
     isTb:inTb, status:liveMatch.status, winner:liveMatch.winner,
+    scoring:liveMatch.scoring||'games', games1:cur.t1, games2:cur.t2, p1:cur.p1||0, p2:cur.p2||0,
   };
   const ss=DB.sessions(); const s=ss.find(x=>x.id===sessionId);
   if(s){ s.liveScore=score; DB._s('sessions',ss); }
