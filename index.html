@@ -515,6 +515,7 @@
     <div class="modal-title">Confirmar Presença</div>
     <div class="ig"><label>Selecione seu nome</label><div class="pchip-grid" id="confirm-chips"></div></div>
     <div class="ig" style="margin-top:10px"><label>Ou digite um nome</label><input type="text" id="confirm-input" placeholder="Seu nome..." maxlength="30"></div>
+    <div class="hint" style="text-align:left;margin-top:2px">Um nome digitado cria um jogador avulso (sem login). Ele entra no ranking, mas não tem conta própria.</div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-confirm')">Cancelar</button>
       <button class="btn btn-p" onclick="confirmPresenca()">Confirmar</button>
@@ -537,6 +538,7 @@
   <div class="modal">
     <div class="modal-title"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Adicionar ao Grupo</div>
     <div class="ig"><label>Nome do jogador</label><input type="text" id="add-player-name" placeholder="Nome completo..." maxlength="30"></div>
+    <div class="alert alert-info" style="font-size:11px;margin-bottom:4px">Jogador avulso: entra no ranking do grupo, mas <strong>sem conta/login</strong>. Para virar conta de verdade (com histórico próprio), mande o link de convite em Config → Meu grupo.</div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-add-player')">Cancelar</button>
       <button class="btn btn-p" onclick="confirmAddPlayer()">Adicionar</button>
@@ -770,7 +772,14 @@ async function initSupabase(){
     await syncFromSupabase();
     // Intercepta escritas do DB para também salvar no Supabase
     const _sp=DB.setPlayers.bind(DB);
-    DB.setPlayers=v=>{ _sp(v); supa.from('players').upsert(v).then(({error})=>{ if(error)console.warn('supa players:',error); }); };
+    DB.setPlayers=v=>{ _sp(v);
+      // envia só as linhas que este usuário pode gravar (as próprias + as do(s) seu(s) grupo(s)),
+      // pra uma linha órfã não fazer o banco rejeitar o lote inteiro (o que barrava jogadores avulsos)
+      const me=DB.authUserId();
+      const myGroups=new Set(v.filter(p=>p.user_id===me).map(p=>p.group_id));
+      const writable=v.filter(p=>p.user_id===me||myGroups.has(p.group_id));
+      supa.from('players').upsert(writable).then(({error})=>{ if(error)console.warn('supa players:',error); });
+    };
     const _ss=DB.setSessions.bind(DB);
     DB.setSessions=v=>{ _ss(v); supa.from('sessions').upsert(v.map(sessionToDB)).then(({error})=>{ if(error)console.warn('supa sessions:',error); }); };
     const _sm=DB.setMatches.bind(DB);
@@ -1352,6 +1361,7 @@ function buildConvocacao(){
 let page='home', rankTab='elo', histFilter=null, rrState=null, mvpSessionId=null, selectedMvpId=null;
 let histRevealed=new Set(); // dias do histórico com placares revelados (escondidos por padrão)
 let histTab='sessoes'; // 'sessoes' | 'evolucao'
+let listaMonth='all';  // filtro da Lista por mês/ano: 'all' | 'YYYY-MM'
 let manualMode='games'; // formato do jogo manual: 'games' | 'tiebreak'
 let manualTarget=6;     // 4/6 (games) ou 7/10 (tiebreak)
 
@@ -1574,7 +1584,16 @@ function renderLista(){
 
 function renderListaIndex(){
   const today=new Date().toISOString().slice(0,10);
-  const sessions=groupSessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
+  const all=groupSessions().slice().sort((a,b)=>b.date.localeCompare(a.date));
+  // meses disponíveis (YYYY-MM) para o filtro
+  const months=[...new Set(all.map(s=>(s.date||'').slice(0,7)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+  if(listaMonth!=='all' && !months.includes(listaMonth)) listaMonth='all';
+  const monthLabel=ym=>{ const[y,m]=ym.split('-'); const nm=new Date(+y,+m-1,1).toLocaleDateString('pt-BR',{month:'long'}); return nm.charAt(0).toUpperCase()+nm.slice(1)+' '+y; };
+  const filterHtml = months.length>1 ? `<div class="ig" style="margin-bottom:12px"><select onchange="setListaMonth(this.value)">
+      <option value="all"${listaMonth==='all'?' selected':''}>Todos os meses</option>
+      ${months.map(ym=>`<option value="${ym}"${listaMonth===ym?' selected':''}>${monthLabel(ym)}</option>`).join('')}
+    </select></div>` : '';
+  const sessions = listaMonth==='all' ? all : all.filter(s=>(s.date||'').slice(0,7)===listaMonth);
   const upcoming=sessions.filter(s=>s.date>=today);
   const past=sessions.filter(s=>s.date<today);
 
@@ -1629,7 +1648,9 @@ function renderListaIndex(){
     ? `<div class="eyebrow" style="margin-top:${upcoming.length?'16px':'0'}">Anteriores</div>${past.map(sessCard).join('')}`
     : '';
   const emptyHtml=!sessions.length
-    ? `<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão criada ainda.<br>Crie a primeira!</p></div>`
+    ? (all.length
+        ? `<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão neste período.</p></div>`
+        : `<div class="empty"><div class="ei">${icon('calendar',34)}</div><p>Nenhuma sessão criada ainda.<br>Crie a primeira!</p></div>`)
     : '';
 
   return`
@@ -1637,8 +1658,10 @@ function renderListaIndex(){
       <div style="font-family:var(--font-h);font-size:18px;font-weight:700;text-transform:uppercase">Sessões</div>
       <button class="btn btn-p btn-sm" onclick="openNewSessionModal()">+ Nova Sessão</button>
     </div>
+    ${filterHtml}
     ${upcomingHtml}${pastHtml}${emptyHtml}`;
 }
+function setListaMonth(v){ listaMonth=v; render(); }
 
 function renderListaDetail(sessionId){
   const session=DB.sessions().find(s=>s.id===sessionId);
