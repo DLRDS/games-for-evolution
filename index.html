@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#0D0D0D">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -34,6 +34,7 @@
       --fb:'Archivo',sans-serif;         /* corpo e títulos */
       --fm:'JetBrains Mono',monospace;   /* rótulo, metadado, nível */
       --nav-h:76px;
+      --safe-top:env(safe-area-inset-top, 0px);
     }
     html,body{height:100%;}
     body{background:var(--ink);color:var(--white);font-family:var(--fb);font-size:16px;line-height:1.5;
@@ -51,14 +52,15 @@
     .body-sm{font-size:14px;color:var(--label);}
     .muted{color:var(--label);}
     .num{font-family:var(--fd);letter-spacing:-.03em;color:var(--white);}
-    .mono{font-family:var(--fm);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
-    .mono-md{font-family:var(--fm);font-size:12px;letter-spacing:.12em;color:var(--label);}
+    .mono{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
+    #hd-sub{font-weight:700;color:var(--white);}
+    .mono-md{font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--label);}
     .accent{color:var(--orange);}
 
     /* ── ESTRUTURA ────────────────────────────────────────────── */
-    #app{min-height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;}
-    .topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 14px;gap:10px;}
-    .screen{flex:1;padding:0 20px;padding-bottom:calc(var(--nav-h) + 24px);overflow-y:auto;}
+    #app{min-height:100dvh;display:flex;flex-direction:column;max-width:480px;margin:0 auto;position:relative;padding-top:var(--safe-top);}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 0;gap:10px;}
+    .screen{flex:1;padding:20px 20px calc(var(--nav-h) + 24px);overflow-y:auto;}
     .stack{display:flex;flex-direction:column;gap:12px;}
     .stack-sm{display:flex;flex-direction:column;gap:8px;}
     .row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -113,7 +115,7 @@
 
     .tabs{display:flex;gap:8px;flex-wrap:wrap;}
     .tab{border:1.5px solid var(--line);color:var(--label);border-radius:999px;padding:7px 16px;
-      font-family:var(--fm);font-size:12px;letter-spacing:.12em;background:transparent;}
+      font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;background:transparent;}
     .tab.on{background:var(--white);color:var(--ink);font-weight:700;border-color:var(--white);}
 
     /* seletor segmentado (Entrar / Criar conta) */
@@ -123,7 +125,7 @@
 
     /* ── CAMPOS ───────────────────────────────────────────────── */
     .field{display:flex;flex-direction:column;gap:8px;}
-    .field > label{font-family:var(--fm);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
+    .field > label{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
     .input{background:var(--surf);border:1.5px solid var(--line);border-radius:16px;padding:15px 16px;
       font-size:16px;color:var(--white);width:100%;outline:none;transition:border-color .15s;}
     .input::placeholder{color:var(--dim);}
@@ -137,7 +139,7 @@
     /* divisor com rótulo (OU) */
     .or{display:flex;align-items:center;gap:14px;}
     .or .sep{flex:1;}
-    .or span{font-family:var(--fm);font-size:11px;letter-spacing:.2em;color:var(--dim);}
+    .or span{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.2em;color:var(--dim);}
 
     /* ── BARRA DE 4 ABAS ──────────────────────────────────────── */
     nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;
@@ -152,7 +154,7 @@
     .prog i{display:block;height:100%;border-radius:999px;background:var(--orange);}
 
     /* ── OVERLAYS / MODAIS ────────────────────────────────────── */
-    .overlay{position:fixed;inset:0;background:var(--ink);z-index:400;display:flex;flex-direction:column;
+    .overlay{position:fixed;inset:0;background:var(--ink);z-index:400;display:flex;flex-direction:column;padding-top:var(--safe-top);
       max-width:480px;margin:0 auto;overflow-y:auto;}
     .overlay.hidden,.hidden{display:none !important;}
     .sheet-ov{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;display:flex;align-items:flex-end;justify-content:center;}
@@ -201,10 +203,10 @@
 </div>
 
 <!-- pílula AO VIVO flutuante (aparece quando há partida rolando) -->
-<div id="live-badge" class="pill pill-live" onclick="goToLive()" style="display:none;position:fixed;top:18px;right:20px;z-index:300;cursor:pointer"><span class="dot"></span>AO VIVO</div>
+<div id="live-badge" class="pill pill-live" onclick="goToLive()" style="display:none;position:fixed;top:calc(env(safe-area-inset-top, 0px) + 16px);right:20px;z-index:300;cursor:pointer"><span class="dot"></span>AO VIVO</div>
 
 <!-- ══ PLACAR AO VIVO ══ -->
-<div id="live-overlay" class="overlay hidden"><div id="live-inner" style="display:flex;flex-direction:column;min-height:100dvh;position:relative"></div></div>
+<div id="live-overlay" class="overlay hidden"><div id="live-inner" style="display:flex;flex-direction:column;min-height:calc(100dvh - env(safe-area-inset-top, 0px));position:relative"></div></div>
 
 <!-- ══ SPLASH ══ -->
 <div id="gfe-splash" class="overlay hidden" style="align-items:center;justify-content:center;gap:14px">
@@ -1534,7 +1536,7 @@ function renderAjustes(){
       <div class="stack" style="gap:10px">
         <div class="mono">Convidar por link</div>
         <div class="card stack" style="gap:14px">
-          <div style="font-family:var(--fm);font-size:17px;letter-spacing:.18em">${esc(code)}</div>
+          <div style="font-family:var(--fm);font-weight:700;font-size:17px;letter-spacing:.18em">${esc(code)}</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn btn-p btn-sm" onclick="copyInviteLink()">${icon('copy',16)} Copiar link</button>
             <button class="btn btn-o btn-sm" onclick="copyGroupCode()">${icon('share',16)} Código</button>
@@ -1779,7 +1781,7 @@ function renderPairManager(session){
     const sel=selectedPoolChip===pid;
     return`<button onclick="selectPoolChip('${pid}')" style="display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:8px 14px;font-size:14px;font-weight:${sel?'700':'600'};
       background:${sel?'var(--orange)':'transparent'};color:${sel?'var(--ink)':'var(--white)'};border:1.5px solid ${sel?'var(--orange)':'var(--line)'}">
-      ${esc(getName(pid).split(' ')[0])}<span style="font-family:var(--fm);font-size:12px;${sel?'':'color:var(--label)'}">${getElo(pid)}</span></button>`;
+      ${esc(getName(pid).split(' ')[0])}<span style="font-family:var(--fm);font-weight:700;font-size:12px;${sel?'':'color:var(--label)'}">${getElo(pid)}</span></button>`;
   }).join(''):`<span class="body-sm">Todos escalados</span>`;
 
   const slot=(pi,pos,pid)=>{
@@ -2753,7 +2755,7 @@ function renderDuplasTable(){
         <div style="font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--ink)">DUPLA MAIS FORTE</div>
         <div style="font-family:var(--fd);font-size:30px;line-height:1;letter-spacing:-.03em;color:var(--ink)">${parts.join('<br>+ ')}</div>
         <div class="row" style="border-top:1.5px solid var(--ink);padding-top:12px">
-          <div style="font-family:var(--fm);font-size:13px;letter-spacing:.1em;color:var(--ink)">${d.w}V · ${d.l}D</div>
+          <div style="font-family:var(--fm);font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--ink)">${d.w}V · ${d.l}D</div>
           <div style="font-family:var(--fd);font-size:24px;color:var(--ink)">${pct}%</div>
         </div>
       </div>`;
@@ -3062,7 +3064,7 @@ function buildScoreboard(){
         <div style="font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--ink)">VENCERAM</div>
         <div style="font-family:var(--fd);font-size:34px;line-height:1;letter-spacing:-.035em;color:var(--ink)">${winTeam.map(pid=>esc(getName(pid).split(' ')[0])).join('<br>+ ')}</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between">
-          <div style="font-family:var(--fm);font-size:12px;letter-spacing:.12em;color:var(--ink)">GAMES</div>
+          <div style="font-family:var(--fm);font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--ink)">GAMES</div>
           <div style="font-family:var(--fd);font-size:52px;line-height:.8;letter-spacing:-.05em;color:var(--ink)">${Math.max(cur.t1,cur.t2)}—${Math.min(cur.t1,cur.t2)}</div>
         </div>
       </div>
