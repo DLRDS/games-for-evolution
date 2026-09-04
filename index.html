@@ -6,27 +6,28 @@
   <meta name="theme-color" content="#0D0D0D">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="GFE">
-  <title>Games For Evolution</title>
+  <meta name="apple-mobile-web-app-title" content="Level BT">
+  <title>Level BT</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Antonio:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --orange:#FF6600; --orange-deep:#B0481A; --orange-soft:#F2A06E;
-      --ink:#0D0D0D; --lente:#F4F1ED;
-      --n0:#FFFFFF; --n50:#F4F1ED; --n100:#E8E3DC; --n200:#D4CDC2;
-      --n300:#B0A89C; --n400:#807A70; --n500:#5A554D; --n600:#3F3B35;
-      --n700:#26231F; --n900:#0D0D0D;
-      --bg:var(--n900); --surface:var(--n700); --surface2:var(--n600);
-      --border:var(--n500); --text:var(--lente); --muted:var(--n300);
+      /* Level BT — laranja só no que evolui; preto/branco estruturais; neutros frios */
+      --orange:#FF6600; --orange-deep:#B83E00; --orange-soft:#FF8A4D;
+      --ink:#0D0D0D; --lente:#FFFFFF;
+      --n0:#FFFFFF; --n50:#F2F2F2; --n100:#E0E0E0; --n200:#C8C8C8;
+      --n300:#B8B8B8; --n400:#A8A8A8; --n500:#7A7A7A; --n600:#2A2A2A;
+      --n700:#1A1A1A; --n900:#0D0D0D;
+      --bg:var(--n900); --surface:var(--n700); --surface2:#242424;
+      --border:var(--n600); --text:var(--lente); --muted:var(--n400);
       --accent:var(--orange); --success:#22c55e; --danger:#ef4444;
       --gold:#FFB800; --silver:var(--n300); --bronze:var(--orange-deep);
-      --font-d:'Anton',sans-serif; --font-h:'Antonio',sans-serif;
-      --font-b:'Inter',sans-serif; --font-m:'JetBrains Mono',monospace;
-      --nav-h:64px; --r:10px;
+      --font-d:'Archivo Black',sans-serif; --font-h:'Archivo',sans-serif;
+      --font-b:'Archivo',sans-serif; --font-m:'JetBrains Mono',monospace;
+      --nav-h:64px; --r:16px;
     }
     body { font-family:var(--font-b); background:var(--bg); color:var(--text); min-height:100dvh; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
     #app { display:flex; flex-direction:column; min-height:100dvh; }
@@ -456,14 +457,49 @@
     .nb.active .ico{color:var(--orange);}
     .dest-icon .ico,.ei .ico{vertical-align:0;}
     .role-badge .ico{vertical-align:-.15em;}
+
+    /* ════════ LEVEL BT — ajustes de identidade (raios, medidor, marca) ════════ */
+    /* Raios: 999 botões/chips · 16 linha · 20 card · 24 painel */
+    .btn,.btn-sm{border-radius:999px;}
+    .card,.t-card{border-radius:20px;}
+    .sess-card,.hist-card,.match-card,.conv-pair,.gen-match,.stat-box,.psb,.slot,.spots-bar,.sess-active-header,.last-match-card,.metric-box,.destaque-card{border-radius:16px;}
+    .pair-card,.pair-pool,.home-hero,.lp-card,.ps-card,.t-card{border-radius:20px;}
+    input,select,.new-name-input{border-radius:12px;}
+    .modal{border-radius:24px 24px 0 0;}
+    .tab-tog,.login-toggle,.format-tog .fmt-btn,.mode-sw{border-radius:999px;}
+    .tab-tog button,.lt-btn{border-radius:999px;}
+    .fmt-btn{border-radius:14px;}
+    /* números/placar sempre Archivo Black, sem itálico condensado */
+    .splash-logo,.sess-num,.live-game-score,.mc-score,.elo-val,.spots-n,.metric-val,.stat-big,.rpos,.sv,.lm-score,.finished-score,.sess-day-big,.sb-day,.hc-day,.conv-num,.t-pos,.psb-v{letter-spacing:-1px;}
+
+    /* Medidor de nível — elemento-assinatura (5 cápsulas) */
+    .lvl-meter{display:inline-flex;align-items:flex-end;gap:4px;}
+    .lvl-cap{width:6px;border-radius:999px;background:var(--n600);flex-shrink:0;}
+    .lvl-cap.on{background:var(--orange);}
+    .lvl-badge{display:inline-flex;align-items:center;gap:7px;}
+    .lvl-tag{font-family:var(--font-m);font-size:10px;letter-spacing:1px;color:var(--orange);font-weight:700;text-transform:uppercase;}
+    .lvl-name{font-family:var(--font-b);font-size:12px;color:var(--n300);}
+
+    /* Lockup da marca — palavra LEVEL + cápsula BT + medidor */
+    .lbt-lock{display:flex;flex-direction:column;align-items:center;gap:10px;}
+    .lbt-word{font-family:var(--font-d);line-height:.9;letter-spacing:-2px;color:var(--lente);}
+    .lbt-word .bt{color:var(--orange);}
+    .lbt-row{display:flex;align-items:center;gap:10px;}
+    .lbt-cap{font-family:var(--font-d);color:var(--ink);background:var(--orange);border-radius:999px;padding:2px 10px;line-height:1.1;}
+    .hd-lock{display:flex;align-items:center;gap:8px;}
+    .hd-word{font-family:var(--font-d);font-size:18px;letter-spacing:-.5px;color:var(--lente);line-height:1;}
+    .hd-word .bt{color:var(--orange);}
   </style>
 </head>
 <body>
 <div id="app">
   <header>
     <div class="hd-left">
-      <div class="hd-title">Games For Evolution</div>
-      <div class="hd-sub" id="hd-sub">Beach Tennis · GFE</div>
+      <div class="hd-lock">
+        <div class="lvl-meter" aria-hidden="true"><div class="lvl-cap on" style="height:7px"></div><div class="lvl-cap on" style="height:10px"></div><div class="lvl-cap on" style="height:13px"></div><div class="lvl-cap on" style="height:16px"></div><div class="lvl-cap" style="height:19px"></div></div>
+        <div class="hd-word">LEVEL<span class="bt">BT</span></div>
+      </div>
+      <div class="hd-sub" id="hd-sub">Beach Tennis</div>
     </div>
     <div id="live-badge" onclick="goToLive()" style="display:none;align-items:center;gap:6px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:5px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent">
       <div style="width:7px;height:7px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;flex-shrink:0"></div>
@@ -489,8 +525,8 @@
 <!-- PLAYER SELECTOR -->
 <div id="player-selector" class="hidden">
   <div class="ps-header">
-    <div class="ps-logo">Games For Evolution</div>
-    <div class="ps-tagline">Beach Tennis · Grupo GFE</div>
+    <div class="ps-logo"><span style="color:var(--lente)">LEVEL</span><span style="color:var(--orange)">BT</span></div>
+    <div class="ps-tagline">Beach Tennis</div>
     <div class="ps-title">Quem é você?</div>
   </div>
   <div class="ps-grid" id="ps-grid"></div>
@@ -572,16 +608,26 @@
 
 <!-- SPLASH -->
 <div id="gfe-splash" class="hidden">
-  <div class="splash-logo">GFE</div>
-  <div class="splash-title">Games For Evolution</div>
-  <div class="splash-sub">Beach Tennis · Seu grupo, seu jogo</div>
+  <div class="lbt-lock">
+    <div class="lvl-meter" style="gap:7px" aria-hidden="true"><div class="lvl-cap on" style="width:11px;height:26px"></div><div class="lvl-cap on" style="width:11px;height:38px"></div><div class="lvl-cap on" style="width:11px;height:50px"></div><div class="lvl-cap on" style="width:11px;height:62px"></div><div class="lvl-cap" style="width:11px;height:74px"></div></div>
+    <div class="lbt-row">
+      <div class="lbt-word" style="font-size:56px">LEVEL</div>
+      <div class="lbt-cap" style="font-size:40px">BT</div>
+    </div>
+  </div>
+  <div class="splash-sub">Todo jogo te move no ranking</div>
 </div>
 
 <!-- LOGIN -->
 <div id="gfe-login" class="hidden">
   <div class="login-header">
-    <div class="login-logo">GFE</div>
-    <div class="login-title">Games For Evolution</div>
+    <div class="lbt-lock" style="gap:8px">
+      <div class="lvl-meter" style="gap:5px" aria-hidden="true"><div class="lvl-cap on" style="width:8px;height:16px"></div><div class="lvl-cap on" style="width:8px;height:23px"></div><div class="lvl-cap on" style="width:8px;height:30px"></div><div class="lvl-cap on" style="width:8px;height:37px"></div><div class="lvl-cap" style="width:8px;height:44px"></div></div>
+      <div class="lbt-row">
+        <div class="lbt-word" style="font-size:34px">LEVEL</div>
+        <div class="lbt-cap" style="font-size:24px">BT</div>
+      </div>
+    </div>
   </div>
   <div class="login-body" id="login-body"></div>
 </div>
@@ -1133,8 +1179,8 @@ function copyGroupCode(){
 
 function copyInviteLink(){
   const link=inviteLink();
-  const msg=`Bora jogar Beach Tennis? Entre no nosso grupo no GFE por aqui: ${link}`;
-  if(navigator.share){ navigator.share({title:'Convite GFE',text:msg,url:link}).catch(()=>{}); return; }
+  const msg=`Bora jogar Beach Tennis? Entre no nosso grupo no Level BT por aqui: ${link}`;
+  if(navigator.share){ navigator.share({title:'Convite Level BT',text:msg,url:link}).catch(()=>{}); return; }
   try{ navigator.clipboard.writeText(link).then(()=>alert('Link de convite copiado!'),()=>alert('Link de convite:\n'+link)); }
   catch(e){ alert('Link de convite:\n'+link); }
 }
@@ -1203,6 +1249,31 @@ function getPlayer(id){ return DB.players().find(p=>p.id===id); }
 function getName(id){ return getPlayer(id)?.name??'?'; }
 function getElo(id){ return getPlayer(id)?.elo??1000; }
 function initials(name){ return name?name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase():'?'; }
+
+// ── Nível (mapeia o ELO em N1–N5) — sistema de níveis Level BT ──
+function eloToLevel(elo){
+  elo=elo||1000;
+  if(elo<1200) return {n:1,name:'Começando',min:1000,max:1200};
+  if(elo<1350) return {n:2,name:'Pegando ritmo',min:1200,max:1350};
+  if(elo<1500) return {n:3,name:'Constante',min:1350,max:1500};
+  if(elo<1650) return {n:4,name:'Avançado',min:1500,max:1650};
+  return {n:5,name:'Topo do grupo',min:1650,max:1650};
+}
+// Medidor de 5 cápsulas. scale escala a altura; capW a largura.
+function levelMeter(elo,scale,capW){
+  const lv=eloToLevel(elo).n; scale=scale||1; capW=capW||6;
+  const H=[9,13,17,21,25];
+  let s='<div class="lvl-meter" aria-label="Nível '+lv+' de 5">';
+  for(let i=0;i<5;i++){ s+='<div class="lvl-cap'+(i<lv?' on':'')+'" style="width:'+capW+'px;height:'+Math.round(H[i]*scale)+'px"></div>'; }
+  return s+'</div>';
+}
+// Texto de progresso até o próximo nível
+function levelProgress(elo){
+  const lv=eloToLevel(elo);
+  if(lv.n>=5) return 'Nível máximo. Segura o topo.';
+  const falta=Math.max(0,Math.ceil(lv.max-(elo||1000)));
+  return 'Faltam '+falta+' pontos pro N'+(lv.n+1)+'.';
+}
 
 function getOrCreateSession(date){
   let ss=DB.sessions(); let s=ss.find(x=>x.date===date);
@@ -1398,7 +1469,7 @@ function render(){
 // update header subtitle with current player
   const cp=DB.currentPlayer();
   const hd=document.getElementById('hd-sub');
-  if(hd) hd.textContent = cp ? `Olá, ${getName(cp).split(' ')[0]}` : 'Beach Tennis · GFE';
+  if(hd) hd.textContent = cp ? `Olá, ${getName(cp).split(' ')[0]}` : 'Beach Tennis';
 }
 
 // ══════════════════════════════════════
@@ -1516,13 +1587,28 @@ function renderHome(){
       <div class="home-avatar">${initials(player.name)}</div>
       <div style="flex:1;min-width:0">
         <div class="home-name">${esc(player.name.split(' ')[0])}</div>
-        <div class="home-elo-line">
-          <div class="home-elo">ELO ${player.elo||1000}</div>
-          <div class="home-rank">· ${posLabel} no ranking</div>
+        <div class="home-elo-line" style="gap:10px">
+          ${levelMeter(player.elo,1,6)}
+          <div>
+            <div class="lvl-tag">Nível ${eloToLevel(player.elo).n} · ${eloToLevel(player.elo).name}</div>
+            <div class="home-rank">ELO ${player.elo||1000} · ${posLabel}</div>
+          </div>
         </div>
         ${player.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
       </div>
       <button class="home-change-btn" onclick="nav('config')" style="display:flex;align-items:center">${icon('settings',15)}</button>
+    </div>
+
+    <div class="card" style="padding:16px 18px;display:flex;align-items:center;gap:16px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+        <div style="font-family:var(--font-d);font-size:44px;color:var(--orange);line-height:.85">N${eloToLevel(player.elo).n}</div>
+        ${levelMeter(player.elo,1.15,7)}
+      </div>
+      <div style="flex:1;min-width:0">
+        <div class="lvl-tag" style="margin-bottom:2px">Seu nível</div>
+        <div style="font-size:16px;color:var(--lente);font-weight:600">${eloToLevel(player.elo).name}</div>
+        <div style="font-size:13px;color:var(--n400);margin-top:4px">${levelProgress(player.elo)}</div>
+      </div>
     </div>
 
     ${activity}
@@ -2562,11 +2648,11 @@ function renderDestaques(d, sessionId){
 
   // WhatsApp share text
   const wppText=encodeURIComponent(
-    `🎾 *GFE · Sessão ${dateLabel}*\n\n`+
+    `🎾 *Level BT · Sessão ${dateLabel}*\n\n`+
     (d.mvpId?`🏅 MVP: *${getName(d.mvpId)}* (${d.mvpWins}V)\n`:'') +
     (d.domPair?`👑 Dupla: *${d.domPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}* (${d.domWins}V)\n`:'') +
     (d.reiPair&&d.reiStreak>1?`🔥 Rei: *${d.reiPair.map(pid=>getName(pid).split(' ')[0]).join(' & ')}* (${d.reiStreak} seguidas)\n`:'') +
-    `\nJogado via Games For Evolution 🏆`
+    `\nJogado via Level BT 🏆`
   );
 
   return`<div class="destaques-wrap">
@@ -2735,7 +2821,7 @@ function renderConfig(){
     <button class="btn btn-d btn-full" style="margin-top:4px" onclick="logout()">
       Sair da conta
     </button>
-    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">GFE v1.0 · Beach Tennis · Grupo</p>
+    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">Level BT · Beach Tennis</p>
   `;
 }
 
@@ -2948,7 +3034,7 @@ function renderEloTable(){
       <td><div class="rname" onclick="openProfile('${p.id}')">${esc(p.name)} ${stk}
         <div style="display:flex;align-items:center;gap:4px;margin-top:3px">${formDots(st.form)}${p.role?`<span style="margin-left:4px">${roleBadge(p.id)}</span>`:''}</div>
       </div></td>
-      <td><div class="sb"><div class="elo-val">${p.elo||1000}</div><div class="sl">ELO</div></div></td>
+      <td><div class="sb"><div style="display:flex;align-items:center;justify-content:center;gap:5px">${levelMeter(p.elo,.55,4)}<span class="elo-val">${p.elo||1000}</span></div><div class="sl">N${eloToLevel(p.elo).n} · ELO</div></div></td>
       <td><div class="sb"><div class="sv" style="color:var(--success)">${st.w}</div><div class="sl">V</div></div></td>
       <td><div class="sb"><div class="sv" style="color:var(--danger)">${st.l}</div><div class="sl">D</div></div></td>
       <td><div class="sb" style="font-family:var(--font-h);font-weight:700;font-size:14px;color:var(--orange)">${pct}%</div></td>
@@ -3074,7 +3160,10 @@ function openProfile(pid){
       <div class="profile-avatar">${initials(p.name)}</div>
       <div>
         <div class="profile-name">${esc(p.name)}</div>
-        <div class="profile-elo">ELO · ${p.elo||1000}</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
+          ${levelMeter(p.elo,.85,5)}
+          <div class="profile-elo" style="margin-top:0">N${eloToLevel(p.elo).n} · ${eloToLevel(p.elo).name} · ELO ${p.elo||1000}</div>
+        </div>
         ${streakHtml?`<div style="margin-top:5px">${streakHtml}</div>`:''}
       </div>
     </div>
@@ -3713,7 +3802,7 @@ document.querySelectorAll('.modal-ov').forEach(o=>o.addEventListener('click',e=>
 // PWA
 // ══════════════════════════════════════
 (function(){
-  const m={name:"Games For Evolution",short_name:"GFE",start_url:"./",display:"standalone",background_color:"#0D0D0D",theme_color:"#0D0D0D",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230D0D0D'/%3E%3Ctext x='50' y='52' dominant-baseline='central' text-anchor='middle' font-family='Arial,sans-serif' font-size='33' font-weight='bold' fill='%23FF6600'%3EGFE%3C/text%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
+  const m={name:"Level BT",short_name:"Level BT",start_url:"./",display:"standalone",background_color:"#0D0D0D",theme_color:"#0D0D0D",icons:[{src:"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='27' fill='%230D0D0D'/%3E%3Crect x='28' y='38' width='11' height='34' rx='5.5' fill='%23FF6600'/%3E%3Crect x='44.5' y='30' width='11' height='42' rx='5.5' fill='%23FF6600'/%3E%3Crect x='61' y='22' width='11' height='50' rx='5.5' fill='%23FF6600'/%3E%3C/svg%3E",sizes:"192x192",type:"image/svg+xml"}]};
   const b=new Blob([JSON.stringify(m)],{type:'application/json'});
   const l=document.createElement('link');l.rel='manifest';l.href=URL.createObjectURL(b);document.head.appendChild(l);
 })();
