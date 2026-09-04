@@ -36,15 +36,15 @@
     header { background:var(--ink); border-bottom:1px solid var(--n600); padding:0 16px; height:56px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
     .hd-left { display:flex; flex-direction:column; }
     .hd-title { font-family:var(--font-h); font-size:19px; font-weight:700; letter-spacing:.5px; color:var(--lente); line-height:1; text-transform:uppercase; }
-    .hd-sub { font-family:var(--font-m); font-size:9px; color:var(--orange); letter-spacing:1.5px; margin-top:2px; text-transform:uppercase; }
+    .hd-sub { font-family:var(--font-m); font-size:11px; color:var(--orange); letter-spacing:1.5px; margin-top:2px; text-transform:uppercase; }
     .mode-sw { display:flex; background:var(--n700); border:1px solid var(--n600); border-radius:6px; padding:3px; gap:2px; }
-    .mode-btn { padding:5px 10px; border:none; border-radius:4px; font-family:var(--font-m); font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; background:transparent; color:var(--n500); transition:all .15s; -webkit-tap-highlight-color:transparent; }
+    .mode-btn { padding:5px 10px; border:none; border-radius:4px; font-family:var(--font-m); font-size:11px; font-weight:700; letter-spacing:1px; cursor:pointer; background:transparent; color:var(--n500); transition:all .15s; -webkit-tap-highlight-color:transparent; }
     .mode-btn.ma { background:var(--n500); color:var(--lente); }
     .mode-btn.madm { background:var(--orange); color:var(--ink); }
 
     /* NAV */
     nav { position:fixed; bottom:0; left:0; right:0; height:var(--nav-h); background:var(--ink); border-top:1px solid var(--n600); display:flex; z-index:200; padding-bottom:env(safe-area-inset-bottom); }
-    .nb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:none; background:transparent; color:var(--n500); cursor:pointer; font-family:var(--font-m); font-size:8px; font-weight:500; letter-spacing:.8px; text-transform:uppercase; transition:color .15s; -webkit-tap-highlight-color:transparent; }
+    .nb { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:none; background:transparent; color:var(--n500); cursor:pointer; font-family:var(--font-m); font-size:11px; font-weight:500; letter-spacing:.8px; text-transform:uppercase; transition:color .15s; -webkit-tap-highlight-color:transparent; }
     .nb .ic { font-size:19px; line-height:1; }
     .nb.active { color:var(--orange); }
 
@@ -54,10 +54,10 @@
 
     /* CARDS */
     .card { background:var(--surface); border-radius:var(--r); padding:14px; margin-bottom:10px; border:1px solid var(--n600); }
-    .eyebrow { font-family:var(--font-m); font-size:9px; font-weight:700; color:var(--orange); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
+    .eyebrow { font-family:var(--font-m); font-size:11px; font-weight:700; color:var(--orange); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:10px; }
 
     /* BUTTONS */
-    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:10px 18px; border-radius:6px; border:none; font-family:var(--font-h); font-size:14px; font-weight:700; letter-spacing:.3px; cursor:pointer; transition:opacity .15s,transform .1s; -webkit-tap-highlight-color:transparent; text-transform:uppercase; }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:12px 20px; border-radius:6px; border:none; font-family:var(--font-h); font-size:16px; font-weight:700; letter-spacing:.3px; cursor:pointer; transition:opacity .15s,transform .1s; -webkit-tap-highlight-color:transparent; text-transform:uppercase; }
     .btn:active{transform:scale(.97);}
     .btn-p{background:var(--orange);color:var(--ink);}
     .btn-s{background:var(--surface2);color:var(--lente);border:1px solid var(--border);}
@@ -65,20 +65,20 @@
     .btn-g{background:var(--success);color:var(--ink);}
     .btn-w{background:#25D366;color:#fff;}
     .btn:disabled{opacity:.35;cursor:not-allowed;}
-    .btn-sm{padding:5px 10px;font-size:11px;border-radius:5px;}
+    .btn-sm{padding:8px 14px;font-size:14px;border-radius:5px;}
     .btn-full{width:100%;}
 
     /* INPUTS */
     .ig { margin-bottom:10px; }
-    .ig label { display:block; font-family:var(--font-m); font-size:9px; color:var(--n400); margin-bottom:5px; letter-spacing:1px; text-transform:uppercase; }
-    input,select { width:100%; background:var(--n700); border:1px solid var(--n600); border-radius:6px; color:var(--lente); padding:9px 11px; font-family:var(--font-b); font-size:13px; outline:none; transition:border-color .15s; }
+    .ig label { display:block; font-family:var(--font-m); font-size:11px; color:var(--n400); margin-bottom:5px; letter-spacing:1px; text-transform:uppercase; }
+    input,select { width:100%; background:var(--n700); border:1px solid var(--n600); border-radius:6px; color:var(--lente); padding:9px 11px; font-family:var(--font-b); font-size:14px; outline:none; transition:border-color .15s; }
     input:focus,select:focus{border-color:var(--orange);}
     select option{background:var(--n700);}
     .team-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
     .score-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;}
     .score-sep{text-align:center;font-family:var(--font-d);font-size:22px;color:var(--n500);}
     .divider{height:1px;background:var(--n600);margin:16px 0;}
-    .tlabel{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;margin-top:8px;}
+    .tlabel{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;margin-top:8px;}
 
     /* LISTA */
     .sess-card{background:var(--n700);border:1px solid var(--n600);border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .15s;}
@@ -89,22 +89,22 @@
     .sess-card.upcoming .sess-day-big{color:var(--orange);}
     .sess-card-info{flex:1;min-width:0;}
     .sess-card-date{font-family:var(--font-h);font-size:14px;font-weight:700;text-transform:uppercase;line-height:1.2;}
-    .sess-card-meta{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
-    .sess-badge{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;padding:3px 7px;border-radius:4px;white-space:nowrap;}
+    .sess-card-meta{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
+    .sess-badge{font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:1px;padding:3px 7px;border-radius:4px;white-space:nowrap;}
     .sess-badge-open{background:rgba(255,102,0,.15);color:var(--orange);border:1px solid rgba(255,102,0,.3);}
     .sess-badge-full{background:rgba(34,197,94,.1);color:var(--success);border:1px solid rgba(34,197,94,.25);}
     .sess-badge-past{background:var(--n600);color:var(--n400);border:1px solid var(--n600);}
-    .sess-names{font-size:11px;color:var(--n400);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sess-names{font-size:14px;color:var(--n400);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     /* detail view */
     .sess-detail-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-    .back-btn{background:none;border:none;color:var(--orange);font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;padding:6px 0;letter-spacing:.3px;-webkit-tap-highlight-color:transparent;}
+    .back-btn{background:none;border:none;color:var(--orange);font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;padding:6px 0;letter-spacing:.3px;-webkit-tap-highlight-color:transparent;}
     .sess-num{font-family:var(--font-d);font-size:56px;color:var(--orange);line-height:.9;letter-spacing:-1px;}
-    .sess-lbl{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:1.8px;text-transform:uppercase;margin-top:5px;}
-    .sess-dt{font-family:var(--font-h);font-size:12px;color:var(--n300);margin-top:3px;font-weight:500;text-transform:uppercase;}
+    .sess-lbl{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:1.8px;text-transform:uppercase;margin-top:5px;}
+    .sess-dt{font-family:var(--font-h);font-size:14px;color:var(--n300);margin-top:3px;font-weight:500;text-transform:uppercase;}
     .spots-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 12px;background:var(--n700);border-radius:6px;border:1px solid var(--n600);}
     .spots-n{font-family:var(--font-d);font-size:30px;color:var(--orange);line-height:1;}
-    .spots-l{font-family:var(--font-b);font-size:12px;color:var(--n400);flex:1;}
-    .spots-l strong{color:var(--lente);display:block;font-size:12px;}
+    .spots-l{font-family:var(--font-b);font-size:14px;color:var(--n400);flex:1;}
+    .spots-l strong{color:var(--lente);display:block;font-size:14px;}
     .slot-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
     .slot{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px;min-height:54px;display:flex;align-items:center;gap:8px;}
     .slot.filled{border-color:var(--orange);background:rgba(255,102,0,.06);}
@@ -113,63 +113,63 @@
     .slot-open:hover,.slot-open:active{border-color:var(--orange);background:rgba(255,102,0,.06);}
     .sn{font-family:var(--font-d);font-size:17px;color:var(--n500);width:20px;text-align:center;flex-shrink:0;}
     .slot.filled .sn{color:var(--orange);}
-    .slot-name{font-size:13px;font-weight:600;flex:1;}
-    .slot-rm{background:none;border:none;color:var(--n500);cursor:pointer;font-size:13px;padding:2px;-webkit-tap-highlight-color:transparent;}
+    .slot-name{font-size:14px;font-weight:600;flex:1;}
+    .slot-rm{background:none;border:none;color:var(--n500);cursor:pointer;font-size:14px;padding:2px;-webkit-tap-highlight-color:transparent;}
     .slot-empty{color:var(--n500);font-size:11px;font-family:var(--font-m);}
-    .hint{text-align:center;font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:8px;letter-spacing:.8px;}
+    .hint{text-align:center;font-family:var(--font-m);font-size:11px;color:var(--n500);margin-top:8px;letter-spacing:.8px;}
     .hist-card{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:12px;}
     .hc-day{font-family:var(--font-d);font-size:22px;color:var(--n500);white-space:nowrap;}
     .hc-info{flex:1;min-width:0;}
-    .hc-cnt{font-family:var(--font-m);font-size:9px;color:var(--orange);font-weight:700;}
-    .hc-names{font-size:11px;color:var(--n400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .hc-cnt{font-family:var(--font-m);font-size:11px;color:var(--orange);font-weight:700;}
+    .hc-names{font-size:14px;color:var(--n400);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
     /* ROLE BADGES */
-    .role-badge{display:inline-flex;align-items:center;gap:3px;font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px;text-transform:uppercase;white-space:nowrap;}
+    .role-badge{display:inline-flex;align-items:center;gap:3px;font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.8px;padding:2px 6px;border-radius:3px;text-transform:uppercase;white-space:nowrap;}
     .role-pres{background:rgba(255,184,0,.15);color:var(--gold);border:1px solid rgba(255,184,0,.3);}
     .role-vice{background:rgba(176,72,26,.2);color:var(--orange-soft);border:1px solid rgba(176,72,26,.35);}
 
     /* SESSION ACTIVE */
     .sess-active-header{background:rgba(255,102,0,.08);border:1px solid rgba(255,102,0,.25);border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
     .sess-active-dot{width:9px;height:9px;border-radius:50%;background:var(--orange);animation:pulse 1.4s infinite;flex-shrink:0;}
-    .sess-active-label{font-family:var(--font-m);font-size:10px;color:var(--orange);letter-spacing:1.2px;font-weight:700;}
+    .sess-active-label{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1.2px;font-weight:700;}
     /* pair builder */
     .pair-pool{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:16px;min-height:38px;padding:10px;background:var(--n700);border-radius:8px;border:1px solid var(--n600);}
-    .pool-chip{padding:7px 12px;border-radius:20px;border:1px solid var(--n500);background:var(--n600);color:var(--lente);font-size:12px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .12s;}
+    .pool-chip{padding:7px 12px;border-radius:20px;border:1px solid var(--n500);background:var(--n600);color:var(--lente);font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .12s;}
     .pool-chip:active{transform:scale(.95);}
     .pool-chip.selected{border-color:var(--orange);background:rgba(255,102,0,.2);color:var(--orange);}
     .pair-slots{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
     .pair-card{background:var(--n700);border:1px solid var(--n600);border-radius:10px;padding:12px 10px;}
     .pair-card.has-focus{border-color:var(--orange);}
-    .pair-label{font-family:var(--font-m);font-size:8px;color:var(--orange);letter-spacing:1.2px;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
+    .pair-label{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1.2px;font-weight:700;margin-bottom:8px;text-transform:uppercase;}
     .pair-player{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;margin-bottom:4px;background:var(--n600);border:1px solid var(--n500);min-height:32px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .12s;}
     .pair-player:last-child{margin-bottom:0;}
     .pair-player.filled{border-color:rgba(255,102,0,.4);background:rgba(255,102,0,.08);}
     .pair-player.filled:active{border-color:var(--orange);}
     .pair-player.empty{border-style:dashed;cursor:default;}
-    .pair-player-name{font-size:11px;font-weight:600;flex:1;line-height:1.2;}
-    .pair-player-rm{background:none;border:none;color:var(--n500);font-size:11px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;}
+    .pair-player-name{font-size:14px;font-weight:600;flex:1;line-height:1.2;}
+    .pair-player-rm{background:none;border:none;color:var(--n500);font-size:14px;cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent;}
 
     /* RANKING */
     .tab-tog{display:flex;background:var(--n700);border-radius:7px;padding:3px;margin-bottom:12px;border:1px solid var(--n600);}
-    .tab-tog button{flex:1;padding:7px 4px;border:none;border-radius:5px;background:transparent;color:var(--n400);font-family:var(--font-h);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
+    .tab-tog button{flex:1;padding:7px 4px;border:none;border-radius:5px;background:transparent;color:var(--n400);font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
     .tab-tog button.active{background:var(--orange);color:var(--ink);}
     .rank-table{width:100%;border-collapse:collapse;}
-    .rank-table th{text-align:left;color:var(--n400);font-family:var(--font-m);font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 6px;border-bottom:1px solid var(--n600);}
+    .rank-table th{text-align:left;color:var(--n400);font-family:var(--font-m);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:5px 6px;border-bottom:1px solid var(--n600);}
     .rank-table td{padding:10px 6px;border-bottom:1px solid rgba(63,59,53,.5);vertical-align:middle;}
     .rank-table tr:last-child td{border-bottom:none;}
     .rpos{font-family:var(--font-d);font-size:20px;color:var(--n500);min-width:28px;}
     .rpos.p1{color:var(--gold);} .rpos.p2{color:var(--silver);} .rpos.p3{color:var(--bronze);}
-    .rname{font-family:var(--font-b);font-weight:600;font-size:13px;cursor:pointer;}
+    .rname{font-family:var(--font-b);font-weight:600;font-size:14px;cursor:pointer;}
     .rname:hover{color:var(--orange);}
-    .rname small{display:block;font-size:9px;color:var(--n400);font-weight:400;font-family:var(--font-m);}
+    .rname small{display:block;font-size:11px;color:var(--n400);font-weight:400;font-family:var(--font-m);}
     .sb{text-align:center;}
     .sv{font-family:var(--font-d);font-size:19px;line-height:1;}
-    .sl{font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.5px;text-transform:uppercase;}
+    .sl{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;text-transform:uppercase;}
     .elo-val{font-family:var(--font-d);font-size:19px;color:var(--orange);}
     .form-dots{display:flex;gap:3px;margin-top:3px;}
     .fd{width:8px;height:8px;border-radius:50%;}
     .fd.w{background:var(--success);} .fd.l{background:var(--danger);} .fd.x{background:var(--n600);}
-    .streak-badge{font-family:var(--font-m);font-size:9px;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;white-space:nowrap;}
+    .streak-badge{font-family:var(--font-m);font-size:11px;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;white-space:nowrap;}
     .streak-w{background:rgba(34,197,94,.15);color:var(--success);}
     .streak-l{background:rgba(239,68,68,.1);color:var(--danger);}
 
@@ -177,22 +177,22 @@
     .conv-pair{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
     .conv-num{font-family:var(--font-d);font-size:32px;color:var(--orange);line-height:1;min-width:36px;text-align:center;}
     .conv-players{flex:1;}
-    .conv-p{font-size:13px;font-weight:600;}
-    .conv-elo{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
+    .conv-p{font-size:14px;font-weight:600;}
+    .conv-elo{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
 
     /* PERFIL MODAL */
     .profile-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
     .profile-avatar{width:54px;height:54px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:24px;color:var(--ink);flex-shrink:0;}
-    .profile-name{font-family:var(--font-h);font-size:22px;font-weight:700;text-transform:uppercase;line-height:1;}
-    .profile-elo{font-family:var(--font-m);font-size:10px;color:var(--orange);letter-spacing:1px;margin-top:3px;}
+    .profile-name{font-family:var(--font-h);font-size:24px;font-weight:700;text-transform:uppercase;line-height:1;}
+    .profile-elo{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1px;margin-top:3px;}
     .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
     .stat-box{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px;text-align:center;}
     .stat-big{font-family:var(--font-d);font-size:26px;line-height:1;}
-    .stat-tag{font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px;margin-top:3px;text-transform:uppercase;}
+    .stat-tag{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;margin-top:3px;text-transform:uppercase;}
     .profile-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--n600);}
     .profile-row:last-child{border-bottom:none;}
-    .pr-label{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.8px;text-transform:uppercase;}
-    .pr-val{font-size:13px;font-weight:600;}
+    .pr-label{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;text-transform:uppercase;}
+    .pr-val{font-size:14px;font-weight:600;}
 
     /* HISTÓRICO */
     .sess-block{margin-bottom:18px;}
@@ -200,40 +200,40 @@
     .sb-day{font-family:var(--font-d);font-size:34px;color:var(--orange);line-height:1;min-width:42px;text-align:center;}
     .sb-info{flex:1;}
     .sb-date{font-family:var(--font-h);font-size:14px;font-weight:700;text-transform:uppercase;}
-    .sb-meta{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.8px;margin-top:1px;}
-    .latest-badge{font-family:var(--font-m);font-size:8px;font-weight:700;letter-spacing:1px;color:var(--ink);background:var(--orange);padding:3px 6px;border-radius:4px;white-space:nowrap;}
+    .sb-meta{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;margin-top:1px;}
+    .latest-badge{font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink);background:var(--orange);padding:3px 6px;border-radius:4px;white-space:nowrap;}
     .match-card{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px;margin-bottom:6px;}
     .mc-teams{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;}
     .mc-team{display:flex;flex-direction:column;gap:1px;}
     .mc-team.r{text-align:right;align-items:flex-end;}
-    .mc-player{font-size:12px;font-weight:600;color:var(--n300);}
+    .mc-player{font-size:14px;font-weight:600;color:var(--n300);}
     .mc-player.won{color:var(--lente);}
     .mc-score-block{display:flex;flex-direction:column;align-items:center;gap:1px;}
     .mc-score{font-family:var(--font-d);font-size:26px;color:var(--orange);line-height:1;letter-spacing:1px;}
-    .mc-sep{font-family:var(--font-m);font-size:8px;color:var(--n500);letter-spacing:1px;}
-    .mc-winner{margin-top:6px;padding-top:6px;border-top:1px solid var(--n600);font-family:var(--font-m);font-size:9px;color:var(--success);letter-spacing:.8px;text-align:center;}
-    .mvp-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.25);border-radius:4px;padding:2px 7px;font-family:var(--font-m);font-size:9px;color:var(--gold);letter-spacing:.5px;font-weight:700;}
+    .mc-sep{font-family:var(--font-m);font-size:11px;color:var(--n500);letter-spacing:1px;}
+    .mc-winner{margin-top:6px;padding-top:6px;border-top:1px solid var(--n600);font-family:var(--font-m);font-size:11px;color:var(--success);letter-spacing:.8px;text-align:center;}
+    .mvp-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.25);border-radius:4px;padding:2px 7px;font-family:var(--font-m);font-size:11px;color:var(--gold);letter-spacing:.5px;font-weight:700;}
     .filter-wrap{overflow-x:auto;display:flex;gap:6px;padding-bottom:4px;margin-bottom:12px;-webkit-overflow-scrolling:touch;}
-    .fchip{flex-shrink:0;padding:5px 11px;border-radius:20px;border:1px solid var(--n600);background:var(--n700);color:var(--n400);font-family:var(--font-b);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+    .fchip{flex-shrink:0;padding:5px 11px;border-radius:20px;border:1px solid var(--n600);background:var(--n700);color:var(--n400);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
     .fchip.active{border-color:var(--orange);background:rgba(255,102,0,.12);color:var(--orange);}
-    .no-matches{font-family:var(--font-m);font-size:10px;color:var(--n500);letter-spacing:.5px;padding:8px 0;}
+    .no-matches{font-family:var(--font-m);font-size:11px;color:var(--n500);letter-spacing:.5px;padding:8px 0;}
     .plyr-stat-row{display:flex;gap:8px;margin-bottom:10px;}
     .psb{flex:1;background:var(--n700);border-radius:6px;padding:8px;text-align:center;border:1px solid var(--n600);}
     .psb-v{font-family:var(--font-d);font-size:24px;line-height:1;}
-    .psb-l{font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px;margin-top:2px;}
+    .psb-l{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;margin-top:2px;}
 
     /* TORNEIOS */
     .t-card{background:var(--surface);border:1px solid var(--n600);border-radius:var(--r);margin-bottom:10px;overflow:hidden;}
     .t-header{background:var(--ink);padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--n600);}
     .t-name{font-family:var(--font-h);font-size:16px;font-weight:700;text-transform:uppercase;}
-    .t-date{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:1px;}
+    .t-date{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1px;}
     .t-podium{padding:10px 14px;}
     .t-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(63,59,53,.5);}
     .t-row:last-child{border-bottom:none;}
     .t-pos{font-family:var(--font-d);font-size:22px;color:var(--n500);width:28px;}
     .t-pos.p1{color:var(--gold);} .t-pos.p2{color:var(--silver);} .t-pos.p3{color:var(--bronze);}
-    .t-pname{font-size:13px;font-weight:600;flex:1;}
-    .t-pts{font-family:var(--font-m);font-size:10px;color:var(--orange);font-weight:700;letter-spacing:.5px;}
+    .t-pname{font-size:14px;font-weight:600;flex:1;}
+    .t-pts{font-family:var(--font-m);font-size:11px;color:var(--orange);font-weight:700;letter-spacing:.5px;}
 
     /* ADMIN */
     .adm-title{font-family:var(--font-h);font-size:15px;font-weight:700;text-transform:uppercase;color:var(--orange);margin-bottom:10px;letter-spacing:.5px;}
@@ -245,19 +245,19 @@
     .rr-player-check:last-child{border-bottom:none;}
     .rr-cb{width:20px;height:20px;border-radius:4px;border:2px solid var(--n500);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
     .rr-cb.checked{border-color:var(--orange);background:var(--orange);}
-    .rr-cb.checked::after{content:'✓';color:var(--ink);font-size:11px;font-weight:700;}
-    .rr-pname{font-size:13px;font-weight:600;flex:1;}
-    .rr-pelo{font-family:var(--font-m);font-size:10px;color:var(--orange);}
+    .rr-cb.checked::after{content:'✓';color:var(--ink);font-size:14px;font-weight:700;}
+    .rr-pname{font-size:14px;font-weight:600;flex:1;}
+    .rr-pelo{font-family:var(--font-m);font-size:11px;color:var(--orange);}
     .gen-match{background:var(--n700);border:1px solid var(--n600);border-radius:8px;padding:10px 12px;margin-bottom:7px;}
-    .gen-match-teams{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;}
-    .gmt-vs{font-family:var(--font-m);font-size:9px;color:var(--n500);letter-spacing:.8px;}
-    .gmt-sep{margin-left:auto;font-family:var(--font-m);font-size:9px;color:var(--n400);}
+    .gen-match-teams{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;}
+    .gmt-vs{font-family:var(--font-m);font-size:11px;color:var(--n500);letter-spacing:.8px;}
+    .gmt-sep{margin-left:auto;font-family:var(--font-m);font-size:11px;color:var(--n400);}
     .gen-match-score{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-top:8px;}
     .gen-match-score input{padding:7px;}
     .done-match{opacity:.5;}
 
     /* ALERT */
-    .alert{padding:10px 12px;border-radius:6px;font-size:12px;font-weight:500;margin-bottom:10px;border:1px solid;}
+    .alert{padding:10px 12px;border-radius:6px;font-size:14px;font-weight:500;margin-bottom:10px;border:1px solid;}
     .alert-ok{background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--success);}
     .alert-warn{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.25);color:var(--gold);}
     .alert-info{background:rgba(255,102,0,.08);border-color:rgba(255,102,0,.2);color:var(--orange-soft);}
@@ -266,11 +266,11 @@
     .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:flex;align-items:flex-end;justify-content:center;}
     .modal-ov.hidden{display:none;}
     .modal{background:var(--n700);border-radius:16px 16px 0 0;padding:22px 18px;width:100%;max-height:85dvh;overflow-y:auto;border-top:1px solid var(--n600);}
-    .modal-title{font-family:var(--font-h);font-size:19px;font-weight:700;text-transform:uppercase;margin-bottom:14px;}
+    .modal-title{font-family:var(--font-h);font-size:24px;font-weight:700;text-transform:uppercase;margin-bottom:14px;}
     .modal-actions{display:flex;gap:8px;margin-top:14px;}
     .modal-actions .btn{flex:1;}
     .pchip-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:5px;}
-    .pchip{padding:6px 12px;border-radius:20px;border:1px solid var(--n600);background:var(--n700);color:var(--n300);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+    .pchip{padding:6px 12px;border-radius:20px;border:1px solid var(--n600);background:var(--n700);color:var(--n300);font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;}
     .pchip.selected{border-color:var(--orange);background:rgba(255,102,0,.12);color:var(--orange);}
 
     /* EMPTY */
@@ -280,7 +280,7 @@
 
     /* MVP vote */
     .mvp-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:8px;}
-    .mvp-btn{padding:10px;border-radius:8px;border:1px solid var(--n600);background:var(--n700);color:var(--lente);font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+    .mvp-btn{padding:10px;border-radius:8px;border:1px solid var(--n600);background:var(--n700);color:var(--lente);font-size:14px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;-webkit-tap-highlight-color:transparent;}
     .mvp-btn.sel{border-color:var(--gold);background:rgba(255,184,0,.12);color:var(--gold);}
 
     /* FAB */
@@ -294,9 +294,9 @@
     /* LIVE SETUP */
     .live-setup{padding:18px;overflow-y:auto;flex:1;}
     .live-setup-title{font-family:var(--font-h);font-size:26px;font-weight:700;text-transform:uppercase;margin-bottom:4px;}
-    .live-setup-sub{font-family:var(--font-m);font-size:10px;color:var(--orange);letter-spacing:1.5px;margin-bottom:20px;}
+    .live-setup-sub{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1.5px;margin-bottom:20px;}
     .format-tog{display:flex;gap:8px;margin-bottom:16px;}
-    .fmt-btn{flex:1;padding:10px;border-radius:8px;border:1px solid var(--n600);background:var(--n700);color:var(--n400);font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;text-align:center;text-transform:uppercase;transition:all .15s;-webkit-tap-highlight-color:transparent;}
+    .fmt-btn{flex:1;padding:10px;border-radius:8px;border:1px solid var(--n600);background:var(--n700);color:var(--n400);font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;text-align:center;text-transform:uppercase;transition:all .15s;-webkit-tap-highlight-color:transparent;}
     .fmt-btn.active{border-color:var(--orange);background:rgba(255,102,0,.12);color:var(--orange);}
 
     /* LIVE SCOREBOARD */
@@ -304,16 +304,16 @@
     .live-status{display:flex;align-items:center;gap:7px;}
     .live-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;}
     @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
-    .live-label{font-family:var(--font-m);font-size:10px;color:var(--danger);letter-spacing:1.5px;font-weight:700;}
+    .live-label{font-family:var(--font-m);font-size:11px;color:var(--danger);letter-spacing:1.5px;font-weight:700;}
     .live-timer{font-family:var(--font-m);font-size:12px;color:var(--n400);letter-spacing:1px;}
-    .live-format{font-family:var(--font-m);font-size:9px;color:var(--n500);letter-spacing:.8px;}
+    .live-format{font-family:var(--font-m);font-size:11px;color:var(--n500);letter-spacing:.8px;}
 
     /* SETS TRACK */
     .sets-track{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--n600);flex-shrink:0;}
     .set-score-pill{background:var(--n700);border:1px solid var(--n600);border-radius:6px;padding:4px 10px;font-family:var(--font-d);font-size:16px;color:var(--n400);letter-spacing:1px;}
     .set-score-pill.won{border-color:var(--orange);color:var(--orange);}
     .set-score-pill.current{border-color:var(--n400);color:var(--lente);}
-    .sets-sep{font-family:var(--font-m);font-size:9px;color:var(--n600);}
+    .sets-sep{font-family:var(--font-m);font-size:11px;color:var(--n600);}
 
     /* MAIN COURT */
     .live-court{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:0;min-height:0;}
@@ -323,17 +323,17 @@
     .live-team-names{font-family:var(--font-h);font-size:14px;font-weight:700;text-transform:uppercase;color:var(--n300);text-align:center;line-height:1.3;margin-bottom:10px;}
     .live-game-score{font-family:var(--font-d);font-size:88px;color:var(--lente);line-height:1;letter-spacing:-2px;}
     .live-side.winning .live-game-score{color:var(--orange);}
-    .live-tap-hint{font-family:var(--font-m);font-size:9px;color:var(--n600);letter-spacing:1px;text-transform:uppercase;margin-top:10px;}
+    .live-tap-hint{font-family:var(--font-m);font-size:11px;color:var(--n600);letter-spacing:1px;text-transform:uppercase;margin-top:10px;}
 
     /* LIVE FOOTER */
     .live-footer{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--n600);flex-shrink:0;background:var(--n900);}
-    .live-footer .btn{flex:1;font-size:12px;padding:9px;}
+    .live-footer .btn{flex:1;font-size:14px;padding:9px;}
 
     /* MATCH FINISHED OVERLAY */
     .live-finished{position:absolute;inset:0;background:rgba(13,13,13,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:10;}
     .finished-trophy{font-size:60px;margin-bottom:12px;}
     .finished-winner{font-family:var(--font-h);font-size:28px;font-weight:700;text-transform:uppercase;color:var(--orange);text-align:center;margin-bottom:4px;}
-    .finished-sub{font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:1px;margin-bottom:20px;text-align:center;}
+    .finished-sub{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:1px;margin-bottom:20px;text-align:center;}
     .finished-score{font-family:var(--font-d);font-size:44px;color:var(--lente);letter-spacing:2px;margin-bottom:20px;}
 
     /* PLAYER SELECTOR */
@@ -341,7 +341,7 @@
     #player-selector.hidden{display:none;}
     .ps-header{padding:32px 20px 20px;text-align:center;}
     .ps-logo{font-family:var(--font-h);font-size:28px;font-weight:700;color:var(--lente);text-transform:uppercase;letter-spacing:1px;}
-    .ps-tagline{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
+    .ps-tagline{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-top:4px;}
     .ps-title{font-family:var(--font-h);font-size:16px;color:var(--n300);margin-top:24px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
     .ps-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 32px;}
     .ps-card{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:18px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
@@ -349,7 +349,7 @@
     .ps-card:hover{border-color:var(--n400);}
     .ps-avatar{width:52px;height:52px;border-radius:50%;background:var(--n600);border:2px solid var(--n500);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:20px;color:var(--n200);}
     .ps-name{font-family:var(--font-h);font-size:14px;font-weight:700;text-transform:uppercase;color:var(--lente);text-align:center;line-height:1.2;}
-    .ps-elo{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:.8px;}
+    .ps-elo{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:.8px;}
 
     /* HOME */
     .home-hero{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:14px;}
@@ -357,31 +357,31 @@
     .home-name{font-family:var(--font-h);font-size:24px;font-weight:700;text-transform:uppercase;line-height:1;margin-bottom:3px;}
     .home-elo-line{display:flex;align-items:center;gap:8px;}
     .home-elo{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1px;font-weight:700;}
-    .home-rank{font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:.5px;}
-    .home-change-btn{margin-left:auto;padding:5px 10px;border-radius:5px;border:1px solid var(--n600);background:transparent;color:var(--n400);font-family:var(--font-m);font-size:8px;letter-spacing:.8px;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
+    .home-rank{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;}
+    .home-change-btn{margin-left:auto;padding:5px 10px;border-radius:5px;border:1px solid var(--n600);background:transparent;color:var(--n400);font-family:var(--font-m);font-size:11px;letter-spacing:.8px;cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;}
     .metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
     .metric-box{background:var(--surface);border:1px solid var(--n600);border-radius:10px;padding:12px 6px;text-align:center;}
     .metric-val{font-family:var(--font-d);font-size:28px;line-height:1;margin-bottom:2px;}
     .metric-val.orange{color:var(--orange);}
     .metric-val.green{color:var(--success);}
     .metric-val.red{color:var(--danger);}
-    .metric-tag{font-family:var(--font-m);font-size:7px;color:var(--n400);letter-spacing:.8px;text-transform:uppercase;}
+    .metric-tag{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;text-transform:uppercase;}
     .home-section{margin-bottom:14px;}
     .last-match-card{background:var(--surface);border:1px solid var(--n600);border-radius:10px;padding:12px 14px;}
     .lm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
-    .lm-date{font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:.5px;}
-    .lm-result{font-family:var(--font-m);font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:4px;}
+    .lm-date{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;}
+    .lm-result{font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:4px;}
     .lm-result.win{background:rgba(34,197,94,.15);color:var(--success);}
     .lm-result.loss{background:rgba(239,68,68,.1);color:var(--danger);}
     .lm-score{font-family:var(--font-d);font-size:32px;color:var(--lente);letter-spacing:1px;line-height:1;margin-bottom:4px;}
-    .lm-detail{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;}
+    .lm-detail{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;}
 
     /* SPLASH */
     #gfe-splash{position:fixed;inset:0;background:var(--ink);z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;}
     #gfe-splash.hidden{display:none;}
     .splash-logo{font-family:var(--font-d);font-size:88px;color:var(--orange);line-height:1;letter-spacing:-4px;animation:splashPop .5s cubic-bezier(.34,1.56,.64,1) both;}
     .splash-title{font-family:var(--font-h);font-size:16px;font-weight:700;color:var(--lente);text-transform:uppercase;letter-spacing:3px;margin-top:6px;opacity:0;animation:splashFade .4s .4s ease forwards;}
-    .splash-sub{font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;opacity:0;animation:splashFade .4s .6s ease forwards;}
+    .splash-sub{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:2.5px;text-transform:uppercase;margin-top:6px;opacity:0;animation:splashFade .4s .6s ease forwards;}
     @keyframes splashPop{from{transform:scale(.5);opacity:0;}to{transform:scale(1);opacity:1;}}
     @keyframes splashFade{to{opacity:1;}}
 
@@ -390,10 +390,10 @@
     #gfe-login.hidden{display:none;}
     .login-header{padding:48px 24px 20px;text-align:center;}
     .login-logo{font-family:var(--font-d);font-size:44px;color:var(--orange);line-height:1;letter-spacing:-2px;}
-    .login-title{font-family:var(--font-h);font-size:13px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:2px;margin-top:4px;}
+    .login-title{font-family:var(--font-h);font-size:14px;font-weight:700;color:var(--n400);text-transform:uppercase;letter-spacing:2px;margin-top:4px;}
     .login-body{flex:1;padding:0 20px 32px;}
     .login-section-title{font-family:var(--font-h);font-size:22px;font-weight:700;text-transform:uppercase;color:var(--lente);margin-bottom:4px;}
-    .login-section-sub{font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:.8px;margin-bottom:24px;}
+    .login-section-sub{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;margin-bottom:24px;}
     /* Player picker for login */
     .lp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
     .lp-card{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:all .15s;}
@@ -401,8 +401,8 @@
     .lp-card.sel{border-color:var(--orange);background:rgba(255,102,0,.1);}
     .lp-avatar{width:44px;height:44px;border-radius:50%;background:var(--n600);border:2px solid var(--n500);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:18px;color:var(--n200);}
     .lp-card.sel .lp-avatar{border-color:var(--orange);background:rgba(255,102,0,.2);color:var(--orange);}
-    .lp-name{font-family:var(--font-h);font-size:13px;font-weight:700;text-transform:uppercase;color:var(--lente);text-align:center;line-height:1.2;}
-    .lp-elo{font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px;}
+    .lp-name{font-family:var(--font-h);font-size:14px;font-weight:700;text-transform:uppercase;color:var(--lente);text-align:center;line-height:1.2;}
+    .lp-elo{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;}
     /* PIN display */
     .pin-display{display:flex;justify-content:center;gap:14px;margin:24px 0 20px;}
     .pin-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--n500);background:transparent;transition:all .15s;}
@@ -420,7 +420,7 @@
     .new-name-input:focus{border-color:var(--orange);}
     /* Login toggle */
     .login-toggle{display:flex;background:var(--n700);border-radius:8px;padding:3px;margin-bottom:24px;border:1px solid var(--n600);}
-    .lt-btn{flex:1;padding:9px 4px;border:none;border-radius:6px;background:transparent;color:var(--n400);font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
+    .lt-btn{flex:1;padding:9px 4px;border:none;border-radius:6px;background:transparent;color:var(--n400);font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.3px;}
     .lt-btn.active{background:var(--orange);color:var(--ink);}
 
     /* ONBOARDING */
@@ -443,9 +443,9 @@
     .destaque-card{background:var(--n700);border:1px solid var(--n600);border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;}
     .dest-icon{font-size:32px;flex-shrink:0;width:44px;text-align:center;}
     .dest-body{flex:1;min-width:0;}
-    .dest-label{font-family:var(--font-m);font-size:8px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:3px;}
+    .dest-label{font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:3px;}
     .dest-name{font-family:var(--font-h);font-size:17px;font-weight:700;text-transform:uppercase;color:var(--lente);line-height:1.1;}
-    .dest-detail{font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
+    .dest-detail{font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px;margin-top:2px;}
     .wpp-btn{width:100%;padding:14px;border-radius:10px;border:none;background:#25D366;color:#fff;font-family:var(--font-h);font-size:16px;font-weight:700;text-transform:uppercase;cursor:pointer;letter-spacing:.5px;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
     .wpp-btn:active{opacity:.85;}
 
@@ -477,8 +477,8 @@
     .lvl-cap{width:6px;border-radius:999px;background:var(--n600);flex-shrink:0;}
     .lvl-cap.on{background:var(--orange);}
     .lvl-badge{display:inline-flex;align-items:center;gap:7px;}
-    .lvl-tag{font-family:var(--font-m);font-size:10px;letter-spacing:1px;color:var(--orange);font-weight:700;text-transform:uppercase;}
-    .lvl-name{font-family:var(--font-b);font-size:12px;color:var(--n300);}
+    .lvl-tag{font-family:var(--font-m);font-size:11px;letter-spacing:1px;color:var(--orange);font-weight:700;text-transform:uppercase;}
+    .lvl-name{font-family:var(--font-b);font-size:14px;color:var(--n300);}
 
     /* Lockup da marca — palavra LEVEL + cápsula BT + medidor */
     .lbt-lock{display:flex;flex-direction:column;align-items:center;gap:10px;}
@@ -489,6 +489,46 @@
     .hd-lock{display:flex;align-items:center;gap:8px;}
     .hd-word{font-family:var(--font-d);font-size:18px;letter-spacing:-.5px;color:var(--lente);line-height:1;}
     .hd-word .bt{color:var(--orange);}
+
+    /* ════════ LEVEL BT — telas idênticas ao mockup ════════ */
+    .lbt-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:10px;}
+    .lbt-title{font-family:var(--font-d);font-size:28px;letter-spacing:-.03em;color:var(--lente);line-height:1;}
+    .lbt-kick{font-family:var(--font-m);font-size:11px;letter-spacing:.14em;color:var(--n400);text-align:right;white-space:nowrap;}
+    .lbt-c{background:var(--n700);border-radius:20px;padding:16px;margin-bottom:8px;}
+    .lbt-c24{background:var(--n700);border-radius:24px;padding:20px;margin-bottom:8px;}
+    .lbt-lbl{font-family:var(--font-m);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--n400);}
+    .lbt-elo{font-family:var(--font-d);color:var(--lente);}
+    /* barra de nível horizontal (5 segmentos, largura cheia) */
+    .lbt-bar{display:flex;gap:5px;}
+    .lbt-bar>span{height:14px;border-radius:999px;flex:1;background:var(--n600);}
+    .lbt-bar>span.on{background:var(--orange);}
+    /* mini cápsulas (linhas do ranking) */
+    .lbt-caps{display:flex;gap:4px;}
+    .lbt-caps>span{width:15px;height:7px;border-radius:999px;background:var(--n600);}
+    .lbt-caps>span.on{background:var(--orange);}
+    /* pill AO VIVO */
+    .lbt-live{display:inline-flex;align-items:center;gap:6px;background:var(--orange);color:var(--ink);border-radius:999px;padding:6px 12px;font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.14em;}
+    .lbt-live .dot{width:7px;height:7px;border-radius:999px;background:var(--ink);animation:pulse 1.2s infinite;}
+    /* abas pílula */
+    .lbt-tabs{display:flex;gap:8px;margin-bottom:14px;}
+    .lbt-tab{flex:0 0 auto;border:1.5px solid var(--n600);color:var(--n400);border-radius:999px;padding:7px 16px;font-family:var(--font-m);font-size:12px;letter-spacing:.12em;cursor:pointer;background:transparent;-webkit-tap-highlight-color:transparent;}
+    .lbt-tab.on{background:var(--lente);color:var(--ink);font-weight:700;border-color:var(--lente);}
+    /* botões pílula */
+    .lbt-b{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:13px 20px;font-size:16px;font-weight:700;cursor:pointer;border:none;-webkit-tap-highlight-color:transparent;font-family:var(--font-b);}
+    .lbt-b:active{transform:scale(.97);}
+    .lbt-bp{background:var(--orange);color:var(--ink);}
+    .lbt-bo{background:transparent;border:1.75px solid var(--n600);color:var(--lente);}
+    .lbt-bw{background:transparent;border:1.75px solid var(--lente);color:var(--lente);}
+    /* linha genérica de ranking */
+    .lbt-row{display:flex;align-items:center;gap:12px;background:var(--n700);border-radius:16px;padding:16px;margin-bottom:8px;-webkit-tap-highlight-color:transparent;}
+    .lbt-row.lead{border:1.5px solid var(--orange);}
+    .lbt-rk{font-family:var(--font-d);font-size:20px;width:26px;flex-shrink:0;color:var(--lente);}
+    .lbt-nm{font-size:17px;font-weight:600;color:var(--lente);}
+    .lbt-delta{font-family:var(--font-m);font-size:12px;}
+    .lbt-up{color:var(--orange);} .lbt-dn{color:var(--n400);}
+    /* barra de progresso (saque) */
+    .lbt-prog{height:8px;border-radius:999px;background:var(--n600);overflow:hidden;}
+    .lbt-prog>span{display:block;height:100%;border-radius:999px;background:var(--orange);}
   </style>
 </head>
 <body>
@@ -503,15 +543,15 @@
     </div>
     <div id="live-badge" onclick="goToLive()" style="display:none;align-items:center;gap:6px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35);border-radius:6px;padding:5px 10px;cursor:pointer;-webkit-tap-highlight-color:transparent">
       <div style="width:7px;height:7px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;flex-shrink:0"></div>
-      <span style="font-family:var(--font-m);font-size:9px;color:var(--danger);font-weight:700;letter-spacing:1px">AO VIVO</span>
+      <span style="font-family:var(--font-m);font-size:11px;color:var(--danger);font-weight:700;letter-spacing:1px">AO VIVO</span>
     </div>
   </header>
   <main id="content"></main>
   <nav>
-    <button class="nb active" onclick="nav('home')" id="nav-home"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.7L12 3l9 6.7"/><path d="M5 9v11h14V9"/></svg></span>Home</button>
-    <button class="nb" onclick="nav('lista')" id="nav-lista"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="3.5" cy="6" r="1"/><circle cx="3.5" cy="12" r="1"/><circle cx="3.5" cy="18" r="1"/></svg></span>Lista</button>
-    <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>Histórico</button>
-    <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a2 2 0 0 0 0 4h.7"/><path d="M17 6h3a2 2 0 0 1 0 4h-.7"/><path d="M9 21h6"/><path d="M12 17v4"/></svg></span>Ranking</button>
+    <button class="nb active" onclick="nav('home')" id="nav-home"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/></svg></span>Home</button>
+    <button class="nb" onclick="nav('lista')" id="nav-lista"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M8 2v4"/><path d="M16 2v4"/><path d="M3 10h18"/></svg></span>Sessões</button>
+    <button class="nb" onclick="nav('historico')" id="nav-historico"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>Evolução</button>
+    <button class="nb" onclick="nav('ranking')" id="nav-ranking"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21v-7"/><path d="M12 21V8"/><path d="M20 21v-11"/></svg></span>Ranking</button>
     <button class="nb" onclick="nav('config')" id="nav-config"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.5 7.5 0 0 0 .1-2l1.7-1.3-1.7-3-2 .8a7.5 7.5 0 0 0-1.7-1l-.3-2.1H10l-.3 2.1a7.5 7.5 0 0 0-1.7 1l-2-.8-1.7 3L6 11a7.5 7.5 0 0 0 0 2l-1.7 1.3 1.7 3 2-.8a7.5 7.5 0 0 0 1.7 1l.3 2.1h3.8l.3-2.1a7.5 7.5 0 0 0 1.7-1l2 .8 1.7-3z"/></svg></span>Config</button>
     <button class="nb" onclick="nav('grupo')" id="nav-grupo" style="display:none"><span class="ic"><svg class="ico" viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="M10.5 12.5L20 3"/><path d="M16 5l3 3"/><path d="M18.5 2.5l3 3"/></svg></span>Grupo</button>
   </nav>
@@ -574,7 +614,7 @@
   <div class="modal">
     <div class="modal-title"><svg class="ico" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Adicionar ao Grupo</div>
     <div class="ig"><label>Nome do jogador</label><input type="text" id="add-player-name" placeholder="Nome completo..." maxlength="30"></div>
-    <div class="alert alert-info" style="font-size:11px;margin-bottom:4px">Jogador avulso: entra no ranking do grupo, mas <strong>sem conta/login</strong>. Para virar conta de verdade (com histórico próprio), mande o link de convite em Config → Meu grupo.</div>
+    <div class="alert alert-info" style="font-size:14px;margin-bottom:4px">Jogador avulso: entra no ranking do grupo, mas <strong>sem conta/login</strong>. Para virar conta de verdade (com histórico próprio), mande o link de convite em Config → Meu grupo.</div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-add-player')">Cancelar</button>
       <button class="btn btn-p" onclick="confirmAddPlayer()">Adicionar</button>
@@ -598,7 +638,7 @@
       </div>
     </div>
     <div class="ig"><label>Observação (opcional)</label><input type="text" id="mg-note" placeholder="Ex.: pós-treino de sexta" maxlength="60"></div>
-    <div id="mg-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 4px"></div>
+    <div id="mg-msg" style="min-height:16px;font-size:14px;color:var(--danger);margin:2px 2px 4px"></div>
     <div class="modal-actions">
       <button class="btn btn-s" onclick="closeModal('modal-manual-game')">Cancelar</button>
       <button class="btn btn-p" onclick="saveManualGame()">Salvar</button>
@@ -993,7 +1033,7 @@ function renderGroupSetup(){
       <div class="login-section-title">Criar grupo</div>
       <div class="login-section-sub">VOCÊ SERÁ O DONO</div>
       <div class="ig"><label>Nome do grupo</label><input id="gs-name" type="text" maxlength="30" placeholder="Ex.: Beach Tennis dos amigos"></div>
-      <div id="gs-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+      <div id="gs-msg" style="min-height:16px;font-size:14px;color:var(--danger);margin:2px 2px 10px"></div>
       <button class="btn btn-p btn-full" id="gs-btn" style="font-size:15px;padding:13px" onclick="createGroup(document.getElementById('gs-name').value)">Criar e entrar</button>
       <button class="btn btn-s btn-full" style="margin-top:8px" onclick="setGroupSetupMode('choose')">${icon('arrowLeft',14)} Voltar</button>`;
   } else if(groupSetupMode==='join'){
@@ -1001,7 +1041,7 @@ function renderGroupSetup(){
       <div class="login-section-title">Entrar em grupo</div>
       <div class="login-section-sub">DIGITE O CÓDIGO QUE TE PASSARAM</div>
       <div class="ig"><label>Código do grupo</label><input id="gs-code" type="text" maxlength="8" style="text-transform:uppercase;letter-spacing:2px" placeholder="Ex.: ABC123" oninput="this.value=this.value.toUpperCase()"></div>
-      <div id="gs-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+      <div id="gs-msg" style="min-height:16px;font-size:14px;color:var(--danger);margin:2px 2px 10px"></div>
       <button class="btn btn-p btn-full" id="gs-btn" style="font-size:15px;padding:13px" onclick="joinGroup(document.getElementById('gs-code').value)">Entrar no grupo</button>
       <button class="btn btn-s btn-full" style="margin-top:8px" onclick="setGroupSetupMode('choose')">${icon('arrowLeft',14)} Voltar</button>`;
   } else {
@@ -1094,7 +1134,7 @@ function renderLogin(){
     ${isSignup?`<div class="ig"><label>Nome</label><input id="auth-name" type="text" maxlength="30" placeholder="Seu nome" autocomplete="name"></div>`:''}
     <div class="ig"><label>Email</label><input id="auth-email" type="email" inputmode="email" placeholder="voce@email.com" autocomplete="email"></div>
     <div class="ig"><label>Senha</label><input id="auth-pass" type="password" placeholder="${isSignup?'Crie uma senha (mín. 6)':'Sua senha'}" autocomplete="${isSignup?'new-password':'current-password'}"></div>
-    <div id="auth-msg" style="min-height:16px;font-size:12px;color:var(--danger);margin:2px 2px 10px"></div>
+    <div id="auth-msg" style="min-height:16px;font-size:14px;color:var(--danger);margin:2px 2px 10px"></div>
     <button class="btn btn-p btn-full" id="auth-btn" style="font-size:15px;padding:13px" onclick="${isSignup?'doSignup()':'doLogin()'}">${isSignup?'Criar conta e entrar':'Entrar'}</button>`;
   const pass=document.getElementById('auth-pass');
   if(pass) pass.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); isSignup?doSignup():doLogin(); }});
@@ -1273,6 +1313,23 @@ function levelProgress(elo){
   if(lv.n>=5) return 'Nível máximo. Segura o topo.';
   const falta=Math.max(0,Math.ceil(lv.max-(elo||1000)));
   return 'Faltam '+falta+' pontos pro N'+(lv.n+1)+'.';
+}
+// Barra horizontal de 5 segmentos (card de nível)
+function levelBar(elo){
+  const lv=eloToLevel(elo).n; let s='<div class="lbt-bar">';
+  for(let i=0;i<5;i++) s+='<span class="'+(i<lv?'on':'')+'"></span>';
+  return s+'</div>';
+}
+// Mini cápsulas 15×7 (linhas do ranking)
+function levelCaps(elo){
+  const lv=eloToLevel(elo).n; let s='<div class="lbt-caps">';
+  for(let i=0;i<5;i++) s+='<span class="'+(i<lv?'on':'')+'"></span>';
+  return s+'</div>';
+}
+// Faixa de ELO do nível (ex.: "1650+", "1350–1500")
+function levelRange(elo){
+  const lv=eloToLevel(elo);
+  return lv.n>=5?'1650+':(lv.min+'–'+lv.max);
 }
 
 function getOrCreateSession(date){
@@ -1526,136 +1583,100 @@ function renderHome(){
   // Last match
   const allMatches=DB.matches().filter(m=>m.team1.includes(pid)||m.team2.includes(pid));
   const lastMatch=allMatches.length?allMatches.slice().sort((a,b)=>b.date.localeCompare(a.date))[0]:null;
-  let lastMatchHtml=`<div class="last-match-card" style="color:var(--n500);font-family:var(--font-m);font-size:10px;padding:14px">Nenhuma partida ainda</div>`;
+  let lastGameBlock=`<div style="font-size:15px;color:var(--n400)">Nenhuma partida ainda</div>`;
   if(lastMatch){
     const inT1=lastMatch.team1.includes(pid);
     const won=(inT1&&lastMatch.winner===1)||(!inT1&&lastMatch.winner===2);
     const myG=inT1?lastMatch.games1:lastMatch.games2;
     const oppG=inT1?lastMatch.games2:lastMatch.games1;
     const partner=(inT1?lastMatch.team1:lastMatch.team2).find(x=>x!==pid);
-    const opp1=(inT1?lastMatch.team2:lastMatch.team1)[0];
-    const opp2=(inT1?lastMatch.team2:lastMatch.team1)[1];
-    lastMatchHtml=`<div class="last-match-card">
-      <div class="lm-header">
-        <div class="lm-date">${fmtDate(lastMatch.date)}</div>
-        <div class="lm-result ${won?'win':'loss'}">${won?'VITÓRIA':'DERROTA'}</div>
-      </div>
-      <div class="lm-score">${myG} – ${oppG}</div>
-      <div class="lm-detail">Com ${esc(getName(partner))} · vs ${esc(getName(opp1))} &amp; ${esc(getName(opp2))}</div>
-    </div>`;
+    lastGameBlock=`<div style="font-family:var(--font-d);font-size:26px;letter-spacing:-.03em;color:var(--lente)">${myG}—${oppG}</div>
+      <div style="font-size:15px;color:var(--n400)">${won?'Vitória':'Derrota'}${partner?' · com '+esc(getName(partner).split(' ')[0]):''}</div>`;
   }
 
   // Form dots
-  const formHtml=`<div style="display:flex;gap:5px;align-items:center">${stats.form.length?formDots(stats.form):'<span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">Sem jogos</span>'}</div>`;
+  const formHtml=`<div style="display:flex;gap:5px;align-items:center">${stats.form.length?formDots(stats.form):'<span style="font-family:var(--font-m);font-size:11px;color:var(--n500)">Sem jogos</span>'}</div>`;
 
   // Acontecendo agora / Sessões abertas
   const today=new Date().toISOString().slice(0,10);
   const sess=groupSessions();
   const liveSess=sess.filter(s=>s.status==='active'&&(s.liveScore||s.flowState));
   const openSess=sess.filter(s=>s.status!=='active'&&s.status!=='finished'&&s.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
-  const liveCard=s=>`<div class="sess-card" style="border-color:rgba(239,68,68,.5);background:rgba(239,68,68,.06)" onclick="goToSession('${s.id}')">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div style="width:9px;height:9px;border-radius:50%;background:var(--danger);animation:pulse 1.4s infinite;flex-shrink:0"></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-family:var(--font-m);font-size:9px;color:var(--danger);font-weight:700;letter-spacing:1.5px">AO VIVO</div>
-          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name?esc(s.name):fmtDateLong(s.date)}</div>
-        </div>
-        <span style="font-family:var(--font-m);font-size:10px;color:var(--orange)">Assistir ›</span>
+  const liveCard=s=>{
+    const nm=s.name?esc(s.name):fmtDateLong(s.date);
+    const ls=s.liveScore||{};
+    const scoreLine=(ls.games1!=null&&ls.games2!=null)?`<div style="font-family:var(--font-d);font-size:34px;letter-spacing:-.04em;color:var(--orange)">${ls.games1}—${ls.games2}</div>`:'';
+    return`<div class="lbt-c" style="display:flex;flex-direction:column;gap:12px;cursor:pointer" onclick="goToSession('${s.id}')">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <span class="lbt-live"><span class="dot"></span>ACONTECENDO AGORA</span>
+        <span class="lbt-kick" style="overflow:hidden;text-overflow:ellipsis">${nm}</span>
       </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+        <div style="min-width:0;font-size:15px;color:var(--n400)">Partida rolando agora</div>
+        ${scoreLine}
+      </div>
+      <span class="lbt-b lbt-bw" style="padding:12px 20px;width:fit-content">${icon('eye',18)} Assistir</span>
     </div>`;
+  };
   const openCard=s=>{
-    const cnt=(s.confirmed||[]).length, full=cnt>=8, mine=(s.confirmed||[]).includes(pid);
-    const badge=mine?'<span class="sess-badge sess-badge-full">CONFIRMADO</span>':full?'<span class="sess-badge sess-badge-past">COMPLETA</span>':'<span class="sess-badge sess-badge-open">ABERTA</span>';
-    return`<div class="sess-card" onclick="goToSession('${s.id}')">
-      <div style="display:flex;align-items:center;gap:10px">
-        <div class="sess-day-big" style="font-size:26px;min-width:34px">${dayNum(s.date)}</div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.name?esc(s.name):fmtDateLong(s.date)}</div>
-          <div class="sess-card-meta">${cnt}/8 confirmados${mine?' · você está dentro':''}</div>
-        </div>
-        ${badge}
+    const cnt=(s.confirmed||[]).length, mine=(s.confirmed||[]).includes(pid);
+    const nm=s.name?esc(s.name):fmtDateLong(s.date);
+    return`<div class="lbt-c" style="border-radius:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer" onclick="goToSession('${s.id}')">
+      <div style="min-width:0">
+        <div class="lbt-lbl" style="letter-spacing:.16em">SESSÃO ABERTA</div>
+        <div style="font-size:16px;font-weight:600;color:var(--lente);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${nm} · ${cnt} confirmados</div>
       </div>
+      <span class="lbt-b lbt-bp" style="padding:10px 16px;font-size:15px;white-space:nowrap">${mine?'Ver':icon('plus',16)+' Entrar'}</span>
     </div>`;
   };
   let activity='';
-  if(liveSess.length) activity+=`<div class="home-section"><div class="eyebrow">Acontecendo agora</div>${liveSess.map(liveCard).join('')}</div>`;
-  if(openSess.length) activity+=`<div class="home-section"><div class="eyebrow">Sessões abertas</div>${openSess.slice(0,4).map(openCard).join('')}</div>`;
-  if(!liveSess.length&&!openSess.length) activity+=`<div class="home-section"><div class="card" style="display:flex;align-items:center;gap:10px;padding:12px 14px"><span style="color:var(--n400);font-size:12px;flex:1">Nenhuma sessão aberta no momento.</span><button class="btn btn-p btn-sm" onclick="nav('lista')">Criar sessão</button></div></div>`;
+  if(liveSess.length) activity+=`<div style="margin-bottom:8px">${liveSess.map(liveCard).join('')}</div>`;
+  if(openSess.length) activity+=`<div style="margin-bottom:8px">${openSess.slice(0,3).map(openCard).join('')}</div>`;
+  if(!liveSess.length&&!openSess.length) activity+=`<div class="lbt-c" style="border-radius:16px;display:flex;align-items:center;gap:10px"><span style="color:var(--n400);font-size:15px;flex:1">Nenhuma sessão aberta agora.</span><button class="lbt-b lbt-bp" style="padding:10px 16px;font-size:15px" onclick="nav('lista')">Criar sessão</button></div>`;
 
+  // Último jogo + forma (colunas)
+  const form5=stats.form.slice(-5);
+  const formChips=form5.length?form5.map(f=>{const w=(f==='w');return`<div style="width:26px;height:26px;border-radius:999px;background:${w?'var(--orange)':'var(--n600)'};color:${w?'var(--ink)':'var(--n400)'};font-family:var(--font-m);font-size:14px;font-weight:${w?'700':'400'};display:flex;align-items:center;justify-content:center">${w?'V':'D'}</div>`;}).join(''):'<span style="font-size:14px;color:var(--n400)">Sem jogos ainda</span>';
+  const fW=form5.filter(f=>f==='w').length, fL=form5.length-fW;
+
+  const lv=eloToLevel(player.elo);
   return`
-    <div class="home-hero">
-      <div class="home-avatar">${initials(player.name)}</div>
-      <div style="flex:1;min-width:0">
-        <div class="home-name">${esc(player.name.split(' ')[0])}</div>
-        <div class="home-elo-line" style="gap:10px">
-          ${levelMeter(player.elo,1,6)}
-          <div>
-            <div class="lvl-tag">Nível ${eloToLevel(player.elo).n} · ${eloToLevel(player.elo).name}</div>
-            <div class="home-rank">ELO ${player.elo||1000} · ${posLabel}</div>
-          </div>
+    <div class="lbt-c24" style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div class="lbt-lbl">SEU NÍVEL</div>
+          <div style="font-family:var(--font-d);font-size:52px;line-height:.85;letter-spacing:-.04em;color:var(--orange)">N${lv.n}</div>
+          <div style="font-size:16px;font-weight:600;color:var(--lente)">${lv.name}</div>
         </div>
-        ${player.role?`<div style="margin-top:4px">${roleBadge(pid)}</div>`:''}
+        <div style="text-align:right;display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+          <div style="font-family:var(--font-d);font-size:30px;color:var(--lente)">${player.elo||1000}</div>
+          <div class="lbt-kick">ELO · ${pos}º DE ${ranked.length}</div>
+          ${player.role?roleBadge(pid):''}
+        </div>
       </div>
-      <button class="home-change-btn" onclick="nav('config')" style="display:flex;align-items:center">${icon('settings',15)}</button>
-    </div>
-
-    <div class="card" style="padding:16px 18px;display:flex;align-items:center;gap:16px">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
-        <div style="font-family:var(--font-d);font-size:44px;color:var(--orange);line-height:.85">N${eloToLevel(player.elo).n}</div>
-        ${levelMeter(player.elo,1.15,7)}
-      </div>
-      <div style="flex:1;min-width:0">
-        <div class="lvl-tag" style="margin-bottom:2px">Seu nível</div>
-        <div style="font-size:16px;color:var(--lente);font-weight:600">${eloToLevel(player.elo).name}</div>
-        <div style="font-size:13px;color:var(--n400);margin-top:4px">${levelProgress(player.elo)}</div>
+      ${levelBar(player.elo)}
+      <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--n600);padding-top:12px;gap:10px">
+        <div style="font-size:15px;color:var(--n400)">${levelProgress(player.elo)}</div>
+        <div style="font-family:var(--font-m);font-size:12px;letter-spacing:.1em;color:var(--orange);white-space:nowrap">${levelRange(player.elo)}</div>
       </div>
     </div>
 
     ${activity}
 
-    <div class="metric-grid">
-      <div class="metric-box">
-        <div class="metric-val green">${stats.w}</div>
-        <div class="metric-tag">Vitórias</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val red">${stats.l}</div>
-        <div class="metric-tag">Derrotas</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val orange">${pct}%</div>
-        <div class="metric-tag">Aproveit.</div>
-      </div>
-      <div class="metric-box">
-        <div class="metric-val" style="font-size:20px;padding-top:4px">${streakHtml}</div>
-        <div class="metric-tag">Sequência</div>
-      </div>
-    </div>
-
-    <div class="home-section">
-      <div class="eyebrow">Último jogo</div>
-      ${lastMatchHtml}
-    </div>
-
-    <div class="home-section">
-      <div class="eyebrow">Forma recente</div>
-      <div class="card" style="padding:12px 14px">
-        ${formHtml}
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n500);margin-top:6px;letter-spacing:.5px">Últimas ${stats.form.length} partidas · Verde=V · Vermelho=D</div>
-      </div>
-    </div>
-
-    ${stats.bestPartner?`<div class="home-section">
-      <div class="eyebrow">Melhor parceiro</div>
-      <div class="card" style="padding:12px 14px;display:flex;align-items:center;gap:12px">
-        <div style="width:36px;height:36px;border-radius:50%;background:var(--n600);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;flex-shrink:0">${initials(getName(stats.bestPartner.id))}</div>
-        <div>
-          <div style="font-size:13px;font-weight:600">${esc(getName(stats.bestPartner.id))}</div>
-          <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);margin-top:2px">${stats.bestPartner.w}V ${stats.bestPartner.l}D juntos</div>
+    <div class="lbt-c" style="border-radius:16px;margin-bottom:8px">
+      <div style="display:flex;gap:14px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
+          <div class="lbt-lbl">Último jogo</div>
+          ${lastGameBlock}
         </div>
-        <div style="margin-left:auto;font-family:var(--font-d);font-size:22px;color:var(--success)">${Math.round(stats.bestPartner.wr*100)}%</div>
+        <div style="width:1px;background:var(--n600)"></div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-width:0">
+          <div class="lbt-lbl">Forma recente</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">${formChips}</div>
+          <div style="font-size:14px;color:var(--n400)">${form5.length?fW+'V · '+fL+'D nas últimas '+form5.length:'—'}</div>
+        </div>
       </div>
-    </div>`:''}
+    </div>
   `;
 }
 
@@ -1783,7 +1804,7 @@ function renderListaDetail(sessionId){
     }
     // Fallback: sessão finalizada sem dados de flow
     return backBtn+dateHdr+`<div class="alert alert-ok">${icon('check',14)} Sessão finalizada em ${fmtDate(session.date)}</div>
-      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-top:8px">Confira o histórico para ver as partidas.</p>`;
+      <p style="font-family:var(--font-m);font-size:11px;color:var(--n500);text-align:center;margin-top:8px">Confira o histórico para ver as partidas.</p>`;
   }
 
   // Pending → show confirmation list
@@ -1821,7 +1842,7 @@ function renderListaDetail(sessionId){
 
   const startBtn=canStart
     ?`<button class="btn btn-p btn-full" style="margin-top:14px;font-size:15px;padding:13px" onclick="startSession('${session.id}')">${icon('play',14)} Iniciar Sessão (${confirmed.length} jogadores)</button>`
-    :`<p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-top:10px;letter-spacing:.5px">Mínimo 4 jogadores para iniciar · ${confirmed.length}/4</p>`;
+    :`<p style="font-family:var(--font-m);font-size:11px;color:var(--n500);text-align:center;margin-top:10px;letter-spacing:.5px">Mínimo 4 jogadores para iniciar · ${confirmed.length}/4</p>`;
 
   return`${backBtn}${dateHdr}
     <div class="spots-bar">
@@ -1915,7 +1936,7 @@ function renderPairManager(session){
   const poolChips=pool.map(pid=>{
     const sel=selectedPoolChip===pid;
     return`<div class="pool-chip ${sel?'selected':''}" onclick="selectPoolChip('${pid}')">${esc(getName(pid))}</div>`;
-  }).join('') || `<span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">Todos atribuídos</span>`;
+  }).join('') || `<span style="font-family:var(--font-m);font-size:11px;color:var(--n500)">Todos atribuídos</span>`;
 
   // Pair cards
   const pairCards=pairs.map((pair,pi)=>`
@@ -1931,7 +1952,7 @@ function renderPairManager(session){
           </div>`;
         } else {
           return`<div class="pair-player empty" onclick="assignToPair(${pi},${pos})">
-            <div class="pair-player-name" style="color:var(--n500);font-style:italic;font-size:10px">+ jogador</div>
+            <div class="pair-player-name" style="color:var(--n500);font-style:italic;font-size:14px">+ jogador</div>
           </div>`;
         }
       }).join('')}
@@ -1957,7 +1978,7 @@ function renderPairManager(session){
     </div>
     <div class="pair-slots">${pairCards}</div>
 
-    <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;margin-bottom:12px;letter-spacing:.5px">
+    <p style="font-family:var(--font-m);font-size:11px;color:var(--n500);text-align:center;margin-bottom:12px;letter-spacing:.5px">
       Toque num jogador para pegá-lo, depois toque em outro para trocar de lugar, ou num espaço vazio para mover. O × remove.
     </p>
 
@@ -1971,91 +1992,73 @@ function renderSpectator(session){
   const fs=session.flowState;
   const pairs=session.pairs||[];
 
-  // ── Bloco de placar ──
+  // ── Bloco de placar (dois cards empilhados, estilo Level BT) ──
   let scoreBlock='';
+  const topbar=`<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:8px;color:var(--lente)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <span style="font-family:var(--font-m);font-size:12px;letter-spacing:.14em">ESPECTADOR · SÓ LEITURA</span>
+      </div>
+      <span class="lbt-live"><span class="dot"></span>AO VIVO</span>
+    </div>`;
   if(ls && ls.status!=='finished'){
-    const t1names=(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
-    const t2names=(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
+    const t1names=(ls.team1||[]).map(pid=>esc(getName(pid).split(' ')[0])).join('<br>');
+    const t2names=(ls.team2||[]).map(pid=>esc(getName(pid).split(' ')[0])).join('<br>');
     const isPts=ls.scoring==='points'&&!ls.isTb;
     const SPTS=['0','15','30','40'];
-    const bigA=isPts?SPTS[Math.min(ls.p1||0,3)]:ls.t1, bigB=isPts?SPTS[Math.min(ls.p2||0,3)]:ls.t2;
-    const winning1=isPts?(ls.p1||0)>(ls.p2||0):ls.t1>ls.t2, winning2=isPts?(ls.p2||0)>(ls.p1||0):ls.t2>ls.t1;
-    const setsPills=(ls.completedSets||[]).map(s=>{
-      const t1w=s.won===1;
-      return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}</div>
-             <div class="sets-sep">·</div>
-             <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}</div>
-             <div class="sets-sep" style="margin:0 4px">|</div>`;
-    }).join('');
-    const tbBanner=ls.isTb?`<div style="text-align:center;padding:5px 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;border-bottom:1px solid var(--n600)">${icon('zap',13)} TIEBREAK · PRIMEIRO A ${ls.tiebreakPoints||7}</div>`:'';
+    const bigA=isPts?SPTS[Math.min(ls.p1||0,3)]:(ls.isTb?ls.t1:ls.t1), bigB=isPts?SPTS[Math.min(ls.p2||0,3)]:(ls.isTb?ls.t2:ls.t2);
+    const modeLine=(isPts?'AVANÇADA':(ls.isTb?'TIEBREAK':'BÁSICA (SÓ GAMES)'));
+    const card=(names,big,color,gamesN,srv)=>`<div style="background:var(--n700);border-radius:20px;padding:24px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="font-size:20px;font-weight:700;color:var(--lente);line-height:1.25">${names}</div>
+          ${srv?'<span style="font-family:var(--font-m);font-size:11px;letter-spacing:.14em;color:var(--orange)">SACANDO</span>':(isPts?`<span style="font-family:var(--font-m);font-size:11px;color:var(--n400)">${gamesN} games</span>`:'')}
+        </div>
+        <div style="font-family:var(--font-d);font-size:80px;line-height:.8;letter-spacing:-.05em;color:${color}">${big}</div>
+      </div>`;
     scoreBlock=`
-      <div class="eyebrow">Partida ao vivo</div>
-      <div style="background:var(--n700);border:1px solid rgba(255,102,0,.4);border-radius:12px;overflow:hidden;margin-bottom:16px">
-        <div style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--n600);background:rgba(255,102,0,.05)">
-          <div class="live-dot" style="width:7px;height:7px;border-radius:50%;background:var(--danger);animation:pulse 1.2s infinite;flex-shrink:0"></div>
-          <span style="font-family:var(--font-m);font-size:9px;color:var(--danger);letter-spacing:1.5px;font-weight:700">AO VIVO</span>
-          <div style="margin-left:auto;display:flex;gap:4px;align-items:center">${setsPills}
-            <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t1}</div>
-            <div class="sets-sep">·</div>
-            <div class="set-score-pill current" style="${ls.isTb?'border-color:var(--gold);color:var(--gold)':''}">${ls.t2}</div>
-          </div>
-        </div>
-        ${tbBanner}
-        ${isPts&&ls.server?`<div style="text-align:center;padding:5px 0;font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:1px;border-bottom:1px solid var(--n600)">SACANDO: <span style="color:var(--orange)">${esc(getName(ls.server).split(' ')[0])}</span></div>`:''}
-        <div style="display:grid;grid-template-columns:1fr 1fr">
-          <div style="padding:18px 12px;text-align:center;border-right:1px solid var(--n600);background:${winning1?'rgba(255,102,0,.06)':''}">
-            <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t1names)}</div>
-            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':isPts?'var(--orange)':winning1?'var(--orange)':'var(--lente)'}">${bigA}</div>
-            ${isPts?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:4px;letter-spacing:.5px">${ls.games1||0} game${(ls.games1||0)!==1?'s':''}</div>`:''}
-          </div>
-          <div style="padding:18px 12px;text-align:center;background:${winning2?'rgba(255,102,0,.06)':''}">
-            <div style="font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;color:var(--n400);margin-bottom:6px">${esc(t2names)}</div>
-            <div style="font-family:var(--font-d);font-size:80px;line-height:1;color:${ls.isTb?'var(--gold)':isPts?'var(--orange)':winning2?'var(--orange)':'var(--lente)'}">${bigB}</div>
-            ${isPts?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:4px;letter-spacing:.5px">${ls.games2||0} game${(ls.games2||0)!==1?'s':''}</div>`:''}
-          </div>
-        </div>
+      <div style="font-family:var(--font-m);font-size:12px;letter-spacing:.14em;color:var(--n400);margin-bottom:10px">${modeLine}</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        ${card(t1names,bigA,'var(--orange)',ls.games1||0,isPts&&ls.server&&(ls.team1||[]).includes(ls.server))}
+        ${card(t2names,bigB,'var(--lente)',ls.games2||0,isPts&&ls.server&&(ls.team2||[]).includes(ls.server))}
       </div>`;
   } else if(ls && ls.status==='finished'){
     const winNames=ls.winner===1?(ls.team1||[]).map(pid=>getName(pid).split(' ')[0]).join(' & '):(ls.team2||[]).map(pid=>getName(pid).split(' ')[0]).join(' & ');
-    scoreBlock=`<div class="alert alert-ok" style="margin-bottom:16px;text-align:center">
-      ${icon('trophy',14)} <strong>${esc(winNames)}</strong> venceu · Próxima partida em breve...
+    scoreBlock=`<div class="lbt-c" style="border:1.5px solid var(--orange);display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span style="color:var(--orange)">${icon('trophy',18)}</span>
+      <div style="font-size:15px;color:var(--lente)"><strong>${esc(winNames)}</strong> venceu · próxima partida em breve.</div>
     </div>`;
   } else {
-    scoreBlock=`<div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;padding:20px;text-align:center;margin-bottom:16px">
+    scoreBlock=`<div class="lbt-c" style="padding:24px;text-align:center;margin-bottom:16px">
       <div style="margin-bottom:8px;color:var(--orange)">${icon('ball',32)}</div>
-      <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);letter-spacing:1px">AGUARDANDO INÍCIO DA PARTIDA</div>
+      <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:1px">AGUARDANDO INÍCIO DA PARTIDA</div>
     </div>`;
   }
 
-  // ── Bloco do grupo ──
+  // ── Duplas da sessão ──
   const onCourtIds=ls?[...(ls.team1||[]),...(ls.team2||[])]:[];
   const pairRows=pairs.map((pair,i)=>{
     const isOnCourt=pair.some(pid=>onCourtIds.includes(pid));
-    const pairNames=pair.map(pid=>getName(pid).split(' ')[0]).join(' & ');
-    const eloAvg=pair.length?Math.round(pair.reduce((s,pid)=>s+getElo(pid),0)/pair.length):0;
-    return`<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-bottom:1px solid var(--n600);${isOnCourt?'background:rgba(255,102,0,.06)':''}">
-      <div style="font-family:var(--font-d);font-size:18px;color:${isOnCourt?'var(--orange)':'var(--n500)'};width:20px;text-align:center">${i+1}</div>
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:700;color:${isOnCourt?'var(--lente)':'var(--n300)'}">${esc(pairNames)}</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:1px">ELO médio ${eloAvg}</div>
-      </div>
-      ${isOnCourt?`<span style="font-family:var(--font-m);font-size:8px;font-weight:700;color:var(--orange);letter-spacing:1px;padding:3px 7px;border-radius:4px;background:rgba(255,102,0,.15);border:1px solid rgba(255,102,0,.3)">EM QUADRA</span>`
-        :`<span style="font-family:var(--font-m);font-size:8px;color:var(--n500);letter-spacing:.8px">AGUARDANDO</span>`}
+    const pairNames=pair.map(pid=>esc(getName(pid).split(' ')[0])).join(' · ');
+    const elos=pair.map(pid=>getElo(pid)).join(' · ');
+    return`<div style="display:flex;align-items:center;justify-content:space-between;background:var(--n700);border-radius:16px;padding:14px 16px;${isOnCourt?'':'opacity:.7'}">
+      <div style="font-size:16px;font-weight:600;color:var(--lente)">${pairNames}</div>
+      <div style="font-family:var(--font-m);font-size:13px;color:${isOnCourt?'var(--orange)':'var(--n400)'}">${isOnCourt?elos:'NA FILA'}</div>
     </div>`;
   }).join('');
 
   const finishBtnHtml=isPresOrDono(DB.currentPlayer())
-    ?'<button class="btn btn-d btn-sm btn-full" style="margin-top:12px" onclick="finishSession(\''+session.id+'\')">'+icon('stop',14)+' Encerrar sessão</button>'
+    ?'<button class="lbt-b lbt-bp" style="width:100%;background:var(--danger);color:#fff;margin-top:14px" onclick="finishSession(\''+session.id+'\')">'+icon('stop',16)+' Encerrar sessão</button>'
     :'';
 
   return`
-    <div class="sess-active-header"><div class="sess-active-dot"></div><div class="sess-active-label">SESSÃO AO VIVO · ESPECTADOR</div></div>
+    ${topbar}
     ${scoreBlock}
-    <div class="eyebrow">Grupo da sessão</div>
-    <div style="background:var(--n700);border:1px solid var(--n600);border-radius:10px;overflow:hidden;margin-bottom:10px">
-      ${pairRows||'<div style="padding:14px;font-family:var(--font-m);font-size:10px;color:var(--n500);text-align:center">Duplas ainda não definidas</div>'}
+    <div style="height:1px;background:var(--n600);margin-bottom:12px"></div>
+    <div class="lbt-lbl" style="letter-spacing:.2em;margin-bottom:10px">Duplas da sessão</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+      ${pairRows||'<div style="padding:14px;font-family:var(--font-m);font-size:11px;color:var(--n400);text-align:center">Duplas ainda não definidas</div>'}
     </div>
-    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;letter-spacing:.8px">Atualiza automaticamente a cada 3 segundos</p>
+    <div style="font-size:15px;color:var(--n400);text-align:center">Atualiza sozinho. Fica de olho.</div>
   `+finishBtnHtml;
 }
 
@@ -2204,33 +2207,33 @@ function sfFormatBar(sf){
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
       <div onclick="sf_set('targetGames',4)" style="padding:10px;border-radius:8px;border:1px solid ${tg===4?'var(--orange)':'var(--n600)'};background:${tg===4?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
         <div style="font-family:var(--font-d);font-size:22px;color:${tg===4?'var(--orange)':'var(--n300)'}">4</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px">GAMES</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px">GAMES</div>
       </div>
       <div onclick="sf_set('targetGames',6)" style="padding:10px;border-radius:8px;border:1px solid ${tg===6?'var(--orange)':'var(--n600)'};background:${tg===6?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
         <div style="font-family:var(--font-d);font-size:22px;color:${tg===6?'var(--orange)':'var(--n300)'}">6</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.8px">GAMES</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px">GAMES</div>
       </div>
     </div>
-    <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:6px;letter-spacing:.5px">Tiebreak se ${tg}×${tg}:</div>
+    <div style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-bottom:6px;letter-spacing:.5px">Tiebreak se ${tg}×${tg}:</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
       <div onclick="sf_set('tiebreakPoints',7)" style="padding:8px;border-radius:8px;border:1px solid ${tb===7?'var(--orange)':'var(--n600)'};background:${tb===7?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
         <div style="font-family:var(--font-d);font-size:20px;color:${tb===7?'var(--orange)':'var(--n300)'}">7</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.5px">PONTOS</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px">PONTOS</div>
       </div>
       <div onclick="sf_set('tiebreakPoints',10)" style="padding:8px;border-radius:8px;border:1px solid ${tb===10?'var(--orange)':'var(--n600)'};background:${tb===10?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
         <div style="font-family:var(--font-d);font-size:20px;color:${tb===10?'var(--orange)':'var(--n300)'}">10</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.5px">PONTOS</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px">PONTOS</div>
       </div>
     </div>
-    <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:6px;letter-spacing:.5px">Pontuação:</div>
+    <div style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-bottom:6px;letter-spacing:.5px">Pontuação:</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
       <div onclick="sf_set('scoring','games')" style="padding:10px;border-radius:8px;border:1px solid ${sc==='games'?'var(--orange)':'var(--n600)'};background:${sc==='games'?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-h);font-size:13px;font-weight:700;color:${sc==='games'?'var(--orange)':'var(--n300)'}">Básica</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.5px">SÓ GAMES</div>
+        <div style="font-family:var(--font-h);font-size:14px;font-weight:700;color:${sc==='games'?'var(--orange)':'var(--n300)'}">Básica</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px">SÓ GAMES</div>
       </div>
       <div onclick="sf_set('scoring','points')" style="padding:10px;border-radius:8px;border:1px solid ${sc==='points'?'var(--orange)':'var(--n600)'};background:${sc==='points'?'rgba(255,102,0,.12)':'var(--n700)'};cursor:pointer;text-align:center;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-h);font-size:13px;font-weight:700;color:${sc==='points'?'var(--orange)':'var(--n300)'}">Avançada</div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--n400);letter-spacing:.5px">PONTOS + SAQUE + STATS</div>
+        <div style="font-family:var(--font-h);font-size:14px;font-weight:700;color:${sc==='points'?'var(--orange)':'var(--n300)'}">Avançada</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.5px">PONTOS + SAQUE + STATS</div>
       </div>
     </div>`;
 }
@@ -2259,15 +2262,15 @@ function renderSessionFlow(session){
         border:1px solid ${sf.rule==='rei'?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('crown',15)} Rei da Quadra</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">A dupla vencedora permanece em quadra até perder</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.3px">A dupla vencedora permanece em quadra até perder</div>
       </div>
       ${n>=3?`<div onclick="sf_set('rule','rodizio')" style="
         background:${sf.rule==='rodizio'?'rgba(255,102,0,.12)':'var(--n700)'};
         border:1px solid ${sf.rule==='rodizio'?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:14px;margin-bottom:16px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="font-size:14px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:5px">${icon('cycle',15)} Rodízio Completo</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.3px">Se ganhar de todas as duplas em sequência, as duas saem e as duas da fora entram</div>
-      </div>`:`<div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:16px;letter-spacing:.3px">O Rodízio Completo fica disponível com 3 duplas ou mais (6+ jogadores).</div>`}
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.3px">Se ganhar de todas as duplas em sequência, as duas saem e as duas da fora entram</div>
+      </div>`:`<div style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-bottom:16px;letter-spacing:.3px">O Rodízio Completo fica disponível com 3 duplas ou mais (6+ jogadores).</div>`}
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" onclick="sf_confirmRule()">Confirmar e escolher duplas →</button>
     `;
@@ -2281,14 +2284,14 @@ function renderSessionFlow(session){
         background:${sel?'rgba(255,102,0,.15)':'var(--n700)'};
         border:1px solid ${sel?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
-        <div style="font-size:13px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
+        <div style="font-size:14px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
       </div>`;
     }).join('');
     return`${activeHeader}
       <div class="eyebrow">Quem começa?</div>
       ${pairChips}
-      <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-bottom:4px;letter-spacing:.5px">Selecione 2 duplas</p>
+      <p style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-bottom:4px;letter-spacing:.5px">Selecione 2 duplas</p>
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px" ${sf.pickSelected.length===2?'':'disabled'} onclick="startFlowMatch()">▶ Iniciar Partida</button>
       <button class="btn btn-s btn-sm" style="margin-top:8px;width:100%" onclick="editPairsInFlow('${session.id}')">${icon('edit',13)} Editar Duplas</button>
@@ -2300,7 +2303,7 @@ function renderSessionFlow(session){
   if(sf.phase==='pick_opponent'){
     const cp=pairs[sf.onCourtIdx];
     const kingStreak=sf.kingRun.length;
-    const streakLabel=kingStreak>0?`<span style="font-family:var(--font-m);font-size:9px;color:var(--orange);margin-left:6px">${kingStreak} vitória${kingStreak>1?'s':''} seguida${kingStreak>1?'s':''}</span>`:'';
+    const streakLabel=kingStreak>0?`<span style="font-family:var(--font-m);font-size:11px;color:var(--orange);margin-left:6px">${kingStreak} vitória${kingStreak>1?'s':''} seguida${kingStreak>1?'s':''}</span>`:'';
     const onCourtHtml=`<div class="alert alert-ok" style="margin-bottom:12px;display:flex;align-items:center;flex-wrap:wrap;gap:4px">
       <span>${icon('crown',13)} Em quadra:</span>
       <strong>${cp.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</strong>
@@ -2314,8 +2317,8 @@ function renderSessionFlow(session){
         background:${sel?'rgba(255,102,0,.15)':'var(--n700)'};
         border:1px solid ${sel?'var(--orange)':'var(--n600)'};
         border-radius:10px;padding:12px 14px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-        <div style="font-family:var(--font-m);font-size:9px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
-        <div style="font-size:13px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:${sel?'var(--orange)':'var(--n400)'};margin-bottom:4px">DUPLA ${i+1} ${sel?icon('check',10):''}</div>
+        <div style="font-size:14px;font-weight:700">${pair.map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
       </div>`;
     }).join('');
     return`${activeHeader}${onCourtHtml}
@@ -2335,12 +2338,12 @@ function renderSessionFlow(session){
       <div style="text-align:center;padding:20px 0 10px">
         <div style="margin-bottom:8px;color:var(--orange)">${icon('cycle',38)}</div>
         <div style="font-family:var(--font-h);font-size:22px;font-weight:700;color:var(--orange);text-transform:uppercase">Rodízio!</div>
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--n400);margin-top:6px;letter-spacing:.5px">As duas duplas saem.<br>As que estavam de fora entram.</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:6px;letter-spacing:.5px">As duas duplas saem.<br>As que estavam de fora entram.</div>
       </div>
       <div class="eyebrow" style="margin-top:16px">Novo confronto</div>
       ${newPairs.map(i=>`<div style="background:rgba(255,102,0,.08);border:1px solid rgba(255,102,0,.3);border-radius:10px;padding:12px 14px;margin-bottom:8px">
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--orange);margin-bottom:4px">DUPLA ${i+1}</div>
-        <div style="font-size:13px;font-weight:700">${pairs[i].map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--orange);margin-bottom:4px">DUPLA ${i+1}</div>
+        <div style="font-size:14px;font-weight:700">${pairs[i].map(pid=>getName(pid).split(' ')[0]).join(' + ')}</div>
       </div>`).join('')}
       ${sfFormatBar(sf)}
       <button class="btn btn-p btn-full" style="font-size:15px;padding:13px;margin-top:4px" onclick="startRotationMatch()">▶ Iniciar Partida</button>
@@ -2354,7 +2357,7 @@ function renderSessionFlow(session){
       const p2=pairs[m.pair2Idx].map(pid=>getName(pid).split(' ')[0]).join('+');
       const [wt,wg,lg]=m.winner===1?[p1,m.score1,m.score2]:[p2,m.score2,m.score1];
       const lt=m.winner===1?p2:p1;
-      return`<div style="padding:7px 0;border-bottom:1px solid var(--n600);font-size:12px;display:flex;align-items:center;gap:6px">
+      return`<div style="padding:7px 0;border-bottom:1px solid var(--n600);font-size:14px;display:flex;align-items:center;gap:6px">
         <span style="color:var(--success);font-weight:700">${esc(wt)}</span>
         <span style="font-family:var(--font-d);font-size:18px;color:var(--orange)">${wg}–${lg}</span>
         <span style="color:var(--n400)">${esc(lt)}</span>
@@ -2365,7 +2368,7 @@ function renderSessionFlow(session){
       <div class="alert alert-ok" style="margin-bottom:14px">${icon('check',14)} Sessão finalizada! ${sf.matches.length} partida${sf.matches.length!==1?'s':''} disputada${sf.matches.length!==1?'s':''}.</div>
       ${destHtml}
       <div class="eyebrow" style="margin-top:14px">Resultado completo</div>
-      <div class="card" style="padding:10px 12px">${summary||'<p style="color:var(--n500);font-size:11px">Nenhuma partida.</p>'}</div>
+      <div class="card" style="padding:10px 12px">${summary||'<p style="color:var(--n500);font-size:14px">Nenhuma partida.</p>'}</div>
     `;
   }
 
@@ -2700,7 +2703,7 @@ function openConfirmModal(sessionId){
   const confirmed=session?.confirmed||[];
   const chips=players.filter(p=>!confirmed.includes(p.id))
     .map(p=>`<div class="pchip" onclick="selChip(this,'${p.id}')">${esc(p.name)}</div>`).join('');
-  document.getElementById('confirm-chips').innerHTML=chips||'<p style="color:var(--n500);font-size:12px">Adicione jogadores no Admin.</p>';
+  document.getElementById('confirm-chips').innerHTML=chips||'<p style="color:var(--n500);font-size:14px">Adicione jogadores no Admin.</p>';
   document.getElementById('confirm-input').value='';
   document.getElementById('modal-confirm').dataset.sid=sessionId;
   selectedChipId=null;
@@ -2754,8 +2757,8 @@ function renderConfig(){
         <div class="pr-label">${label}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <div class="pr-val" style="font-size:13px;color:var(--n300)">${value}</div>
-        ${action?'<span style="color:var(--n500);font-size:12px">›</span>':''}
+        <div class="pr-val" style="font-size:14px;color:var(--n300)">${value}</div>
+        ${action?'<span style="color:var(--n500);font-size:14px">›</span>':''}
       </div>
     </div>`;
 
@@ -2780,7 +2783,7 @@ function renderConfig(){
       ${myGroupsList().map(g=>`
         <div onclick="switchGroup('${g.groupId}')" style="display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;${g.groupId===myGroupId()?'background:rgba(255,102,0,.08)':''}">
           <span style="color:${g.groupId===myGroupId()?'var(--orange)':'var(--n400)'};display:flex">${icon('users',16)}</span>
-          <div style="flex:1;min-width:0;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(g.name)}</div>
+          <div style="flex:1;min-width:0;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(g.name)}</div>
           ${g.role?roleBadge(g.playerId):''}
           ${g.groupId===myGroupId()?`<span style="color:var(--orange);display:flex">${icon('check',16)}</span>`:''}
         </div>`).join('')}
@@ -2821,7 +2824,7 @@ function renderConfig(){
     <button class="btn btn-d btn-full" style="margin-top:4px" onclick="logout()">
       Sair da conta
     </button>
-    <p style="font-family:var(--font-m);font-size:8px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">Level BT · Beach Tennis</p>
+    <p style="font-family:var(--font-m);font-size:11px;color:var(--n600);text-align:center;margin-top:14px;letter-spacing:1px">Level BT · Beach Tennis</p>
   `;
 }
 
@@ -2840,8 +2843,8 @@ function renderGrupo(){
     <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--n600)">
       <div style="width:40px;height:40px;border-radius:50%;background:var(--n600);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:16px;flex-shrink:0">${initials(p.name)}</div>
       <div style="flex:1;min-width:0">
-        <div style="font-size:13px;font-weight:700">${esc(p.name)}</div>
-        <div style="margin-top:3px">${roleBadge(p.id)||`<span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">Membro</span>`}</div>
+        <div style="font-size:14px;font-weight:700">${esc(p.name)}</div>
+        <div style="margin-top:3px">${roleBadge(p.id)||`<span style="font-family:var(--font-m);font-size:11px;color:var(--n500)">Membro</span>`}</div>
       </div>
       <button class="btn btn-s btn-sm" onclick="openManagePlayer('${p.id}')">Editar</button>
     </div>`).join('');
@@ -2850,7 +2853,7 @@ function renderGrupo(){
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <div style="font-family:var(--font-h);font-size:20px;font-weight:700;text-transform:uppercase">Grupo</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:1px">${players.length} JOGADORES</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:1px">${players.length} JOGADORES</div>
       </div>
       <button class="btn btn-p btn-sm" onclick="openModal('modal-add-player');document.getElementById('add-player-name').value=''">+ Adicionar</button>
     </div>
@@ -2876,8 +2879,8 @@ function openManagePlayer(pid){
       cursor:pointer;margin-bottom:8px;-webkit-tap-highlight-color:transparent">
       <div style="color:var(--orange);display:flex">${icon(r.ic,20)}</div>
       <div>
-        <div style="font-size:13px;font-weight:700">${r.name}</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);margin-top:2px">${r.desc}</div>
+        <div style="font-size:14px;font-weight:700">${r.name}</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:2px">${r.desc}</div>
       </div>
       ${p.role===r.val?`<div style="margin-left:auto;color:var(--orange);display:flex">${icon('check',16)}</div>`:''}
     </div>`).join('');
@@ -2887,7 +2890,7 @@ function openManagePlayer(pid){
       <div style="width:48px;height:48px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:20px;color:var(--ink)">${initials(p.name)}</div>
       <div>
         <div style="font-family:var(--font-h);font-size:18px;font-weight:700;text-transform:uppercase">${esc(p.name)}</div>
-        <div style="font-family:var(--font-m);font-size:9px;color:var(--orange);letter-spacing:.8px">ELO ${p.elo||1000}</div>
+        <div style="font-family:var(--font-m);font-size:11px;color:var(--orange);letter-spacing:.8px">ELO ${p.elo||1000}</div>
       </div>
     </div>
     <div class="eyebrow" style="margin-bottom:10px">Papel no grupo</div>
@@ -2936,16 +2939,18 @@ function replayOnboarding(){
 // RANKING
 // ══════════════════════════════════════
 function renderRanking(){
-  const tabs=`
-    <div class="tab-tog">
-      <button class="${rankTab==='elo'?'active':''}" onclick="setRankTab('elo')">ELO</button>
-      <button class="${rankTab==='duplas'?'active':''}" onclick="setRankTab('duplas')">Duplas</button>
-      <button class="${rankTab==='desafios'?'active':''}" onclick="setRankTab('desafios')">Desafios</button>
+  const gname=(DB.groupName()||'Meu grupo').toUpperCase();
+  const header=`<div class="lbt-top"><div class="lbt-title">RANKING</div><div class="lbt-kick">${esc(gname)}</div></div>`;
+  const tabs=`<div class="lbt-tabs">
+      <div class="lbt-tab ${rankTab==='elo'?'on':''}" onclick="setRankTab('elo')">ELO</div>
+      <div class="lbt-tab ${rankTab==='duplas'?'on':''}" onclick="setRankTab('duplas')">DUPLAS</div>
+      <div class="lbt-tab ${rankTab==='desafios'?'on':''}" onclick="setRankTab('desafios')">DESAFIOS</div>
     </div>`;
-  if(rankTab==='desafios') return tabs+renderDesafios();
-  return tabs
-    +(rankTab==='elo'?renderEloTable():renderDuplasTable())
-    +`<div style="margin-top:16px"><div class="eyebrow">Últimas Partidas</div><div class="card">${renderMatchHist()}</div></div>`;
+  let body;
+  if(rankTab==='desafios') body=renderDesafios();
+  else if(rankTab==='duplas') body=renderDuplasTable();
+  else body=renderEloTable();
+  return header+tabs+body;
 }
 function setRankTab(t){rankTab=t;render();}
 
@@ -2983,12 +2988,12 @@ function renderDesafios(){
   if(incoming.length||outgoing.length){
     html+=`<div class="eyebrow">Pendentes</div><div class="card" style="margin-bottom:14px">`;
     html+=incoming.map(c=>`<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--n600)">
-      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">${esc(getName(c.from_id))} te desafiou</div>
+      <div style="flex:1;font-size:14px;font-weight:600;min-width:0">${esc(getName(c.from_id))} te desafiou</div>
       <button class="btn btn-g btn-sm" onclick="acceptChallenge('${c.id}')">Aceitar</button>
       <button class="btn btn-s btn-sm" onclick="declineChallenge('${c.id}')">Recusar</button>
     </div>`).join('');
     html+=outgoing.map(c=>`<div style="display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--n600)">
-      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">Você desafiou ${esc(getName(c.to_id))} <span style="color:var(--n500);font-family:var(--font-m);font-size:10px">· aguardando</span></div>
+      <div style="flex:1;font-size:14px;font-weight:600;min-width:0">Você desafiou ${esc(getName(c.to_id))} <span style="color:var(--n500);font-family:var(--font-m);font-size:11px">· aguardando</span></div>
       <button class="btn btn-s btn-sm" onclick="cancelChallenge('${c.id}')">Cancelar</button>
     </div>`).join('');
     html+=`</div>`;
@@ -2996,8 +3001,8 @@ function renderDesafios(){
   if(active.length){
     html+=`<div class="eyebrow">Para jogar</div><div class="card" style="margin-bottom:14px">`;
     html+=active.map(c=>`<div style="padding:8px 0;border-bottom:1px solid var(--n600)">
-      <div style="font-size:13px;font-weight:600;margin-bottom:6px">${esc(getName(c.from_id))} vs ${esc(getName(c.to_id))}</div>
-      <div style="display:flex;gap:6px;align-items:center"><span style="font-family:var(--font-m);font-size:10px;color:var(--n400)">Quem venceu?</span>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">${esc(getName(c.from_id))} vs ${esc(getName(c.to_id))}</div>
+      <div style="display:flex;gap:6px;align-items:center"><span style="font-family:var(--font-m);font-size:11px;color:var(--n400)">Quem venceu?</span>
         <button class="btn btn-s btn-sm" onclick="resolveChallenge('${c.id}','${c.from_id}')">${esc(getName(c.from_id).split(' ')[0])}</button>
         <button class="btn btn-s btn-sm" onclick="resolveChallenge('${c.id}','${c.to_id}')">${esc(getName(c.to_id).split(' ')[0])}</button>
       </div>
@@ -3007,13 +3012,13 @@ function renderDesafios(){
   html+=`<div class="eyebrow">Placar de Desafios</div><div class="card" style="margin-bottom:14px">`;
   html+= board.length? board.map((x,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(63,59,53,.5)">
       <div class="rpos ${i===0?'p1':i===1?'p2':i===2?'p3':''}" style="font-size:18px">${i+1}</div>
-      <div style="flex:1;font-size:13px;font-weight:600">${esc(x.p.name)}</div>
+      <div style="flex:1;font-size:14px;font-weight:600">${esc(x.p.name)}</div>
       <div class="elo-val">${x.pts}</div><div class="sl">pts</div>
     </div>`).join('') : `<div class="no-matches">Ainda não há desafios concluídos. Vencer vale 3 pts, jogar vale 1.</div>`;
   html+=`</div>`;
   html+=`<div class="eyebrow">Desafiar</div><div class="card">`;
   html+= others.length? others.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--n600)">
-      <div style="flex:1;font-size:13px;font-weight:600;min-width:0">${esc(p.name)} <span style="font-family:var(--font-m);font-size:10px;color:var(--n400)">· ${challengePoints(p.id)} pts</span></div>
+      <div style="flex:1;font-size:14px;font-weight:600;min-width:0">${esc(p.name)} <span style="font-family:var(--font-m);font-size:11px;color:var(--n400)">· ${challengePoints(p.id)} pts</span></div>
       <button class="btn btn-p btn-sm" onclick="createChallenge('${p.id}')">Desafiar</button>
     </div>`).join('') : `<div class="no-matches">Sem outros jogadores no grupo ainda.</div>`;
   html+=`</div>`;
@@ -3023,30 +3028,28 @@ function renderDesafios(){
 function renderEloTable(){
   const players=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
   if(!players.length)return`<div class="empty"><div class="ei">${icon('trophy',34)}</div><p>Nenhum jogador ainda.</p></div>`;
-  const rows=players.map((p,i)=>{
+  const me=DB.currentPlayer();
+  return players.map((p,i)=>{
     const st=playerStats(p.id);
     const total=st.w+st.l;
     const pct=total?Math.round(st.w/total*100):0;
-    const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
-    const stk=st.streak>1?(st.streakType==='w'?`<span class="streak-badge streak-w">${st.streak}V</span>`:`<span class="streak-badge streak-l">${st.streak}D</span>`):'';
-    return`<tr class="${i===0?'rank-champion':''}">
-      <td><div class="rpos ${pc}">${i+1}</div></td>
-      <td><div class="rname" onclick="openProfile('${p.id}')">${esc(p.name)} ${stk}
-        <div style="display:flex;align-items:center;gap:4px;margin-top:3px">${formDots(st.form)}${p.role?`<span style="margin-left:4px">${roleBadge(p.id)}</span>`:''}</div>
-      </div></td>
-      <td><div class="sb"><div style="display:flex;align-items:center;justify-content:center;gap:5px">${levelMeter(p.elo,.55,4)}<span class="elo-val">${p.elo||1000}</span></div><div class="sl">N${eloToLevel(p.elo).n} · ELO</div></div></td>
-      <td><div class="sb"><div class="sv" style="color:var(--success)">${st.w}</div><div class="sl">V</div></div></td>
-      <td><div class="sb"><div class="sv" style="color:var(--danger)">${st.l}</div><div class="sl">D</div></div></td>
-      <td><div class="sb" style="font-family:var(--font-h);font-weight:700;font-size:14px;color:var(--orange)">${pct}%</div></td>
-    </tr>`;
+    const lvn=eloToLevel(p.elo).n;
+    const lead=i===0;
+    const sub = st.streak>1
+      ? (st.streakType==='w'?`<span class="lbt-delta lbt-up">${st.streak}V seguidas</span>`:`<span class="lbt-delta lbt-dn">${st.streak}D seguidas</span>`)
+      : `<span class="lbt-delta ${pct>=50?'lbt-up':'lbt-dn'}">${pct}%</span>`;
+    return`<div class="lbt-row${lead?' lead':''}" onclick="openProfile('${p.id}')" style="cursor:pointer">
+      <div class="lbt-rk" style="color:${lead?'var(--orange)':'var(--lente)'}">${i+1}</div>
+      <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:7px">
+        <div style="font-size:17px;font-weight:${lead?'700':'600'};color:var(--lente);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}${p.id===me?' <span style="font-size:14px;color:var(--n400);font-weight:400">(você)</span>':''}</div>
+        <div style="display:flex;align-items:center;gap:8px">${levelCaps(p.elo)}<span style="font-family:var(--font-m);font-size:11px;letter-spacing:.1em;color:var(--n400)">N${lvn}</span>${p.role?roleBadge(p.id):''}</div>
+      </div>
+      <div style="text-align:right;display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+        <div style="font-family:var(--font-d);font-size:22px;color:var(--lente)">${p.elo||1000}</div>
+        ${sub}
+      </div>
+    </div>`;
   }).join('');
-  return`<div class="card" style="padding:10px;overflow-x:auto">
-    <table class="rank-table">
-      <thead><tr><th>#</th><th>Nome</th><th style="text-align:center">ELO</th><th style="text-align:center">V</th><th style="text-align:center">D</th><th style="text-align:center">W%</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <p style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:8px;letter-spacing:.5px">Toque no nome para ver o perfil completo</p>
-  </div>`;
 }
 
 function renderDuplasTable(){
@@ -3064,24 +3067,26 @@ function renderDuplasTable(){
   });
   const data=Object.values(map).sort((a,b)=>b.w!==a.w?b.w-a.w:b.gw-a.gw);
   if(!data.length)return`<div class="empty"><div class="ei">${icon('users',34)}</div><p>Nenhuma partida ainda.</p></div>`;
-  const rows=data.map((p,i)=>{
+  return data.map((p,i)=>{
     const total=p.w+p.l;const pct=total?Math.round(p.w/total*100):0;
-    const pc=i===0?'p1':i===1?'p2':i===2?'p3':'';
-    return`<tr class="${i===0?'rank-champion':''}">
-      <td><div class="rpos ${pc}">${i+1}</div></td>
-      <td class="rname"><span style="font-size:11px">${esc(p.name)}</span></td>
-      <td><div class="sb"><div class="sv" style="color:var(--success)">${p.w}</div><div class="sl">V</div></div></td>
-      <td><div class="sb"><div class="sv" style="color:var(--danger)">${p.l}</div><div class="sl">D</div></div></td>
-      <td><div class="sb"><div class="sv">${p.gw}</div><div class="sl">G+</div></div></td>
-      <td><div class="sb" style="font-family:var(--font-h);font-weight:700;font-size:14px;color:var(--orange)">${pct}%</div></td>
-    </tr>`;
+    if(i===0){
+      const parts=p.name.split(' + ').map(x=>esc(x).toUpperCase());
+      return`<div style="background:var(--orange);border-radius:20px;padding:20px;margin-bottom:8px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.18em;color:var(--ink)">DUPLA MAIS FORTE</div>
+        <div style="font-family:var(--font-d);font-size:30px;line-height:1;letter-spacing:-.03em;color:var(--ink)">${parts.join('<br>+ ')}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;border-top:1.5px solid var(--ink);padding-top:12px">
+          <div style="font-family:var(--font-m);font-size:13px;letter-spacing:.1em;color:var(--ink)">${p.w}V · ${p.l}D</div>
+          <div style="font-family:var(--font-d);font-size:24px;color:var(--ink)">${pct}%</div>
+        </div>
+      </div>`;
+    }
+    return`<div class="lbt-row">
+      <div class="lbt-rk" style="font-size:18px">${i+1}</div>
+      <div style="flex:1;min-width:0;font-size:16px;font-weight:600;color:var(--lente);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div>
+      <div style="font-family:var(--font-m);font-size:13px;color:var(--n400);white-space:nowrap">${p.w}V · ${p.l}D</div>
+      <div style="font-family:var(--font-d);font-size:18px;color:var(--lente)">${pct}%</div>
+    </div>`;
   }).join('');
-  return`<div class="card" style="padding:10px;overflow-x:auto">
-    <table class="rank-table">
-      <thead><tr><th>#</th><th>Dupla</th><th style="text-align:center">V</th><th style="text-align:center">D</th><th style="text-align:center">G+</th><th style="text-align:center">W%</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-  </div>`;
 }
 
 function renderConvocacao(){
@@ -3100,10 +3105,10 @@ function renderConvocacao(){
   return`
     <div class="card" style="margin-bottom:10px">
       <div class="eyebrow">Escalação sugerida · Davis Cup</div>
-      <p style="font-size:12px;color:var(--n400);margin-bottom:12px">Duplas balanceadas pelo ELO. Use ao enfrentar outro grupo.</p>
+      <p style="font-size:14px;color:var(--n400);margin-bottom:12px">Duplas balanceadas pelo ELO. Use ao enfrentar outro grupo.</p>
       ${pairCards}
     </div>
-    <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);text-align:center;letter-spacing:.5px">
+    <div style="font-family:var(--font-m);font-size:11px;color:var(--n500);text-align:center;letter-spacing:.5px">
       Snake draft: #1+#N, #2+#N-1...
     </div>`;
 }
@@ -3117,12 +3122,12 @@ function renderMatchHist(){
     const[wg,lg]=m.winner===1?[m.games1,m.games2]:[m.games2,m.games1];
     return`<div style="padding:10px 0;border-bottom:1px solid var(--n600);">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-        <span style="color:var(--orange);font-weight:700;font-size:12px">${esc(wt)}</span>
-        <span style="font-family:var(--font-m);font-size:9px;color:var(--n500)">vs</span>
-        <span style="color:var(--n400);font-size:12px">${esc(lt)}</span>
+        <span style="color:var(--orange);font-weight:700;font-size:14px">${esc(wt)}</span>
+        <span style="font-family:var(--font-m);font-size:11px;color:var(--n500)">vs</span>
+        <span style="color:var(--n400);font-size:14px">${esc(lt)}</span>
         <span style="margin-left:auto;font-family:var(--font-d);font-size:20px;color:var(--orange)">${wg}·${lg}</span>
       </div>
-      <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:2px">${fmtDate(m.date)}</div>
+      <div style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-top:2px">${fmtDate(m.date)}</div>
     </div>`;
   }).join('')+'<div style="height:1px;margin-top:-1px"></div>';
 }
@@ -3149,57 +3154,73 @@ function openProfile(pid){
   const total=st.w+st.l;
   const pct=total?Math.round(st.w/total*100):0;
   const streakHtml=st.streak>1?(st.streakType==='w'
-    ?`<span class="streak-badge streak-w" style="font-size:11px">${icon('flame',12)} ${st.streak} vitórias seguidas</span>`
-    :`<span class="streak-badge streak-l" style="font-size:11px">${icon('trendDown',12)} ${st.streak} derrotas seguidas</span>`):'';
-  const bpName=st.bestPartner?getName(st.bestPartner.id):'–';
-  const bpWr=st.bestPartner?Math.round(st.bestPartner.wr*100):0;
-  const nemName=st.nemesis?getName(st.nemesis.id):'–';
+    ?`<span class="streak-badge streak-w" style="font-size:14px">${icon('flame',12)} ${st.streak} vitórias seguidas</span>`
+    :`<span class="streak-badge streak-l" style="font-size:14px">${icon('trendDown',12)} ${st.streak} derrotas seguidas</span>`):'';
+  const bpName=st.bestPartner?getName(st.bestPartner.id).split(' ')[0]:'–';
+  const bpGames=st.bestPartner?(st.bestPartner.w+st.bestPartner.l):0;
+  const ranked=groupPlayers().slice().sort((a,b)=>(b.elo||1000)-(a.elo||1000));
+  const pos=ranked.findIndex(x=>x.id===pid)+1;
+  const gname=(DB.groupName()||'Meu grupo').toUpperCase();
+  const lv=eloToLevel(p.elo);
+  const confPct=ss.served?Math.round(ss.held/ss.served*100):0;
+  const brokPct=ss.served?Math.round(ss.broken/ss.served*100):0;
 
   document.getElementById('modal-profile-content').innerHTML=`
-    <div class="profile-header">
-      <div class="profile-avatar">${initials(p.name)}</div>
-      <div>
-        <div class="profile-name">${esc(p.name)}</div>
-        <div style="display:flex;align-items:center;gap:8px;margin-top:5px">
-          ${levelMeter(p.elo,.85,5)}
-          <div class="profile-elo" style="margin-top:0">N${eloToLevel(p.elo).n} · ${eloToLevel(p.elo).name} · ELO ${p.elo||1000}</div>
+    <div class="lbt-c24" style="display:flex;flex-direction:column;gap:14px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:50px;height:50px;border-radius:999px;background:var(--orange);color:var(--ink);font-family:var(--font-d);font-size:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0">${initials(p.name)}</div>
+        <div style="min-width:0">
+          <div style="font-family:var(--font-d);font-size:24px;letter-spacing:-.02em;color:var(--lente);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.name)}</div>
+          <div class="lbt-kick" style="text-align:left;margin-top:4px">${esc(gname)} · ${pos}º DE ${ranked.length}</div>
         </div>
-        ${streakHtml?`<div style="margin-top:5px">${streakHtml}</div>`:''}
+      </div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+          <div class="lbt-lbl">NÍVEL</div>
+          <div style="display:flex;align-items:baseline;gap:12px">
+            <div style="font-family:var(--font-d);font-size:46px;line-height:.85;letter-spacing:-.04em;color:var(--orange)">N${lv.n}</div>
+            <div style="font-size:16px;font-weight:600;color:var(--lente)">${lv.name}</div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:var(--font-d);font-size:26px;color:var(--lente)">${p.elo||1000}</div>
+          <div class="lbt-kick">ELO</div>
+        </div>
+      </div>
+      ${levelBar(p.elo)}
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div class="lbt-c" style="flex:1;border-radius:20px;margin:0;display:flex;flex-direction:column;gap:6px">
+        <div class="lbt-lbl" style="letter-spacing:.16em">WIN RATE</div>
+        <div style="font-family:var(--font-d);font-size:34px;letter-spacing:-.03em;color:var(--lente)">${pct}%</div>
+        <div style="font-size:14px;color:var(--n400)">${st.w}V · ${st.l}D</div>
+      </div>
+      <div class="lbt-c" style="flex:1;border-radius:20px;margin:0;display:flex;flex-direction:column;gap:6px">
+        <div class="lbt-lbl" style="letter-spacing:.16em">MELHOR PARCEIRO</div>
+        <div style="font-size:18px;font-weight:700;color:var(--lente)">${esc(bpName)}</div>
+        <div style="font-size:14px;color:var(--n400)">${st.bestPartner?st.bestPartner.w+'V em '+bpGames+' jogos':'—'}</div>
       </div>
     </div>
-    <div class="stat-grid">
-      <div class="stat-box"><div class="stat-big" style="color:var(--success)">${st.w}</div><div class="stat-tag">Vitórias</div></div>
-      <div class="stat-box"><div class="stat-big" style="color:var(--danger)">${st.l}</div><div class="stat-tag">Derrotas</div></div>
-      <div class="stat-box"><div class="stat-big" style="color:var(--orange)">${pct}%</div><div class="stat-tag">Win Rate</div></div>
-      <div class="stat-box"><div class="stat-big">${st.gw}</div><div class="stat-tag">Games+</div></div>
-      <div class="stat-box"><div class="stat-big">${total}</div><div class="stat-tag">Partidas</div></div>
-      <div class="stat-box">
-        <div style="display:flex;gap:3px;justify-content:center;margin-top:4px">${formDots(st.form)}</div>
-        <div class="stat-tag" style="margin-top:6px">Forma</div>
-      </div>
-    </div>
-    <div class="card" style="padding:12px">
-      <div class="profile-row">
-        <div class="pr-label">Melhor Parceiro</div>
-        <div class="pr-val">${esc(bpName)}${st.bestPartner?` <span style="color:var(--orange);font-size:11px">${bpWr}% W</span>`:''}</div>
-      </div>
-      <div class="profile-row">
-        <div class="pr-label">Nemesis</div>
-        <div class="pr-val">${esc(nemName)}${st.nemesis?` <span style="color:var(--danger);font-size:11px">${st.nemesis.l}D</span>`:''}</div>
-      </div>
-      <div class="profile-row">
-        <div class="pr-label">Games marcados</div>
-        <div class="pr-val">${st.gw} <span style="color:var(--n400);font-size:11px">/ ${st.gl} sofridos</span></div>
-      </div>
-    </div>
+
     ${ss.served>0?`
-    <div class="eyebrow" style="margin-top:14px;margin-bottom:8px">Saque · modo avançado</div>
-    <div class="stat-grid" style="grid-template-columns:1fr 1fr 1fr">
-      <div class="stat-box"><div class="stat-big" style="color:var(--success)">${ss.held}</div><div class="stat-tag">Confirmados</div></div>
-      <div class="stat-box"><div class="stat-big" style="color:var(--danger)">${ss.broken}</div><div class="stat-tag">Quebrados</div></div>
-      <div class="stat-box"><div class="stat-big" style="color:var(--orange)">${Math.round(ss.held/ss.served*100)}%</div><div class="stat-tag">Aproveit.</div></div>
+    <div class="lbt-c" style="border-radius:20px;display:flex;flex-direction:column;gap:10px">
+      <div class="lbt-lbl">Saque</div>
+      <div style="display:flex;gap:20px">
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:var(--font-d);font-size:28px;color:var(--lente)">${confPct}%</div>
+          <div style="font-size:14px;color:var(--n400)">Confirmado</div>
+          <div class="lbt-prog"><span style="width:${confPct}%"></span></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px">
+          <div style="font-family:var(--font-d);font-size:28px;color:var(--lente)">${brokPct}%</div>
+          <div style="font-size:14px;color:var(--n400)">Quebrado</div>
+          <div class="lbt-prog"><span style="width:${brokPct}%;background:var(--lente)"></span></div>
+        </div>
+      </div>
     </div>`:''}
-    <button class="btn btn-s btn-full" style="margin-top:12px" onclick="closeModal('modal-profile')">Fechar</button>`;
+
+    <button class="lbt-b lbt-bo" style="width:100%;margin-top:6px" onclick="closeModal('modal-profile')">Fechar</button>`;
   openModal('modal-profile');
 }
 
@@ -3340,11 +3361,11 @@ function renderMinhaEvolucao(){
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:8px">
-        <div style="flex:1;font-size:12px;font-weight:600">${esc(g.myPair||'Minha dupla')}</div>
+        <div style="flex:1;font-size:14px;font-weight:600">${esc(g.myPair||'Minha dupla')}</div>
         <div style="font-family:var(--font-d);font-size:20px;color:var(--orange)">${g.myScore}–${g.oppScore}</div>
-        <div style="flex:1;font-size:12px;font-weight:600;text-align:right;color:var(--n300)">${esc(g.oppPair||'Adversária')}</div>
+        <div style="flex:1;font-size:14px;font-weight:600;text-align:right;color:var(--n300)">${esc(g.oppPair||'Adversária')}</div>
       </div>
-      <div style="font-family:var(--font-m);font-size:9px;color:var(--n500);margin-top:4px;letter-spacing:.5px">${modeLbl}${g.note?' · '+esc(g.note):''}</div>
+      <div style="font-family:var(--font-m);font-size:11px;color:var(--n500);margin-top:4px;letter-spacing:.5px">${modeLbl}${g.note?' · '+esc(g.note):''}</div>
     </div>`;
   }).join('');
 
@@ -3377,12 +3398,12 @@ function evolutionChart(asc){
   const y50=y(50).toFixed(1);
   return`
     <div class="card" style="padding:12px 10px 8px">
-      <div style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:.8px;margin-bottom:6px;padding-left:2px">EVOLUÇÃO · % de vitórias (janela de 5 jogos)</div>
+      <div style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:.8px;margin-bottom:6px;padding-left:2px">EVOLUÇÃO · % de vitórias (janela de 5 jogos)</div>
       <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="none" style="display:block">
         <line x1="${pad}" y1="${y50}" x2="${W-pad}" y2="${y50}" stroke="var(--n600)" stroke-width="1" stroke-dasharray="3 3"/>
         <polyline fill="none" stroke="var(--orange)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${line}"/>
       </svg>
-      <div style="display:flex;justify-content:space-between;font-family:var(--font-m);font-size:8px;color:var(--n500);margin-top:2px;padding:0 2px">
+      <div style="display:flex;justify-content:space-between;font-family:var(--font-m);font-size:11px;color:var(--n500);margin-top:2px;padding:0 2px">
         <span>mais antigo</span><span>agora: ${pts[pts.length-1]}%</span>
       </div>
     </div>`;
@@ -3406,8 +3427,8 @@ function setManualMode(m){
 function setManualTarget(v){ manualTarget=v; renderManualFormat(); }
 function renderManualFormat(){
   const el=document.getElementById('mg-format'); if(!el) return;
-  const optBtn=(val,label,active,fn)=>`<button type="button" onclick="${fn}(${val})" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${active?'var(--orange)':'var(--n600)'};background:${active?'rgba(255,102,0,.12)':'var(--n700)'};color:${active?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
-  const modeBtn=(val,label)=>`<button type="button" onclick="setManualMode('${val}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${manualMode===val?'var(--orange)':'var(--n600)'};background:${manualMode===val?'rgba(255,102,0,.12)':'var(--n700)'};color:${manualMode===val?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:13px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
+  const optBtn=(val,label,active,fn)=>`<button type="button" onclick="${fn}(${val})" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${active?'var(--orange)':'var(--n600)'};background:${active?'rgba(255,102,0,.12)':'var(--n700)'};color:${active?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
+  const modeBtn=(val,label)=>`<button type="button" onclick="setManualMode('${val}')" style="flex:1;padding:8px;border-radius:8px;border:1px solid ${manualMode===val?'var(--orange)':'var(--n600)'};background:${manualMode===val?'rgba(255,102,0,.12)':'var(--n700)'};color:${manualMode===val?'var(--orange)':'var(--n300)'};font-family:var(--font-h);font-size:14px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent">${label}</button>`;
   const targets = manualMode==='games' ? [[4,'Até 4'],[6,'Até 6']] : [[7,'7 pontos'],[10,'10 pontos']];
   el.innerHTML=`
     <div class="ig"><label>Formato</label>
@@ -3561,18 +3582,18 @@ function buildScoreboard(){
 
   // simulação de ranking (ELO em jogo)
   const stk=eloStakes(m.team1,m.team2);
-  const stakeLine=(win,lose)=>stk?`<div style="font-family:var(--font-m);font-size:9px;letter-spacing:.5px;margin-bottom:8px"><span style="color:var(--success)">▲${win>=0?'+':''}${win}</span> <span style="color:var(--n500)">/</span> <span style="color:var(--danger)">▼${lose}</span></div>`:'';
+  const stakeLine=(win,lose)=>stk?`<div style="font-family:var(--font-m);font-size:11px;letter-spacing:.5px;margin-bottom:8px"><span style="color:var(--success)">▲${win>=0?'+':''}${win}</span> <span style="color:var(--n500)">/</span> <span style="color:var(--danger)">▼${lose}</span></div>`:'';
 
   // sets pills
   const setsPills=m.completedSets.map(s=>{
     const t1w=s.won===1;
     const hasTb=s.tb1!==undefined;
-    return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}${hasTb?`<sup style="font-size:9px;margin-left:1px">TB</sup>`:''}${hasTb?`<span style="font-size:11px;margin-left:2px">${s.tb1}</span>`:''}</div>
+    return`<div class="set-score-pill won" style="${t1w?'':'opacity:.5'}">${s.t1}${hasTb?`<sup style="font-size:14px;margin-left:1px">TB</sup>`:''}${hasTb?`<span style="font-size:14px;margin-left:2px">${s.tb1}</span>`:''}</div>
            <div class="sets-sep">·</div>
-           <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}${hasTb?`<span style="font-size:11px;margin-left:2px">${s.tb2}</span>`:''}</div>
+           <div class="set-score-pill won" style="${!t1w?'':'opacity:.5'}">${s.t2}${hasTb?`<span style="font-size:14px;margin-left:2px">${s.tb2}</span>`:''}</div>
            <div class="sets-sep" style="margin:0 4px">|</div>`;
   }).join('')+(inTb
-    ?`<div class="set-score-pill current" style="border-color:var(--gold);color:var(--n400);font-size:11px">${cur.t1}·${cur.t2}</div><div class="sets-sep" style="color:var(--gold);font-weight:700">TB</div><div class="set-score-pill current" style="border-color:var(--gold);color:var(--gold)">${tb1}</div><div class="sets-sep">·</div><div class="set-score-pill current" style="border-color:var(--gold);color:var(--gold)">${tb2}</div>`
+    ?`<div class="set-score-pill current" style="border-color:var(--gold);color:var(--n400);font-size:14px">${cur.t1}·${cur.t2}</div><div class="sets-sep" style="color:var(--gold);font-weight:700">TB</div><div class="set-score-pill current" style="border-color:var(--gold);color:var(--gold)">${tb1}</div><div class="sets-sep">·</div><div class="set-score-pill current" style="border-color:var(--gold);color:var(--gold)">${tb2}</div>`
     :`<div class="set-score-pill current">${cur.t1}</div><div class="sets-sep">·</div><div class="set-score-pill current">${cur.t2}</div>`);
 
   const setsLabel=m.format===3?`MELHOR DE 3 · SET ${m.completedSets.length+1}`:'1 SET';
@@ -3594,50 +3615,77 @@ function buildScoreboard(){
       </div>
     </div>`:'';
 
-  return`
-    <div class="live-header">
-      <div class="live-status">
-        ${m.status==='playing'?'<div class="live-dot"></div><div class="live-label">AO VIVO</div>':'<div class="live-label" style="color:var(--success);display:flex;align-items:center;gap:4px">'+icon('check',12)+' ENCERRADA</div>'}
+  // pips de games (até o alvo, min 6)
+  const pips=(won,color)=>{let s='<div style="display:flex;gap:4px">';const n=Math.max(tgt,6);for(let i=0;i<n;i++){s+=`<span style="width:20px;height:6px;border-radius:999px;background:${i<won?color:'var(--n600)'};display:block"></span>`;}return s+'</div>';};
+  const srvT1=isPoints&&m.currentServer&&m.team1.includes(m.currentServer);
+  const srvT2=isPoints&&m.currentServer&&m.team2.includes(m.currentServer);
+  const sacPill=`<span style="display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--orange);color:var(--orange);border-radius:999px;padding:4px 11px;width:fit-content;font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.14em"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>SACANDO</span>`;
+  const big1=isPoints?pt1:(inTb?tb1:disp1);
+  const big2=isPoints?pt2:(inTb?tb2:disp2);
+  const modeLabel=isPoints?'AVANÇADA':(inTb?'TIEBREAK':'BÁSICA');
+  const gameNo=(cur.t1||0)+(cur.t2||0)+1;
+  const showGamesRow=isPoints||inTb; // quando o número grande NÃO é o de games
+  const panel=(team,big,color,srv)=>{
+    const names=(team===1?m.team1:m.team2).map(getName).map(esc).join('<br>');
+    const gamesN=team===1?cur.t1:cur.t2;
+    const rad=team===1?'20px 20px 4px 4px':'4px 4px 20px 20px';
+    const bottom=showGamesRow
+      ? `<div style="display:flex;align-items:center;justify-content:space-between">
+           <div style="font-family:var(--font-m);font-size:12px;letter-spacing:.14em;color:var(--n400)">GAMES</div>
+           <div style="display:flex;align-items:center;gap:10px"><div style="font-family:var(--font-d);font-size:30px;color:var(--lente)">${gamesN}</div>${pips(gamesN,color)}</div>
+         </div>`
+      : `<div style="display:flex;align-items:center;justify-content:flex-end">${pips(gamesN,color)}</div>`;
+    return`<div onclick="addGame(${team})" style="cursor:pointer;flex:1;background:var(--n700);border-radius:${rad};padding:22px 20px;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box;-webkit-tap-highlight-color:transparent">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+        <div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:20px;font-weight:700;color:var(--lente);line-height:1.2">${names}</div>${srv?sacPill:''}</div>
+        <div style="font-family:var(--font-d);font-size:92px;line-height:.8;letter-spacing:-.05em;color:${color}">${big}</div>
       </div>
-      <div class="live-format">${setsLabel}</div>
-      <div class="live-timer" id="live-clock">${fmtTimer(liveSeconds)}</div>
+      ${bottom}
+    </div>`;
+  };
+  const serverSel=(isPoints&&(m.serveOrder||[]).length)?`<div style="display:flex;align-items:center;gap:6px;padding:0 20px 8px;flex-wrap:wrap;justify-content:center">
+      <span style="font-family:var(--font-m);font-size:11px;color:var(--n400);letter-spacing:1px">SAQUE:</span>
+      ${(m.serveOrder||[]).map(pid=>`<button onclick="setServer('${pid}')" style="border:1.5px solid ${m.currentServer===pid?'var(--orange)':'var(--n600)'};background:transparent;color:${m.currentServer===pid?'var(--orange)':'var(--n400)'};font-family:var(--font-m);font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;cursor:pointer;-webkit-tap-highlight-color:transparent">${esc(getName(pid).split(' ')[0])}</button>`).join('')}
+    </div>`:'';
+  const stakeFooter=stk?`<div style="display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--font-m);font-size:12px;letter-spacing:.12em;color:var(--n400)">EM JOGO: ${Math.abs(stk.t1Win||stk.t2Win||0)} PONTOS DE ELO</div>`:'';
+
+  return`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;flex-shrink:0">
+      <div style="display:flex;align-items:center;gap:8px;color:var(--lente)">
+        <button onclick="closeLive()" style="all:unset;cursor:pointer;display:flex"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span style="font-family:var(--font-m);font-size:12px;letter-spacing:.14em" id="live-clock">${fmtTimer(liveSeconds)}</span>
+      </div>
+      ${m.status==='playing'?'<span class="lbt-live"><span class="dot"></span>AO VIVO</span>':'<span style="font-family:var(--font-m);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--success);display:flex;align-items:center;gap:4px">'+icon('check',12)+' ENCERRADA</span>'}
     </div>
 
-    <div class="sets-track">${setsPills}</div>
+    <div style="padding:0 20px 12px;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--n700);border-radius:999px;padding:6px 14px">
+        <span style="font-family:var(--font-m);font-size:12px;letter-spacing:.12em;color:var(--n400)">${modeLabel}${m.format===3?' · '+setsLabel:''}</span>
+        <span style="font-family:var(--font-m);font-size:12px;letter-spacing:.12em;color:var(--n400)">${inTb?'TIEBREAK':'GAME '+gameNo}</span>
+      </div>
+    </div>
 
-    ${m.format===3?`<div style="display:flex;justify-content:space-between;padding:4px 14px;font-family:var(--font-d);font-size:13px;flex-shrink:0">
-      <span style="color:var(--orange)">${score1Ind||'○'}</span>
-      <span style="font-family:var(--font-m);font-size:9px;color:var(--n500);align-self:center">SETS</span>
-      <span style="color:var(--orange)">${score2Ind||'○'}</span>
-    </div>`:''}
+    ${serverSel}
 
-    ${inTb?`<div style="text-align:center;padding:4px 0 0;font-family:var(--font-m);font-size:10px;font-weight:700;color:var(--gold);letter-spacing:1.5px;flex-shrink:0">${icon('zap',13)} TIEBREAK · PRIMEIRO A ${m.tiebreakPoints||7}</div>`:''}
-    ${isPoints&&m.currentServer?`<div style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-bottom:1px solid var(--n600);flex-shrink:0;flex-wrap:wrap;justify-content:center">
-      <span style="font-family:var(--font-m);font-size:9px;color:var(--n400);letter-spacing:1px">SACANDO:</span>
-      ${(m.serveOrder||[]).map(pid=>`<button onclick="setServer('${pid}')" style="border:1px solid ${m.currentServer===pid?'var(--orange)':'var(--n600)'};background:${m.currentServer===pid?'rgba(255,102,0,.15)':'transparent'};color:${m.currentServer===pid?'var(--orange)':'var(--n300)'};font-family:var(--font-b);font-size:11px;font-weight:600;padding:4px 10px;border-radius:14px;cursor:pointer;-webkit-tap-highlight-color:transparent">${esc(getName(pid).split(' ')[0])}</button>`).join('')}
-    </div>`:''}
-    <div class="live-court" style="position:relative">
-      <button class="live-side${t1winning?' winning':''}" onclick="addGame(1)" style="${inTb?'border-right:1px solid rgba(255,184,0,.3)':''}">
-        <div class="live-team-names">${m.team1.map(getName).map(esc).join('<br>')}</div>
-        ${stakeLine(stk?.t1Win,stk?.t1Lose)}
-        <div class="live-game-score" style="${inTb?'color:var(--gold)':(isPoints?'color:var(--orange)':'')}">${isPoints?pt1:disp1}</div>
-        ${isPoints?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:2px;letter-spacing:.5px">${cur.t1} game${cur.t1!==1?'s':''}</div>`:''}
-        <div class="live-tap-hint">${(inTb||isPoints)?'▲ TOQUE PARA PONTO':'▲ TOQUE PARA GAME'}</div>
-      </button>
-      <button class="live-side${t2winning?' winning':''}" onclick="addGame(2)" style="${inTb?'border-left:none':''}">
-        <div class="live-team-names">${m.team2.map(getName).map(esc).join('<br>')}</div>
-        ${stakeLine(stk?.t2Win,stk?.t2Lose)}
-        <div class="live-game-score" style="${inTb?'color:var(--gold)':(isPoints?'color:var(--orange)':'')}">${isPoints?pt2:disp2}</div>
-        ${isPoints?`<div style="font-family:var(--font-m);font-size:11px;color:var(--n400);margin-top:2px;letter-spacing:.5px">${cur.t2} game${cur.t2!==1?'s':''}</div>`:''}
-        <div class="live-tap-hint">${(inTb||isPoints)?'▲ TOQUE PARA PONTO':'▲ TOQUE PARA GAME'}</div>
-      </button>
+    <div style="flex:1;display:flex;flex-direction:column;gap:2px;padding:0 20px;min-height:0;position:relative">
+      ${panel(1,big1,'var(--orange)',srvT1)}
+      ${panel(2,big2,'var(--lente)',srvT2)}
       ${finishedOverlay}
     </div>
 
-    <div class="live-footer">
-      <button class="btn btn-s" onclick="undoGame()" ${!m.history.length?'disabled':''}>↩ Desfazer</button>
-      ${m.status==='playing'?`<button class="btn btn-d" onclick="endMatchManual()">${icon('flag',14)} Encerrar</button>`
-        :`<button class="btn btn-p" onclick="saveLiveMatch()">${icon('save',14)} Salvar</button>`}
+    ${inTb?`<div style="margin:12px 20px 0;background:var(--n600);border-radius:16px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <span style="font-family:var(--font-m);font-size:12px;font-weight:700;letter-spacing:.16em;color:var(--orange)">TIEBREAK · ${cur.t1}—${cur.t2}</span>
+      <span style="font-family:var(--font-m);font-size:12px;letter-spacing:.12em;color:var(--n400)">VAI ATÉ ${m.tiebreakPoints||7}</span>
+    </div>`:''}
+
+    <div style="padding:16px 20px 24px;display:flex;flex-direction:column;gap:10px;flex-shrink:0">
+      <div style="display:flex;gap:10px">
+        ${m.status==='playing'
+          ?`<button class="lbt-b lbt-bo" style="flex:1${!m.history.length?';opacity:.4':''}" onclick="undoGame()" ${!m.history.length?'disabled':''}>${icon('undo',18)} Desfazer</button>
+            <button class="lbt-b lbt-bp" style="flex:1;background:var(--danger);color:#fff" onclick="endMatchManual()">${icon('flag',16)} Encerrar</button>`
+          :`<button class="lbt-b lbt-bp" style="flex:1" onclick="saveLiveMatch()">${icon('save',16)} Salvar no histórico</button>`}
+      </div>
+      ${stakeFooter}
     </div>`;
 }
 
