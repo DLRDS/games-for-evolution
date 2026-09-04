@@ -52,6 +52,9 @@
     .body-sm{font-size:14px;color:var(--label);}
     .muted{color:var(--label);}
     .num{font-family:var(--fd);letter-spacing:-.03em;color:var(--white);}
+    /* traço de placar: escala com o número e não domina a linha */
+    .dash{display:inline-block;width:.42em;height:.09em;background:currentColor;
+      vertical-align:.24em;margin:0 .13em;border-radius:99px;}
     .mono{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
     #hd-sub{font-weight:700;color:var(--white);}
     .mono-md{font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--label);}
@@ -965,6 +968,7 @@ function levelProgress(elo){
   if(lv.n>=5) return 'Nível máximo. Segura o topo.';
   return 'Faltam '+Math.max(0,Math.ceil(lv.max-(elo||1000)))+' pontos pro N'+(lv.n+1)+'.';
 }
+function placar(a,b){ return a+'<span class="dash"></span>'+b; }
 function levelBar(elo){
   const lv=eloToLevel(elo).n; let s='<div class="lvbar">';
   for(let i=0;i<5;i++) s+='<i class="'+(i<lv?'on':'')+'"></i>';
@@ -1243,8 +1247,8 @@ function renderHome(){
     const duelo=(t1&&t2)?t1+' × '+t2:'Partida rolando agora';
     const isPts=ls.scoring==='points'&&!ls.isTb;
     const PTS=['0','15','30','40'];
-    const meta=isPts?('GAME '+((ls.games1||0)+(ls.games2||0)+1)+' · '+PTS[Math.min(ls.p1||0,3)]+'—'+PTS[Math.min(ls.p2||0,3)]):null;
-    const games=(ls.t1!=null&&ls.t2!=null)?ls.t1+'—'+ls.t2:null;
+    const meta=isPts?('GAME '+((ls.games1||0)+(ls.games2||0)+1)+' · '+PTS[Math.min(ls.p1||0,3)]+'–'+PTS[Math.min(ls.p2||0,3)]):null;
+    const games=(ls.t1!=null&&ls.t2!=null)?placar(ls.t1,ls.t2):null;
     return`<div class="card stack" style="gap:12px;cursor:pointer" onclick="goToSession('${s.id}')">
       <div class="row"><span class="pill pill-live"><span class="dot"></span>ACONTECENDO AGORA</span><span class="mono-md trunc">${nm}</span></div>
       <div class="row">
@@ -1285,7 +1289,7 @@ function renderHome(){
     const won=(inT1&&last.winner===1)||(!inT1&&last.winner===2);
     const my=inT1?last.games1:last.games2, op=inT1?last.games2:last.games1;
     const par=(inT1?last.team1:last.team2).find(x=>x!==pid);
-    ultimo=`<div class="num" style="font-size:26px">${my}—${op}</div>
+    ultimo=`<div class="num" style="font-size:26px">${placar(my,op)}</div>
       <div class="body-sm">${won?'Vitória':'Derrota'}${par?' · com '+esc(getName(par).split(' ')[0]):''}</div>`;
   }
   const f5=stats.form.slice(-5);
@@ -1489,7 +1493,7 @@ function renderEvolucao(){
           <div class="mono-md">${g.date?fmtDate(g.date):''} · ${esc(g.format||'games').toUpperCase()}</div>
         </div>
         <div style="display:flex;align-items:center;gap:10px">
-          <div class="num" style="font-size:20px">${g.myScore??0}—${g.oppScore??0}</div>
+          <div class="num" style="font-size:20px">${placar(g.myScore??0,g.oppScore??0)}</div>
           <button class="btn btn-link" onclick="deleteManualGame('${g.id}')">${icon('trash',16)}</button>
         </div>
       </div>`).join('')+`</div>`:
@@ -2174,7 +2178,7 @@ function renderSessionFlow(session){
       const wg=m.winner===1?m.score1:m.score2, lg=m.winner===1?m.score2:m.score1;
       return`<div class="line-item row">
         <div class="trunc grow"><span style="font-weight:700">${win}</span> <span class="body-sm">× ${lose}</span></div>
-        <div class="num" style="font-size:20px;color:var(--orange)">${wg}—${lg}</div>
+        <div class="num" style="font-size:20px;color:var(--orange)">${placar(wg,lg)}</div>
       </div>`;
     }).join('');
     return topo('FIM DA SESSÃO')+
@@ -2435,7 +2439,7 @@ function renderDestaques(d, sessionId){
     const m=d.closestMatch;
     const p1=d.pairs[m.pair1Idx].map(pid=>esc(getName(pid).split(' ')[0])).join('+');
     const p2=d.pairs[m.pair2Idx].map(pid=>esc(getName(pid).split(' ')[0])).join('+');
-    cards+=destaqueCard('JOGO MAIS DISPUTADO',p1+' × '+p2,'Placar '+m.score1+'—'+m.score2,'');
+    cards+=destaqueCard('JOGO MAIS DISPUTADO',p1+' × '+p2,'Placar '+m.score1+'–'+m.score2,'');
   }
 
   const wpp=encodeURIComponent(
@@ -3065,7 +3069,7 @@ function buildScoreboard(){
         <div style="font-family:var(--fd);font-size:34px;line-height:1;letter-spacing:-.035em;color:var(--ink)">${winTeam.map(pid=>esc(getName(pid).split(' ')[0])).join('<br>+ ')}</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between">
           <div style="font-family:var(--fm);font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--ink)">GAMES</div>
-          <div style="font-family:var(--fd);font-size:52px;line-height:.8;letter-spacing:-.05em;color:var(--ink)">${Math.max(cur.t1,cur.t2)}—${Math.min(cur.t1,cur.t2)}</div>
+          <div style="font-family:var(--fd);font-size:52px;line-height:.8;letter-spacing:-.05em;color:var(--ink)">${placar(Math.max(cur.t1,cur.t2),Math.min(cur.t1,cur.t2))}</div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
@@ -3135,7 +3139,7 @@ function buildScoreboard(){
     </div>
 
     ${inTb?`<div class="row" style="margin:12px 20px 0;background:var(--line);border-radius:16px;padding:12px 16px;flex-shrink:0">
-      <span class="mono-md" style="font-weight:700;letter-spacing:.16em;color:var(--orange)">TIEBREAK · ${cur.t1}—${cur.t2}</span>
+      <span class="mono-md" style="font-weight:700;letter-spacing:.16em;color:var(--orange)">TIEBREAK · ${cur.t1}–${cur.t2}</span>
       <span class="mono-md">VAI ATÉ ${m.tiebreakPoints||7}</span>
     </div>`:''}
 
