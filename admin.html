@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D0D0D">
+<meta name="robots" content="noindex,nofollow">
+<title>Level BT · Painel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Archivo+Black&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --orange:#FF6600; --ink:#0D0D0D; --surf:#1A1A1A; --line:#2A2A2A;
+    --label:#A8A8A8; --dim:#6B6B6B; --white:#FFFFFF; --danger:#FF4D4D; --ok:#22c55e;
+    --fd:'Archivo Black',sans-serif; --fb:'Archivo',sans-serif; --fm:'JetBrains Mono',monospace;
+  }
+  body{font-family:var(--fb);background:var(--ink);color:var(--white);font-size:16px;-webkit-font-smoothing:antialiased;}
+  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  input{font:inherit;color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px 60px;}
+  .lock{display:flex;align-items:center;gap:9px;}
+  .meter{display:flex;align-items:flex-end;gap:3px;height:20px;}
+  .meter i{width:5px;border-radius:999px;background:var(--line);display:block;}
+  .meter i.on{background:var(--orange);}
+  .lock-word{font-family:var(--fd);font-size:19px;letter-spacing:-.03em;}
+  .lock-word b{color:var(--orange);font-weight:inherit;}
+  .h1{font-family:var(--fd);font-size:30px;letter-spacing:-.03em;line-height:1.1;}
+  .mono{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
+  .mono-md{font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;color:var(--label);}
+  .body-sm{font-size:14px;color:var(--label);}
+  .num{font-family:var(--fd);letter-spacing:-.03em;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .card{background:var(--surf);border-radius:20px;padding:16px;}
+  .line{background:var(--surf);border-radius:16px;padding:16px;}
+  .panel{background:var(--surf);border-radius:24px;padding:20px;}
+  .stack{display:flex;flex-direction:column;gap:12px;}
+  .stack-sm{display:flex;flex-direction:column;gap:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;}
+  .field{display:flex;flex-direction:column;gap:8px;}
+  .field>label{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);}
+  .input{background:var(--surf);border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;font-size:16px;color:var(--white);width:100%;outline:none;}
+  .input:focus{border-color:var(--orange);}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:14px 22px;font-size:16px;font-weight:700;}
+  .btn-p{background:var(--orange);color:var(--ink);}
+  .btn-q{border:1.75px solid var(--line);color:var(--white);font-weight:600;padding:12px 20px;}
+  .btn:active{transform:scale(.97);}
+  .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 11px;
+    font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;}
+  .pill-live{background:var(--orange);color:var(--ink);}
+  .pill-live i{width:7px;height:7px;border-radius:999px;background:var(--ink);animation:blink 1.3s infinite;}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .pill-g{border:1.5px solid var(--line);color:var(--label);font-weight:400;}
+  .pill-ok{border:1.5px solid var(--orange);color:var(--orange);}
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{border:1.5px solid var(--line);color:var(--label);border-radius:999px;padding:7px 16px;
+    font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.12em;}
+  .tab.on{background:var(--white);color:var(--ink);border-color:var(--white);}
+  .hidden{display:none !important;}
+  .trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .grow{flex:1;min-width:0;}
+  .empty{padding:40px 20px;text-align:center;color:var(--label);font-size:15px;}
+  a{color:var(--orange);text-decoration:none;}
+  .sep{height:1px;background:var(--line);margin:22px 0;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="row" style="margin-bottom:22px">
+    <div class="lock">
+      <div class="meter"><i class="on" style="height:9px"></i><i class="on" style="height:13px"></i><i class="on" style="height:17px"></i><i style="height:20px"></i></div>
+      <div class="lock-word">LEVEL<b>BT</b></div>
+    </div>
+    <div class="mono" id="stamp"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="auth">
+    <div class="h1" style="margin-bottom:8px">PAINEL</div>
+    <div class="body-sm" style="margin-bottom:22px">Visão de todos os grupos e transmissões da plataforma.</div>
+    <div class="panel stack" style="gap:14px;max-width:460px">
+      <div class="field"><label>Chave de admin</label>
+        <input class="input" id="key" type="password" placeholder="cole a chave aqui" autocomplete="off"></div>
+      <div id="authMsg" class="body-sm" style="color:var(--danger);display:none"></div>
+      <button class="btn btn-p" id="btnEnter" style="width:fit-content">Entrar</button>
+    </div>
+    <div class="body-sm" style="margin-top:16px;max-width:460px">
+      A chave é criada uma vez no Supabase, com o SQL do arquivo <code>admin-supabase.sql</code>.
+    </div>
+  </div>
+
+  <!-- PAINEL -->
+  <div id="board" class="hidden">
+    <div class="row" style="margin-bottom:18px">
+      <div class="h1">PAINEL</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-q" id="btnReload">Atualizar</button>
+        <button class="btn btn-q" id="btnOut">Sair</button>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-bottom:22px" id="totais"></div>
+
+    <div class="tabs">
+      <button class="tab on" data-t="grupos">GRUPOS</button>
+      <button class="tab" data-t="lives">TRANSMISSÕES</button>
+    </div>
+    <div id="conteudo"></div>
+  </div>
+</div>
+
+<script>
+const SUPA_URL='https://jvmgsedxwakzfpskvfpf.supabase.co';
+const SUPA_KEY='sb_publishable_HeNPn65BKSEuJx63GVTiGA_1d3yciE1';
+const supa=window.supabase?window.supabase.createClient(SUPA_URL,SUPA_KEY):null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
+
+let CHAVE=null, DADOS=null, ABA='grupos', timer=null;
+
+const dt=s=>{ if(!s)return'—'; try{ return new Date(s).toLocaleDateString('pt-BR'); }catch(e){ return '—'; } };
+const hr=s=>{ if(!s)return'—'; try{ return new Date(s).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; } };
+const dias=s=>{ if(!s)return null; const d=Math.floor((Date.now()-new Date(s+'T12:00:00'))/86400000); return isNaN(d)?null:d; };
+
+function situacao(ultima){
+  const d=dias(ultima);
+  if(d===null) return {t:'NUNCA JOGOU',c:'pill-g'};
+  if(d<=14)    return {t:'ATIVO',c:'pill-ok'};
+  if(d<=45)    return {t:'ESFRIANDO',c:'pill-g'};
+  return {t:'PARADO',c:'pill-g'};
+}
+
+async function carregar(){
+  const {data,error}=await supa.rpc('admin_overview',{p_key:CHAVE});
+  if(error||!data||data.erro) return false;
+  DADOS=data;
+  $('stamp').textContent='ATUALIZADO '+new Date().toLocaleTimeString('pt-BR');
+  pintar();
+  return true;
+}
+
+function pintar(){
+  const t=DADOS.totais||{};
+  const bloco=(v,l,cor)=>`<div class="card"><div class="num" style="font-size:34px;${cor?'color:'+cor:''}">${v??0}</div><div class="mono" style="margin-top:4px">${l}</div></div>`;
+  $('totais').innerHTML=
+    bloco(t.grupos,'Grupos')+
+    bloco(t.usuarios,'Contas')+
+    bloco(t.sessoes,'Sessões')+
+    bloco(t.partidas,'Partidas')+
+    bloco(t.transmissoes,'Transmissões')+
+    bloco(t.no_ar,'No ar agora', t.no_ar>0?'var(--orange)':'');
+
+  if(ABA==='grupos') pintarGrupos(); else pintarLives();
+}
+
+function pintarGrupos(){
+  const gs=DADOS.grupos||[];
+  if(!gs.length){ $('conteudo').innerHTML='<div class="empty">Nenhum grupo criado ainda.</div>'; return; }
+  const viv=gs.filter(g=>situacao(g.ultima_sessao).t==='ATIVO').length;
+  $('conteudo').innerHTML=
+    `<div class="body-sm" style="margin-bottom:12px">${gs.length} ${gs.length===1?'grupo':'grupos'} · ${viv} ${viv===1?'ativo':'ativos'} nos últimos 14 dias</div>`+
+    '<div class="stack-sm">'+gs.map(g=>{
+      const s=situacao(g.ultima_sessao);
+      return `<div class="line">
+        <div class="row" style="align-items:flex-start">
+          <div class="grow">
+            <div class="trunc" style="font-size:17px;font-weight:700">${esc(g.nome||g.codigo)}</div>
+            <div class="mono-md" style="margin-top:5px">${esc(g.codigo)} · CRIADO ${dt(g.criado_em)}</div>
+          </div>
+          <span class="pill ${s.c}">${s.t}</span>
+        </div>
+        <div style="display:flex;gap:22px;flex-wrap:wrap;margin-top:14px">
+          ${['jogadores','contas','sessoes','partidas'].map(k=>
+            `<div><div class="num" style="font-size:22px">${g[k]??0}</div><div class="mono" style="margin-top:2px">${k}</div></div>`).join('')}
+          <div><div class="num" style="font-size:22px">${g.ultima_sessao?dt(g.ultima_sessao):'—'}</div><div class="mono" style="margin-top:2px">última sessão</div></div>
+        </div>
+      </div>`;
+    }).join('')+'</div>';
+}
+
+function pintarLives(){
+  const ls=DADOS.transmissoes||[];
+  if(!ls.length){ $('conteudo').innerHTML='<div class="empty">Nenhuma transmissão criada ainda.</div>'; return; }
+  const base=location.origin+location.pathname.replace(/admin\.html$/,'placar.html');
+  $('conteudo').innerHTML='<div class="stack-sm">'+ls.map(b=>{
+    const a=(b.dupla_a||[]).join('/')||'—', c=(b.dupla_b||[]).join('/')||'—';
+    const fim=b.status==='finished';
+    const tag=b.no_ar&&!fim?'<span class="pill pill-live"><i></i>NO AR</span>'
+             :fim?'<span class="pill pill-g">ENCERRADA</span>'
+             :'<span class="pill pill-g">PARADA</span>';
+    const ctx=[b.torneio,b.categoria,b.fase].filter(Boolean).join(' · ');
+    return `<div class="line">
+      <div class="row" style="align-items:flex-start">
+        <div class="grow">
+          <div class="trunc" style="font-size:17px;font-weight:700">${esc(a)} × ${esc(c)}</div>
+          ${ctx?`<div class="mono-md" style="margin-top:5px">${esc(ctx.toUpperCase())}</div>`:''}
+        </div>
+        ${tag}
+      </div>
+      <div class="row" style="margin-top:14px">
+        <div style="display:flex;gap:22px">
+          <div><div class="num" style="font-size:22px;color:var(--orange)">${esc(b.sets)}</div><div class="mono" style="margin-top:2px">sets</div></div>
+          <div><div class="num" style="font-size:22px">${esc(b.games)}</div><div class="mono" style="margin-top:2px">games</div></div>
+          <div><div class="num" style="font-size:22px">${hr(b.atualizado)}</div><div class="mono" style="margin-top:2px">último ponto</div></div>
+        </div>
+        <a href="${base}?overlay=${encodeURIComponent(b.token)}" target="_blank" class="mono-md" style="color:var(--orange)">ABRIR OVERLAY ↗</a>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+async function entrar(){
+  const k=$('key').value.trim();
+  if(!k) return;
+  CHAVE=k;
+  $('btnEnter').textContent='Entrando…';
+  const ok=await carregar();
+  $('btnEnter').textContent='Entrar';
+  if(!ok){ $('authMsg').textContent='Chave inválida ou o SQL do painel ainda não foi rodado.'; $('authMsg').style.display='block'; CHAVE=null; return; }
+  try{ localStorage.setItem('lbt_admin',k); }catch(e){}
+  $('auth').classList.add('hidden'); $('board').classList.remove('hidden');
+  clearInterval(timer); timer=setInterval(carregar,30000);
+}
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); ABA=b.dataset.t; pintar();
+});
+$('btnEnter').onclick=entrar;
+$('key').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+$('btnReload').onclick=carregar;
+$('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');}catch(e){}
+  clearInterval(timer); CHAVE=null; $('board').classList.add('hidden'); $('auth').classList.remove('hidden'); $('key').value=''; };
+
+// entra sozinho se a chave já estiver guardada neste aparelho
+(async()=>{
+  let k=null; try{ k=localStorage.getItem('lbt_admin'); }catch(e){}
+  const q=new URLSearchParams(location.search).get('k');
+  if(q) k=q;
+  if(k){ $('key').value=k; await entrar(); }
+})();
+</script>
+</body>
+</html>
