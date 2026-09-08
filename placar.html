@@ -50,6 +50,15 @@
   .seg button{flex:1;border-radius:999px;padding:10px;font-family:var(--fd);font-size:16px;color:var(--label);}
   .seg button.on{background:var(--white);color:var(--ink);}
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  /* fila de jogos */
+  .agrow{background:var(--surf);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;}
+  .agrow .qd{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px;}
+  .agrow .cab{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--label);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .agrow .du{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .agrow .x{flex:none;color:var(--danger);font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px;}
+  .agrow.pronto .du{color:var(--dim);}
+  .agrow .res{flex:none;font-family:var(--fm);font-size:13px;color:var(--orange);}
   .hidden{display:none !important;}
   .tap{background:var(--surf);border-radius:20px;padding:20px;text-align:left;width:100%;}
   .tap.lead{border:1.5px solid var(--orange);}
@@ -215,16 +224,25 @@
   /* — REPLAY — */
   .rep{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     opacity:0;pointer-events:none;}
-  .rep.show{animation:fadeIn .35s ease forwards;}
+  .rep.show{animation:fadeIn .12s ease forwards;}
   .rep.hide{animation:fadeOut .3s ease forwards;}
   /* cortina: o medidor de nível varrendo a tela de cima a baixo */
-  .rep .bars{position:absolute;inset:0;display:flex;gap:6px;padding:0 6px;overflow:hidden;}
+  .rep .bars{position:absolute;inset:0;display:flex;gap:6px;padding:0 6px;overflow:hidden;z-index:1;}
   .rep .bars i{flex:1;background:var(--orange);border-radius:999px 999px 0 0;display:block;
     animation:replayVarre 2.6s cubic-bezier(.16,1,.3,1) both;}
   .rep .bars i:last-child{background:var(--ink);}
   .rep .bars i:nth-child(2){animation-delay:.08s} .rep .bars i:nth-child(3){animation-delay:.16s}
   .rep .bars i:nth-child(4){animation-delay:.24s} .rep .bars i:nth-child(5){animation-delay:.32s}
-  .rep .box{background:var(--ink);padding:30px 44px;display:flex;align-items:center;gap:28px;}
+  /* a palavra fica ACIMA da cortina, e tem entrada e saída próprias:
+     aparece com a tela já coberta e sai antes de a cortina abrir */
+  .rep .box{background:var(--ink);padding:30px 44px;display:flex;align-items:center;gap:28px;
+    position:relative;z-index:2;}
+  .rep.show .box{animation:repPalavra 2.6s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes repPalavra{
+    0%,14%  {opacity:0;transform:scale(1.22)}
+    30%,60% {opacity:1;transform:none}
+    80%,100%{opacity:0;transform:scale(.93)}
+  }
   .rep .mtr{display:flex;align-items:flex-end;gap:8px;height:62px;}
   .rep .mtr i{width:16px;border-radius:999px;background:var(--orange);display:block;}
   .rep .mtr i:last-child{background:var(--line);}
@@ -500,13 +518,22 @@
 
       <details>
         <summary>Próximos jogos da quadra</summary>
-        <div class="stack" style="gap:10px">
-          <div class="body-sm">Uma linha por jogo. Hora e categoria são opcionais:<br>
-            <code>18:00 | MISTA A · SEMI | Ana/Bia x Cris/Dani</code></div>
-          <textarea class="input" id="agdTxt" rows="5" spellcheck="false"
-            placeholder="18:00 | MISTA A · SEMI | Ana/Bia x Cris/Dani"></textarea>
-          <button class="btn btn-q btn-full" id="btnAgdSalvar">Salvar fila de jogos</button>
-          <div class="mono" id="agdMsg"></div>
+        <div class="stack" style="gap:12px">
+          <div class="grid2">
+            <div class="field"><label>Hora</label>
+              <input class="input" id="agHora" placeholder="18:00" maxlength="5" inputmode="numeric"></div>
+            <div class="field"><label>Categoria e fase</label>
+              <input class="input" id="agCtx" placeholder="Mista A · Semi" maxlength="28"></div>
+          </div>
+          <div class="grid2">
+            <div class="field"><label>Dupla A</label>
+              <input class="input" id="agA" placeholder="Ana / Bia" maxlength="30"></div>
+            <div class="field"><label>Dupla B</label>
+              <input class="input" id="agB" placeholder="Cris / Dani" maxlength="30"></div>
+          </div>
+          <button class="btn btn-q btn-full" id="btnAgdAdd">Adicionar à fila</button>
+          <div class="mono" id="agdMsg">FILA DA QUADRA</div>
+          <div class="stack" style="gap:8px" id="agdLista"></div>
         </div>
       </details>
 
@@ -686,22 +713,12 @@ function gravarAgenda(a){
   try{ localStorage.setItem(AGENDA_LS,JSON.stringify(a.slice(-40))); }catch(e){}
 }
 
-// Uma linha por jogo:  18:00 | MISTA A · SEMI | Ana/Bia x Cris/Dani
-// Hora e contexto são opcionais; o "x" separa as duplas.
-function lerLinhas(txt){
-  return String(txt||'').split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{
-    const p=l.split('|').map(x=>x.trim());
-    let hora='', ctx='', duplas=p[p.length-1]||'';
-    if(p.length>=3){ hora=p[0]; ctx=p[1]; }
-    else if(p.length===2){ hora=p[0]; }
-    const d=duplas.split(/\s+[x×]\s+/i);
-    return {hora, ctx, a:(d[0]||'').trim(), b:(d[1]||'').trim(), placar:'', venc:0};
-  }).filter(i=>i.a||i.b);
+// Um jogo da fila, montado a partir dos campos do formulário.
+function novoJogo(hora, ctx, a, b){
+  const lp=x=>String(x||'').trim();
+  return {hora:lp(hora), ctx:lp(ctx).toUpperCase(), a:lp(a), b:lp(b), placar:'', venc:0};
 }
-function linhasDaAgenda(ag){
-  return ag.filter(i=>!i.placar)
-           .map(i=>[i.hora,i.ctx,(i.a+' x '+i.b)].filter(Boolean).join(' | ')).join('\n');
-}
+function jogoValido(j){ return !!(j && (j.a || j.b)); }
 
 // Quando a partida acaba, o resultado entra sozinho na agenda. Se esse
 // jogo já estava na fila, ele vira resultado ali mesmo, no lugar certo.
@@ -1076,12 +1093,39 @@ function pintarEscala(){
   $('escVal').textContent=Math.round(at*100)+'%';
 }
 
+// A fila da quadra, com o que já foi jogado logo abaixo do que falta.
+function pintarAgendaLista(agenda){
+  const ag=Array.isArray(agenda)?agenda:[];
+  const prox=ag.filter(i=>!i.placar), feitos=ag.filter(i=>i.placar);
+  const linha=(i,idx)=>`<div class="agrow${i.placar?' pronto':''}">
+      <div class="qd">
+        <div class="cab">${esc([i.hora,i.ctx].filter(Boolean).join(' · ')||'SEM HORÁRIO')}</div>
+        <div class="du">${esc(i.a||'—')} × ${esc(i.b||'—')}</div>
+      </div>
+      ${i.placar?`<div class="res">${esc(i.placar)}</div>`
+                :`<button class="x" data-i="${idx}">TIRAR</button>`}
+    </div>`;
+  const html=ag.map((i,idx)=>({i,idx}))
+               .sort((x,y)=>(x.i.placar?1:0)-(y.i.placar?1:0))
+               .map(({i,idx})=>linha(i,idx)).join('');
+  $('agdLista').innerHTML = html || '<div class="body-sm">Nenhum jogo na fila ainda.</div>';
+  $('agdLista').querySelectorAll('.x').forEach(b=>b.onclick=()=>tirarDaFila(Number(b.dataset.i)));
+  $('agdMsg').textContent = prox.length
+    ? prox.length+(prox.length===1?' JOGO NA FILA':' JOGOS NA FILA')+
+      (feitos.length?' · '+feitos.length+' JOGADO'+(feitos.length===1?'':'S'):'')
+    : 'FILA DA QUADRA';
+}
+
+function tirarDaFila(i){
+  if(!M||!Array.isArray(M.agenda)) return;
+  M.agenda.splice(i,1);
+  gravarAgenda(M.agenda); M.v++; pintarControle(); publicar();
+}
+
 function pintarControle(){
   const m=M;
   pintarEscala();
-  // a caixa de texto só é reescrita quando não está sendo editada
-  const ta=$('agdTxt');
-  if(ta && document.activeElement!==ta) ta.value=linhasDaAgenda(m.agenda||[]);
+  pintarAgendaLista(m.agenda);
   $('liveMeta').textContent=[m.cat,m.fase].filter(Boolean).join(' · ').toUpperCase()||'PARTIDA';
   const t=tensao(m);
   $('liveState').textContent = m.status==='finished' ? 'ENCERRADA'
@@ -1208,13 +1252,20 @@ function ligarControle(){
     b.disabled=true; b.textContent='NO AR…';
     setTimeout(()=>{ b.disabled=false; b.textContent=t; }, REPLAY_MS);
   };
-  $('btnAgdSalvar').onclick=()=>{
-    const feitos=(M.agenda||[]).filter(i=>i.placar);   // resultados não se apagam
-    M.agenda=feitos.concat(lerLinhas($('agdTxt').value));
-    gravarAgenda(M.agenda); M.v++; publicar();
-    const n=M.agenda.filter(i=>!i.placar).length;
-    $('agdMsg').textContent=n+(n===1?' JOGO NA FILA':' JOGOS NA FILA');
+  $('btnAgdAdd').onclick=()=>{
+    const j=novoJogo($('agHora').value,$('agCtx').value,$('agA').value,$('agB').value);
+    if(!jogoValido(j)){ $('agdMsg').textContent='FALTA O NOME DE UMA DUPLA'; return; }
+    if(!Array.isArray(M.agenda)) M.agenda=[];
+    M.agenda.push(j);
+    gravarAgenda(M.agenda); M.v++;
+    // hora e categoria costumam repetir entre jogos: só as duplas se limpam
+    $('agA').value=''; $('agB').value=''; $('agA').focus();
+    pintarControle(); publicar();
   };
+  // Enter em qualquer campo adiciona
+  ['agHora','agCtx','agA','agB'].forEach(id=>$(id).addEventListener('keydown',e=>{
+    if(e.key==='Enter'){ e.preventDefault(); $('btnAgdAdd').click(); }
+  }));
   document.querySelectorAll('.adjb').forEach(b=>b.onclick=()=>ajustar(b.dataset.a));
   $('btnNova').onclick=()=>{
     if(!confirm('Começar uma transmissão nova? A atual para de ser atualizada.')) return;
