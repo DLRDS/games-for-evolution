@@ -72,6 +72,10 @@
 
     /* ── MARCA ────────────────────────────────────────────────── */
     .lock{display:flex;align-items:center;gap:9px;}
+    /* a marca é botão: leva ao início de qualquer tela */
+    .marca{background:none;border:none;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+    .marca:active{transform:scale(.96);}
+    .marca:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:8px;}
     .lock-word{font-family:var(--fd);font-size:19px;letter-spacing:-.03em;color:var(--white);}
     .lock-word b{color:var(--orange);font-weight:inherit;}
     .meter{display:flex;align-items:flex-end;gap:3px;height:20px;}
@@ -186,10 +190,11 @@
 <!-- ══ APP SHELL ══ -->
 <div id="app">
   <div class="topbar" id="topbar">
-    <div class="lock">
+    <button class="lock marca" id="btn-inicio" onclick="irParaInicio()"
+            title="Ir para o início" aria-label="Ir para o início">
       <div class="meter" aria-hidden="true"><i class="on" style="height:9px"></i><i class="on" style="height:13px"></i><i class="on" style="height:17px"></i><i style="height:20px"></i></div>
       <div class="lock-word">LEVEL<b>BT</b></div>
-    </div>
+    </button>
     <div id="topbar-right"><span class="mono" id="hd-sub"></span></div>
   </div>
   <main class="screen" id="content"></main>
@@ -1267,6 +1272,14 @@ function nav(p){
 }
 let perfilView='perfil'; // 'perfil' | 'evolucao' | 'ajustes' | 'membros'
 function setPerfilView(v){ perfilView=v; window.scrollTo(0,0); render(); }
+
+// A marca no alto é o caminho de volta ao início, de qualquer tela:
+// fecha o que estiver aberto por dentro e volta para a Home.
+function irParaInicio(){
+  listaActiveId=null; perfilView='perfil';
+  pairsState=null; selectedPoolChip=null; selectedSlot=null;
+  nav('home');
+}
 function render(){
   const c=document.getElementById('content');
   if(!c) return;
@@ -1275,12 +1288,14 @@ function render(){
   else if(page==='ranking')  c.innerHTML=renderRanking();
   else if(page==='perfil')   c.innerHTML=renderPerfil();
   else { page='home'; c.innerHTML=renderHome(); }
-  // topbar da marca só na Home; as outras abas trazem o próprio cabeçalho
+
+  // A marca fica em todas as telas: é ela que leva de volta ao início.
   const tb=document.getElementById('topbar');
-  if(tb) tb.style.display = page==='home' ? 'flex' : 'none';
+  if(tb) tb.style.display='flex';
   const cp=DB.currentPlayer();
   const hd=document.getElementById('hd-sub');
-  if(hd) hd.textContent = cp ? 'Olá, '+getName(cp).split(' ')[0] : 'Beach Tennis';
+  const secao={sessoes:'Sessões', ranking:'Ranking', perfil:'Perfil'}[page];
+  if(hd) hd.textContent = secao || (cp ? 'Olá, '+getName(cp).split(' ')[0] : 'Beach Tennis');
 }
 
 

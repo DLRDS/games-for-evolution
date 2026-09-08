@@ -22,6 +22,8 @@
   input{font:inherit;color:inherit;}
   .wrap{max-width:1080px;margin:0 auto;padding:calc(24px + env(safe-area-inset-top)) 20px 60px;}
   .lock{display:flex;align-items:center;gap:9px;}
+  .marca{background:none;border:none;padding:0;cursor:pointer;}
+  .marca:active{transform:scale(.96);}
   .meter{display:flex;align-items:flex-end;gap:3px;height:20px;}
   .meter i{width:5px;border-radius:999px;background:var(--line);display:block;}
   .meter i.on{background:var(--orange);}
@@ -86,10 +88,10 @@
 <div class="wrap">
 
   <div class="row" style="margin-bottom:22px">
-    <div class="lock">
+    <button class="lock marca" id="btnInicio" title="Voltar ao painel" aria-label="Voltar ao painel">
       <div class="meter"><i class="on" style="height:9px"></i><i class="on" style="height:13px"></i><i class="on" style="height:17px"></i><i style="height:20px"></i></div>
       <div class="lock-word">LEVEL<b>BT</b></div>
-    </div>
+    </button>
     <div class="mono" id="stamp"></div>
   </div>
 
@@ -400,6 +402,12 @@ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
 });
 $('btnEnter').onclick=entrar;
 $('key').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
+// A marca no alto volta para a visão geral: fecha o detalhe do grupo,
+// se houver um aberto, e recarrega os números.
+$('btnInicio').onclick=()=>{
+  if(GRUPO) fecharGrupo(); else carregar();
+  window.scrollTo(0,0);
+};
 $('btnReload').onclick=carregar;
 $('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');}catch(e){}
   clearInterval(timer); CHAVE=null; GRUPO=null;

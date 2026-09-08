@@ -67,6 +67,9 @@
       padding:2px 6px;color:var(--dim);margin-left:8px;vertical-align:middle;}
   }
   .lock{display:flex;align-items:center;gap:9px;margin-bottom:20px;}
+  .marca{background:none;border:none;padding:0;margin-bottom:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+  .marca:active{transform:scale(.96);}
+  .marca:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:8px;}
   .meter{display:flex;align-items:flex-end;gap:3px;height:20px;}
   .meter i{width:5px;border-radius:999px;background:var(--line);display:block;}
   .meter i.on{background:var(--orange);}
@@ -509,9 +512,12 @@
 
 <!-- ════════ CONTROLE (celular) ════════ -->
 <div class="wrap hidden" id="ctrl">
-  <div class="lock">
-    <div class="meter" aria-hidden="true"><i class="on" style="height:9px"></i><i class="on" style="height:13px"></i><i class="on" style="height:17px"></i><i style="height:20px"></i></div>
-    <div class="lock-word">LEVEL<b>BT</b></div>
+  <div class="row" style="margin-bottom:4px">
+    <button class="lock marca" id="btnInicio" title="Ir para o app Level BT" aria-label="Ir para o app Level BT">
+      <div class="meter" aria-hidden="true"><i class="on" style="height:9px"></i><i class="on" style="height:13px"></i><i class="on" style="height:17px"></i><i style="height:20px"></i></div>
+      <div class="lock-word">LEVEL<b>BT</b></div>
+    </button>
+    <button class="btn btn-q hidden" id="btnVoltar" style="padding:9px 16px;font-size:14px">Voltar</button>
   </div>
 
   <!-- SETUP -->
@@ -1551,6 +1557,7 @@ async function iniciar(){
   $('setup').classList.add('hidden');
   $('linkbox').classList.remove('hidden');
   $('live').classList.remove('hidden');
+  atualizarVoltar();
   pintarControle(); publicar();
 }
 function aviso(t){ const e=$('setupMsg'); e.textContent=t; e.style.display='block'; }
@@ -1581,7 +1588,7 @@ function ligarControle(){
   $('tap1').onclick=()=>{pontoPara(M,1);pintarControle();publicar();};
   $('tap2').onclick=()=>{pontoPara(M,2);pintarControle();publicar();};
   $('btnUndo').onclick=()=>{ if(!hist.length)return; M=JSON.parse(hist.pop()); M.v++; pintarControle(); publicar(); };
-  $('btnLink').onclick=()=>$('linkbox').classList.toggle('hidden');
+  $('btnLink').onclick=()=>{ $('linkbox').classList.toggle('hidden'); atualizarVoltar(); };
   document.querySelectorAll('.cenab[data-c]').forEach(b=>b.onclick=()=>setCena(b.dataset.c));
   $('btnReplay').onclick=()=>{
     M.replayEm=Date.now(); M.v++; publicar();
@@ -1656,7 +1663,34 @@ function ligarControle(){
     }catch(e){ $('ovUrl').select(); } };
   $('btnOpen').onclick=()=>window.open($('ovUrl').value,'_blank');
   setInterval(()=>{ if(M) $('liveTempo').textContent='· '+relogio(M); },1000);
+
+  // A marca leva para o app. Se houver transmissão no ar, pergunta antes:
+  // sair da página no meio de um jogo é o tipo de tropeço que não dá
+  // para desfazer no meio de um torneio.
+  $('btnInicio').onclick=irParaApp;
+
+  // "Voltar" só aparece quando há de onde voltar: com uma partida no ar,
+  // ele recolhe a caixa do link e devolve o painel.
+  $('btnVoltar').onclick=()=>{
+    $('linkbox').classList.add('hidden');
+    window.scrollTo(0,0);
+    atualizarVoltar();
+  };
   ligarLayoutPC();
+}
+
+// Devolve se saiu ou não — assim dá para testar a decisão sem depender
+// de o navegador realmente trocar de página.
+function irParaApp(){
+  const noAr = M && M.status==='playing' && !$('live').classList.contains('hidden');
+  if(noAr && !confirm('Sair do placar? A transmissão continua no ar e você pode retomar depois neste aparelho.')) return false;
+  location.href='index.html';
+  return true;
+}
+
+function atualizarVoltar(){
+  const b=$('btnVoltar'); if(!b) return;
+  b.classList.toggle('hidden', $('linkbox').classList.contains('hidden'));
 }
 
 // ── Computador ────────────────────────────────────────────────────
