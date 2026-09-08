@@ -151,9 +151,20 @@ function situacao(ultima){
   return {t:'PARADO',c:'pill-g'};
 }
 
+let ULTIMO_ERRO='';
 async function carregar(){
+  ULTIMO_ERRO='';
+  if(!supa){ ULTIMO_ERRO='A biblioteca do Supabase não carregou. Verifique a internet.'; return false; }
   const {data,error}=await supa.rpc('admin_overview',{p_key:CHAVE});
-  if(error||!data||data.erro) return false;
+  if(error){
+    const m=(error.message||'').toLowerCase();
+    ULTIMO_ERRO = (m.includes('does not exist')||m.includes('admin_overview'))
+      ? 'A função admin_overview não existe no banco. Rode o arquivo admin-supabase.sql no SQL Editor.'
+      : 'Supabase: '+(error.message||'erro desconhecido');
+    return false;
+  }
+  if(!data){ ULTIMO_ERRO='O banco respondeu vazio.'; return false; }
+  if(data.erro){ ULTIMO_ERRO='Chave inválida. Confira se você não trocou a chave depois.'; return false; }
   DADOS=data;
   $('stamp').textContent='ATUALIZADO '+new Date().toLocaleTimeString('pt-BR');
   pintar();
@@ -236,16 +247,23 @@ let GRUPO=null, SUBABA='jogadores';
 
 function aviso(msg){
   const t=$('toast'); t.textContent=msg; t.classList.remove('hidden');
-  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.add('hidden'),2400);
+  t.style.maxWidth='min(90vw,560px)'; t.style.borderRadius='16px'; t.style.textAlign='center';
+  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.add('hidden'),6000);
 }
 async function rpc(fn,args){
   const {data,error}=await supa.rpc(fn,Object.assign({p_key:CHAVE},args||{}));
-  if(error) return null;
+  if(error){
+    const m=(error.message||'').toLowerCase();
+    ULTIMO_ERRO = (m.includes('does not exist')||m.includes(fn))
+      ? 'A função '+fn+' não existe. Rode o arquivo admin-detalhe.sql no SQL Editor.'
+      : 'Supabase: '+(error.message||'erro');
+    return null;
+  }
   return data;
 }
 async function abrirGrupo(cod){
   const d=await rpc('admin_grupo',{p_grupo:cod});
-  if(!d||d.erro){ aviso('Não consegui abrir. O SQL de detalhe já foi rodado?'); return; }
+  if(!d||d.erro){ aviso(ULTIMO_ERRO||'Não consegui abrir este grupo.'); return; }
   GRUPO=d; SUBABA='jogadores';
   $('conteudo').classList.add('hidden');
   document.querySelector('.tabs').classList.add('hidden');
@@ -359,7 +377,7 @@ async function entrar(){
   $('btnEnter').textContent='Entrando…';
   const ok=await carregar();
   $('btnEnter').textContent='Entrar';
-  if(!ok){ $('authMsg').textContent='Chave inválida ou o SQL do painel ainda não foi rodado.'; $('authMsg').style.display='block'; CHAVE=null; return; }
+  if(!ok){ $('authMsg').textContent=ULTIMO_ERRO||'Não consegui entrar.'; $('authMsg').style.display='block'; CHAVE=null; return; }
   try{ localStorage.setItem('lbt_admin',k); }catch(e){}
   $('auth').classList.add('hidden'); $('board').classList.remove('hidden');
   clearInterval(timer); timer=setInterval(carregar,30000);

@@ -806,13 +806,20 @@ async function iniciar(){
   if(t1.length<1||t2.length<1){ aviso('Preenche pelo menos um nome de cada dupla.'); return; }
   const btn=$('btnStart'); btn.disabled=true; btn.textContent='Criando…';
   try{
+    if(!supa) throw new Error('A biblioteca do Supabase não carregou. Verifique a internet.');
     const {data,error}=await supa.rpc('bc_create');
+    if(error){
+      const m=(error.message||'').toLowerCase();
+      if(m.includes('bc_create')||m.includes('function')||m.includes('does not exist'))
+        throw new Error('A função bc_create não existe no banco. Rode o arquivo placar-supabase.sql no SQL Editor do Supabase.');
+      throw new Error('Supabase: '+(error.message||'erro desconhecido'));
+    }
     const r=Array.isArray(data)?data[0]:data;
-    if(error||!r) throw new Error('rpc');
+    if(!r||!r.token) throw new Error('O banco respondeu sem token. Rode o placar-supabase.sql de novo.');
     tokenPub=r.token; ctrlKey=r.control_key;
-    localStorage.setItem('lbt_bc',JSON.stringify({token:tokenPub,key:ctrlKey}));
+    try{ localStorage.setItem('lbt_bc',JSON.stringify({token:tokenPub,key:ctrlKey})); }catch(e){}
   }catch(e){
-    aviso('Não consegui criar a transmissão. Confere se o SQL foi rodado no Supabase.');
+    aviso(e.message||'Não consegui criar a transmissão.');
     btn.disabled=false; btn.textContent='Gerar placar e link do OBS'; return;
   }
   M=novaPartida({t1,t2,cat:$('cat').value.trim(),fase:$('fase').value.trim(),
