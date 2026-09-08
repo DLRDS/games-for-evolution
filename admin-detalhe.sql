@@ -41,14 +41,15 @@ begin
         'tem_conta', (p.user_id is not null),
         'partidas', (select count(*) from matches m
                        where m.group_id = p_grupo
-                         and (m.team1 ? p.id or m.team2 ? p.id))
+                         and (to_jsonb(m.team1) ? p.id
+                           or to_jsonb(m.team2) ? p.id))
       ) order by p.elo desc nulls last)
       from players p where p.group_id = p_grupo), '[]'::jsonb),
 
     'sessoes', coalesce((
       select jsonb_agg(jsonb_build_object(
         'id', s.id, 'data', s.date, 'nome', s.name, 'status', s.status,
-        'confirmados', coalesce(jsonb_array_length(s.confirmed), 0),
+        'confirmados', coalesce(jsonb_array_length(to_jsonb(s.confirmed)), 0),
         'partidas', (select count(*) from matches m where m.session_id = s.id)
       ) order by s.date desc)
       from sessions s where s.group_id = p_grupo), '[]'::jsonb),
@@ -56,7 +57,7 @@ begin
     'partidas', coalesce((
       select jsonb_agg(jsonb_build_object(
         'id', m.id, 'data', m.date, 'sessao', m.session_id,
-        'time1', m.team1, 'time2', m.team2,
+        'time1', to_jsonb(m.team1), 'time2', to_jsonb(m.team2),
         'games1', m.games1, 'games2', m.games2, 'vencedor', m.winner
       ) order by m.date desc)
       from (select * from matches where group_id = p_grupo

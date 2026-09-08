@@ -212,9 +212,21 @@ function pintarGrupos(){
 
 function pintarLives(){
   const ls=DADOS.transmissoes||[];
-  if(!ls.length){ $('conteudo').innerHTML='<div class="empty">Nenhuma transmissão criada ainda.</div>'; return; }
   const base=location.origin+location.pathname.replace(/admin\.html$/,'placar.html');
-  $('conteudo').innerHTML='<div class="stack-sm">'+ls.map(b=>{
+  const topo=`<div class="row" style="margin-bottom:14px">
+      <div class="body-sm">${ls.length} ${ls.length===1?'transmissão':'transmissões'}</div>
+      <a href="${base}" target="_blank" class="btn btn-p" style="padding:11px 18px;font-size:15px">+ Nova transmissão</a>
+    </div>`;
+  if(!ls.length){
+    $('conteudo').innerHTML=topo+`<div class="empty">
+      <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px">Nenhuma transmissão ainda</div>
+      <div>As transmissões são criadas na página do placar.<br>
+      Toque em <b style="color:var(--orange)">Nova transmissão</b> acima para abrir.</div>
+      <a href="${base}?overlay=demo" target="_blank" class="btn btn-q" style="margin-top:16px">Ver demonstração do overlay</a>
+    </div>`;
+    return;
+  }
+  $('conteudo').innerHTML=topo+'<div class="stack-sm">'+ls.map(b=>{
     const a=(b.dupla_a||[]).join('/')||'—', c=(b.dupla_b||[]).join('/')||'—';
     const fim=b.status==='finished';
     const tag=b.no_ar&&!fim?'<span class="pill pill-live"><i></i>NO AR</span>'
