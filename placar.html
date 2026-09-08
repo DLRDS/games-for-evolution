@@ -22,6 +22,50 @@
 
   /* ═════════ MODO CONTROLE (celular) ═════════ */
   .wrap{max-width:520px;margin:0 auto;padding:20px 20px calc(24px + env(safe-area-inset-bottom));padding-top:calc(20px + env(safe-area-inset-top));}
+
+  /* No celular o painel é uma coluna só, como sempre foi. */
+  .painel{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+  .cln{display:flex;flex-direction:column;gap:10px;}
+
+  /* ═════════ LAYOUT DE COMPUTADOR ═════════
+     Quem opera a transmissão está sentado na frente do OBS, com espaço
+     de sobra. Aqui o painel abre em três colunas e as gavetas ficam
+     abertas: dá para ver o jogo, as cenas e a fila ao mesmo tempo,
+     sem abrir e fechar nada. */
+  @media (min-width:1040px){
+    body{font-size:16px;}
+    .wrap{max-width:1280px;padding-top:28px;}
+    #setup, #linkbox{max-width:560px;margin-left:auto;margin-right:auto;}
+
+    .painel{display:grid;grid-template-columns:1.1fr 1fr 1.15fr;gap:16px;align-items:start;}
+    .cln{background:var(--surf);border-radius:24px;padding:18px;gap:14px;}
+
+    /* as duas duplas lado a lado, como um placar de verdade */
+    .taps{flex-direction:row;}
+    .taps .tap{flex:1;}
+    .tap .big{font-size:56px;}
+
+    /* dentro das colunas, as gavetas viram seções com título */
+    .cln details{background:transparent;border:none;border-radius:0;padding:0;}
+    .cln details+details{border-top:1.5px solid var(--line);padding-top:14px;}
+    .cln summary{list-style:none;cursor:default;pointer-events:none;
+      font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--label);margin-bottom:12px;}
+    .cln summary::-webkit-details-marker{display:none;}
+    /* a de colar planilha continua sendo uma gaveta de verdade */
+    .cln details details summary{pointer-events:auto;cursor:pointer;color:var(--orange);}
+
+    .agdLista, #agdLista{max-height:340px;overflow-y:auto;}
+    .cenas{grid-template-columns:1fr 1fr;}
+  }
+
+  /* Atalhos de teclado, mostrados só quando há teclado de verdade */
+  .tecla{display:none;}
+  @media (min-width:1040px){
+    .tecla{display:inline-block;font-family:var(--fm);font-size:10px;font-weight:700;
+      letter-spacing:.1em;border:1.5px solid var(--line);border-radius:6px;
+      padding:2px 6px;color:var(--dim);margin-left:8px;vertical-align:middle;}
+  }
   .lock{display:flex;align-items:center;gap:9px;margin-bottom:20px;}
   .meter{display:flex;align-items:flex-end;gap:3px;height:20px;}
   .meter i{width:5px;border-radius:999px;background:var(--line);display:block;}
@@ -525,19 +569,44 @@
       <div class="mono"><span id="liveMeta"></span> <span id="liveTempo" style="color:var(--white)"></span></div>
       <div class="mono" id="liveState" style="color:var(--orange)"></div>
     </div>
-    <div class="stack" style="gap:8px">
+    <div class="painel">
+    <div class="cln">
+    <div class="stack taps" style="gap:8px">
       <button class="tap" id="tap1">
         <div class="row"><div style="font-size:19px;font-weight:700" id="lb1">—</div><div class="big" id="lp1">0</div></div>
-        <div class="row" style="margin-top:8px"><div class="mono" id="lg1">SETS 0 · GAMES 0</div><div class="mono" id="ls1"></div></div>
+        <div class="row" style="margin-top:8px"><div class="mono"><span id="lg1">SETS 0 · GAMES 0</span><span class="tecla">A</span></div><div class="mono" id="ls1"></div></div>
       </button>
       <button class="tap" id="tap2">
         <div class="row"><div style="font-size:19px;font-weight:700" id="lb2">—</div><div class="big" id="lp2">0</div></div>
-        <div class="row" style="margin-top:8px"><div class="mono" id="lg2">SETS 0 · GAMES 0</div><div class="mono" id="ls2"></div></div>
+        <div class="row" style="margin-top:8px"><div class="mono"><span id="lg2">SETS 0 · GAMES 0</span><span class="tecla">L</span></div><div class="mono" id="ls2"></div></div>
       </button>
     </div>
-    <div class="stack" style="gap:10px;margin-top:14px">
-      <button class="btn btn-q btn-full" id="btnUndo">Desfazer último ponto</button>
+      <button class="btn btn-q btn-full" id="btnUndo">Desfazer último ponto<span class="tecla">Z</span></button>
 
+      <details>
+        <summary>Corrigir placar</summary>
+        <div class="stack" style="gap:14px">
+          <div class="row"><div class="body-sm" id="ajN1">Dupla 1</div>
+            <div class="adj"><button class="adjb" data-a="p1-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p1+">+</button></div></div>
+          <div class="row"><div class="body-sm">&nbsp;</div>
+            <div class="adj"><button class="adjb" data-a="g1-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g1+">+</button></div></div>
+          <div style="height:1px;background:var(--line)"></div>
+          <div class="row"><div class="body-sm" id="ajN2">Dupla 2</div>
+            <div class="adj"><button class="adjb" data-a="p2-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p2+">+</button></div></div>
+          <div class="row"><div class="body-sm">&nbsp;</div>
+            <div class="adj"><button class="adjb" data-a="g2-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g2+">+</button></div></div>
+          <div class="row"><div class="body-sm">Sets</div>
+            <div class="adj"><button class="adjb" data-a="s1-">−</button><span class="mono" style="width:54px;text-align:center" id="ajSets">0-0</span><button class="adjb" data-a="s2+">+</button></div></div>
+        </div>
+      </details>
+
+      <details>
+        <summary>Quem está sacando</summary>
+        <div class="srvgrid" id="srvgrid"></div>
+      </details>
+    </div>
+
+    <div class="cln">
       <div class="stack" style="gap:10px">
         <div class="row"><div class="mono">Tamanho do placar</div><div class="mono" id="escVal"></div></div>
         <div class="seg" id="segEsc"></div>
@@ -546,15 +615,23 @@
       <div class="stack" style="gap:10px">
         <div class="mono">O que aparece na transmissão</div>
         <div class="cenas" id="cenas">
-          <button class="cenab" data-c="placar">PLACAR</button>
+          <button class="cenab" data-c="placar">PLACAR<span class="tecla">P</span></button>
           <button class="cenab" data-c="cartela">CARTELA</button>
           <button class="cenab" data-c="agenda">PRÓXIMOS</button>
           <button class="cenab" data-c="patroc">PATROCÍNIO</button>
-          <button class="cenab" id="btnReplay" style="grid-column:1/-1">VINHETA DE REPLAY</button>
-          <button class="cenab" data-c="oculto" style="grid-column:1/-1">OCULTAR TUDO</button>
+          <button class="cenab" id="btnReplay" style="grid-column:1/-1">VINHETA DE REPLAY<span class="tecla">R</span></button>
+          <button class="cenab" data-c="oculto" style="grid-column:1/-1">OCULTAR TUDO<span class="tecla">O</span></button>
         </div>
       </div>
 
+      <button class="btn btn-q btn-full" id="btnLink">Ver link do OBS</button>
+      <div class="grid2">
+        <button class="btn btn-q" id="btnNova">Nova transmissão</button>
+        <button class="btn btn-q" style="color:var(--danger);border-color:var(--danger)" id="btnEnd">Encerrar</button>
+      </div>
+    </div>
+
+    <div class="cln">
       <details>
         <summary>Patrocinadores</summary>
         <div class="stack" style="gap:12px">
@@ -604,33 +681,7 @@
         </div>
       </details>
 
-      <details>
-        <summary>Quem está sacando</summary>
-        <div class="srvgrid" id="srvgrid"></div>
-      </details>
-
-      <details>
-        <summary>Corrigir placar</summary>
-        <div class="stack" style="gap:14px">
-          <div class="row"><div class="body-sm" id="ajN1">Dupla 1</div>
-            <div class="adj"><button class="adjb" data-a="p1-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p1+">+</button></div></div>
-          <div class="row"><div class="body-sm">&nbsp;</div>
-            <div class="adj"><button class="adjb" data-a="g1-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g1+">+</button></div></div>
-          <div style="height:1px;background:var(--line)"></div>
-          <div class="row"><div class="body-sm" id="ajN2">Dupla 2</div>
-            <div class="adj"><button class="adjb" data-a="p2-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p2+">+</button></div></div>
-          <div class="row"><div class="body-sm">&nbsp;</div>
-            <div class="adj"><button class="adjb" data-a="g2-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g2+">+</button></div></div>
-          <div class="row"><div class="body-sm">Sets</div>
-            <div class="adj"><button class="adjb" data-a="s1-">−</button><span class="mono" style="width:54px;text-align:center" id="ajSets">0-0</span><button class="adjb" data-a="s2+">+</button></div></div>
-        </div>
-      </details>
-
-      <button class="btn btn-q btn-full" id="btnLink">Ver link do OBS</button>
-      <div class="grid2">
-        <button class="btn btn-q" id="btnNova">Nova transmissão</button>
-        <button class="btn btn-q" style="color:var(--danger);border-color:var(--danger)" id="btnEnd">Encerrar</button>
-      </div>
+    </div>
     </div>
     <div class="body-sm" style="text-align:center;margin-top:14px" id="syncMsg">—</div>
   </div>
@@ -674,6 +725,11 @@ function novaPartida(o){
   };
 }
 let M=null, ctrlKey=null, tokenPub=null, hist=[];
+
+// M é a partida no ar. Estas duas são a única porta de entrada e saída
+// dela — o resto do arquivo não mexe na variável direto.
+function partidaAtual(){ return M; }
+function definirPartida(m){ M=m; hist=[]; return M; }
 
 const nome=(t)=>t.filter(Boolean).join('/');
 const precisaSets=m=>m.nSets===3?2:1;
@@ -1456,11 +1512,10 @@ async function iniciar(){
     aviso(e.message||'Não consegui criar a transmissão.');
     btn.disabled=false; btn.textContent='Gerar placar e link do OBS'; return;
   }
-  M=novaPartida({t1,t2,cat:$('cat').value.trim(),fase:$('fase').value.trim(),
+  definirPartida(novaPartida({t1,t2,cat:$('cat').value.trim(),fase:$('fase').value.trim(),
                  torneio:$('torneio').value.trim(),quadra:$('quadra').value.trim(),patrocinador:$('patroc').value.trim(),
                  alvo:cfg.alvo,tbPts:cfg.tbPts,nSets:cfg.nSets,
-                 agenda:lerAgenda(), patrocinios:lerPatrocinios()});  // atravessam as partidas
-  hist=[];
+                 agenda:lerAgenda(), patrocinios:lerPatrocinios()}));  // atravessam as partidas
   const url=location.origin+location.pathname+'?overlay='+tokenPub;
   $('ovUrl').value=url;
   $('setup').classList.add('hidden');
@@ -1477,7 +1532,7 @@ async function tentarRetomar(){
   try{
     const {data}=await supa.rpc('bc_read',{p_token:s.token});
     if(!data||!data.t1) return false;
-    M=data; ctrlKey=s.key; tokenPub=s.token; hist=[];
+    definirPartida(data); ctrlKey=s.key; tokenPub=s.token;
     $('ovUrl').value=location.origin+location.pathname+'?overlay='+tokenPub;
     $('setup').classList.add('hidden');
     $('live').classList.remove('hidden');
@@ -1571,6 +1626,42 @@ function ligarControle(){
     }catch(e){ $('ovUrl').select(); } };
   $('btnOpen').onclick=()=>window.open($('ovUrl').value,'_blank');
   setInterval(()=>{ if(M) $('liveTempo').textContent='· '+relogio(M); },1000);
+  ligarLayoutPC();
+}
+
+// ── Computador ────────────────────────────────────────────────────
+const PC_MIN=1040;
+function ehPC(){ return innerWidth>=PC_MIN; }
+
+// No computador as gavetas do painel ficam abertas: o operador precisa
+// ver o jogo, as cenas e a fila de uma vez. A gaveta de colar planilha
+// é a única que continua fechada, porque só se usa uma vez.
+function ajustarGavetas(){
+  document.querySelectorAll('#live .cln > details').forEach(d=>{ d.open = ehPC(); });
+}
+
+// Atalhos: quem opera está com as duas mãos no teclado, ao lado do OBS.
+const ATALHOS={
+  a:()=>$('tap1').click(),          // ponto para a dupla de cima
+  l:()=>$('tap2').click(),          // ponto para a dupla de baixo
+  z:()=>$('btnUndo').click(),       // desfazer
+  r:()=>$('btnReplay').click(),     // vinheta de replay
+  p:()=>setCena('placar'),
+  o:()=>setCena('oculto')
+};
+function ligarLayoutPC(){
+  ajustarGavetas();
+  addEventListener('resize', ajustarGavetas);
+  addEventListener('keydown', e=>{
+    if(!ehPC() || !M) return;
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    // não rouba tecla de quem está digitando
+    const alvo=e.target, tag=alvo&&alvo.tagName;
+    if(tag==='INPUT'||tag==='TEXTAREA'||tag==='SELECT'||(alvo&&alvo.isContentEditable)) return;
+    if($('live').classList.contains('hidden')) return;
+    const fn=ATALHOS[e.key.toLowerCase()];
+    if(fn){ e.preventDefault(); fn(); }
+  });
 }
 
 // ══════════════ BOOT ══════════════
@@ -1593,11 +1684,11 @@ if(OVERLAY_TOKEN){
     box.innerHTML='<div style="margin-bottom:10px">Tem uma partida em andamento neste aparelho.</div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
       '<button class="btn btn-p" style="padding:10px 16px;font-size:15px" id="btnRet">Retomar</button>'+
-      '<button class="btn btn-q" style="padding:9px 16px;font-size:15px" id="btnNova">Começar nova</button></div>';
+      '<button class="btn btn-q" style="padding:9px 16px;font-size:15px" id="btnDescartar">Começar nova</button></div>';
     $('setup').prepend(box);
     $('btnRet').onclick=async()=>{ $('btnRet').textContent='Carregando…';
       const ok=await tentarRetomar(); if(!ok){ $('btnRet').textContent='Não consegui retomar'; } };
-    $('btnNova').onclick=()=>{ localStorage.removeItem('lbt_bc'); box.remove(); };
+    $('btnDescartar').onclick=()=>{ localStorage.removeItem('lbt_bc'); box.remove(); };
   })();
 }
 </script>
