@@ -157,10 +157,9 @@ async function carregar(){
   if(!supa){ ULTIMO_ERRO='A biblioteca do Supabase não carregou. Verifique a internet.'; return false; }
   const {data,error}=await supa.rpc('admin_overview',{p_key:CHAVE});
   if(error){
-    const m=(error.message||'').toLowerCase();
-    ULTIMO_ERRO = (m.includes('does not exist')||m.includes('admin_overview'))
-      ? 'A função admin_overview não existe no banco. Rode o arquivo admin-supabase.sql no SQL Editor.'
-      : 'Supabase: '+(error.message||'erro desconhecido');
+    const bruto=[error.message,error.details,error.hint,error.code].filter(Boolean).join(' · ');
+    ULTIMO_ERRO='admin_overview → '+(bruto||'erro sem mensagem');
+    console.error('[LevelBT] admin_overview',error);
     return false;
   }
   if(!data){ ULTIMO_ERRO='O banco respondeu vazio.'; return false; }
@@ -253,10 +252,10 @@ function aviso(msg){
 async function rpc(fn,args){
   const {data,error}=await supa.rpc(fn,Object.assign({p_key:CHAVE},args||{}));
   if(error){
-    const m=(error.message||'').toLowerCase();
-    ULTIMO_ERRO = (m.includes('does not exist')||m.includes(fn))
-      ? 'A função '+fn+' não existe. Rode o arquivo admin-detalhe.sql no SQL Editor.'
-      : 'Supabase: '+(error.message||'erro');
+    // mostra o texto cru — traduzir escondia a causa real
+    const bruto=[error.message,error.details,error.hint,error.code].filter(Boolean).join(' · ');
+    ULTIMO_ERRO=fn+' → '+(bruto||'erro sem mensagem');
+    console.error('[LevelBT]',fn,error);
     return null;
   }
   return data;
