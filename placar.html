@@ -56,6 +56,8 @@
   .agrow .cab{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--label);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .agrow .du{font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .agrow .jg{flex:none;background:var(--orange);color:var(--ink);border-radius:999px;padding:8px 14px;
+    font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;}
   .agrow .x{flex:none;color:var(--danger);font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;padding:6px;}
   .agrow.pronto .du{color:var(--dim);}
   .agrow .res{flex:none;font-family:var(--fm);font-size:13px;color:var(--orange);}
@@ -97,6 +99,7 @@
   .anc.tl{transform-origin:top left;}
   .anc.tr{transform-origin:top right;}
   .anc.bl{transform-origin:bottom left;}
+  .anc.br{transform-origin:bottom right;}
 
   /* ═════════ ANIMAÇÕES · vocabulário do design ═════════ */
   /* entrada */
@@ -295,6 +298,18 @@
   .agd .rule{height:2px;background:var(--line);}
   .agd .vaz{font-family:var(--fm);font-size:24px;letter-spacing:.16em;color:var(--dim);padding:16px 0;}
 
+  /* — SELO DE PATROCÍNIO NO CANTO (fica durante o jogo) — */
+  .apo{display:flex;align-items:stretch;gap:3px;}
+  .apo .rot{background:var(--ink);padding:14px 18px;display:flex;align-items:center;
+    font-family:var(--fm);font-size:24px;letter-spacing:.16em;color:var(--label);white-space:nowrap;}
+  .apo .marca{background:var(--white);padding:12px 22px;display:flex;align-items:center;justify-content:center;
+    min-width:160px;}
+  .apo .marca img{height:44px;max-width:220px;object-fit:contain;display:block;}
+  .apo .marca .txt{font-family:var(--fd);font-size:30px;letter-spacing:-.03em;color:var(--ink);white-space:nowrap;}
+  .apo.troca{animation:apoTroca .5s cubic-bezier(.2,.8,.2,1);}
+  .apo.out{animation:faixaOut .35s ease forwards;}
+  @keyframes apoTroca{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:none}}
+
   /* — PATROCÍNIO — */
   .spo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     background:rgba(13,13,13,.72);opacity:0;pointer-events:none;}
@@ -304,6 +319,10 @@
   .spo .box{background:var(--ink);padding:40px 36px;display:flex;flex-direction:column;gap:30px;max-width:1200px;}
   .spo .lb{font-family:var(--fm);font-size:28px;font-weight:700;letter-spacing:.2em;color:var(--orange);}
   .spo .nm{font-family:var(--fd);font-size:64px;line-height:.95;letter-spacing:-.04em;color:var(--white);}
+  .spo .marcas{display:flex;flex-wrap:wrap;gap:3px;}
+  .spo .marcas .m{background:var(--white);padding:18px 26px;display:flex;align-items:center;justify-content:center;min-width:200px;}
+  .spo .marcas .m img{height:76px;max-width:280px;object-fit:contain;display:block;}
+  .spo .marcas .m .txt{font-family:var(--fd);font-size:34px;letter-spacing:-.03em;color:var(--ink);}
   .spo .ft{display:flex;align-items:center;gap:16px;}
   .spo .ft .wm{font-family:var(--fd);font-size:24px;letter-spacing:-.03em;color:var(--white);}
   .spo .ft .wm b{color:var(--orange);font-weight:inherit;}
@@ -370,6 +389,10 @@
   <div class="setline" id="ovSetline"></div>
   </div>
 
+  <div class="anc br" style="right:64px;bottom:56px">
+    <div class="apo hidden" id="ovApo"></div>
+  </div>
+
   <div class="anc tr" style="right:64px;top:300px">
   <div class="tens" id="ovTens"><div class="big" id="ovTensBig"></div><div class="sub" id="ovTensSub"></div></div>
   </div>
@@ -408,6 +431,7 @@
     <div class="box">
       <div class="lb">APRESENTADO POR</div>
       <div class="nm" id="spoNome">—</div>
+      <div class="marcas hidden" id="spoMarcas"></div>
       <div class="ft">
         <div class="meter" style="height:26px;gap:4px"><i class="on" style="width:7px;height:11px"></i><i class="on" style="width:7px;height:17px"></i><i class="on" style="width:7px;height:22px"></i><i style="width:7px;height:26px"></i></div>
         <div class="wm">LEVEL<b>BT</b></div>
@@ -532,6 +556,22 @@
       </div>
 
       <details>
+        <summary>Patrocinadores</summary>
+        <div class="stack" style="gap:12px">
+          <div class="body-sm">A logo aparece num selo de canto durante o jogo e no cartão de intervalo.
+            PNG com fundo transparente fica melhor. Até 2 MB.</div>
+          <div class="field"><label>Nome</label>
+            <input class="input" id="spNome" placeholder="Ex.: Arena Beach" maxlength="30"></div>
+          <div class="field"><label>Rótulo</label>
+            <input class="input" id="spRotulo" placeholder="Ex.: APOIO, BOLA OFICIAL" maxlength="18"></div>
+          <label class="btn btn-q btn-full" for="spArq" style="cursor:pointer">Escolher a logo</label>
+          <input type="file" id="spArq" accept="image/png,image/jpeg,image/webp" style="display:none">
+          <div class="mono" id="spMsg"></div>
+          <div class="stack" style="gap:8px" id="spLista"></div>
+        </div>
+      </details>
+
+      <details>
         <summary>Próximos jogos da quadra</summary>
         <div class="stack" style="gap:12px">
           <div class="grid2">
@@ -547,6 +587,18 @@
               <input class="input" id="agB" placeholder="Cris / Dani" maxlength="30"></div>
           </div>
           <button class="btn btn-q btn-full" id="btnAgdAdd">Adicionar à fila</button>
+
+          <details>
+            <summary>Colar da planilha</summary>
+            <div class="stack" style="gap:10px">
+              <div class="body-sm">Selecione as células no Excel ou no Google Sheets e cole aqui.
+                A ordem é <b>hora · categoria e fase · dupla A · dupla B</b>. A linha de títulos é ignorada.</div>
+              <textarea class="input" id="agdCola" rows="4" spellcheck="false"
+                placeholder="18:00	Mista A · Semi	Ana / Bia	Cris / Dani"></textarea>
+              <button class="btn btn-q btn-full" id="btnAgdCola">Ler e acrescentar à fila</button>
+            </div>
+          </details>
+
           <div class="mono" id="agdMsg">FILA DA QUADRA</div>
           <div class="stack" style="gap:8px" id="agdLista"></div>
         </div>
@@ -607,6 +659,7 @@ function novaPartida(o){
     torneio:o.torneio||'', quadra:o.quadra||'', patrocinador:o.patrocinador||'',
     proxima:'', cena:'placar', cartela:'', inicio:Date.now(), fimEm:null,
     replayEm:0, agenda:Array.isArray(o.agenda)?o.agenda:[],
+    patrocinios:Array.isArray(o.patrocinios)?o.patrocinios:[],
     escala:o.escala||.78,   // tamanho do placar na tela, 1 = tamanho do design
     alvo:o.alvo||6, tbPts:o.tbPts||7, superTb:10, nSets:o.nSets||3, ouro:true,
     p1:0,p2:0,        // pontos do game
@@ -720,12 +773,52 @@ function relogio(m){
 // Fica guardada no aparelho que controla, então atravessa as partidas:
 // o resultado de cada jogo entra sozinho quando a partida acaba.
 const AGENDA_LS='lbt_agenda';
+const PATRO_LS='lbt_patrocinios';
 function lerAgenda(){
   try{ const a=JSON.parse(localStorage.getItem(AGENDA_LS)||'[]'); return Array.isArray(a)?a:[]; }
   catch(e){ return []; }
 }
 function gravarAgenda(a){
   try{ localStorage.setItem(AGENDA_LS,JSON.stringify(a.slice(-40))); }catch(e){}
+}
+function lerPatrocinios(){
+  try{ const a=JSON.parse(localStorage.getItem(PATRO_LS)||'[]'); return Array.isArray(a)?a:[]; }
+  catch(e){ return []; }
+}
+function gravarPatrocinios(a){
+  try{ localStorage.setItem(PATRO_LS,JSON.stringify(a.slice(0,8))); }catch(e){}
+}
+
+// ── Patrocinadores ────────────────────────────────────────────────
+// Cada um: {nome, rotulo, img}.  img é o endereço público da logo no
+// Supabase; fica no payload, então o overlay do OBS recebe junto.
+const LOGO_MAX = 2*1024*1024;
+const LOGO_TIPOS = ['image/png','image/jpeg','image/webp'];
+
+function validarLogo(arq){
+  if(!arq) return 'Nenhum arquivo escolhido.';
+  if(LOGO_TIPOS.indexOf(arq.type)<0) return 'A logo precisa ser PNG, JPEG ou WEBP.';
+  if(arq.size>LOGO_MAX) return 'A logo passou de 2 MB. Reduza a imagem e tente de novo.';
+  return null;
+}
+function nomeDeArquivo(arq){
+  const ext=(arq.name.match(/\.[a-z0-9]+$/i)||['.png'])[0].toLowerCase();
+  const limpo=String(arq.name).replace(/\.[^.]*$/,'').replace(/[^a-z0-9]+/gi,'-').slice(0,32) || 'logo';
+  return Date.now().toString(36)+'-'+limpo+ext;
+}
+
+async function enviarLogo(arq){
+  const erro=validarLogo(arq);
+  if(erro) throw new Error(erro);
+  if(!supa) throw new Error('Sem conexão com o banco.');
+  const caminho=nomeDeArquivo(arq);
+  const {error}=await supa.storage.from('logos').upload(caminho,arq,{cacheControl:'31536000'});
+  if(error){
+    const bruto=[error.message,error.error,error.statusCode].filter(Boolean).join(' · ');
+    throw new Error('envio da logo → '+(bruto||'erro sem mensagem'));
+  }
+  const {data}=supa.storage.from('logos').getPublicUrl(caminho);
+  return data.publicUrl;
 }
 
 // Um jogo da fila, montado a partir dos campos do formulário.
@@ -734,6 +827,50 @@ function novoJogo(hora, ctx, a, b){
   return {hora:lp(hora), ctx:lp(ctx).toUpperCase(), a:lp(a), b:lp(b), placar:'', venc:0};
 }
 function jogoValido(j){ return !!(j && (j.a || j.b)); }
+
+// ── Colar da planilha ─────────────────────────────────────────────
+// O Excel e o Google Sheets copiam células separadas por TAB. Também
+// aceito ponto-e-vírgula e vírgula, para quem colar de um .csv.
+// A ordem esperada é: hora · categoria e fase · dupla A · dupla B.
+// Se vierem só duas colunas, entendo como as duas duplas.
+// Uma linha "Ana/Bia x Cris/Dani" numa célula só também vale.
+function colunasDaLinha(l){
+  if(l.indexOf('\t')>=0) return l.split('\t');
+  if(l.indexOf(';') >=0) return l.split(';');
+  if(l.indexOf('|') >=0) return l.split('|');
+  if(l.indexOf(',') >=0) return l.split(',');
+  return [l];
+}
+function pareceCabecalho(c){
+  const t=c.join(' ').toLowerCase();
+  return /\b(hora|hor[áa]rio|categoria|fase|dupla|time|jogo|confronto|adversári)/.test(t)
+      && !/[x×]/.test(c.join(''));
+}
+function lerPlanilha(txt){
+  const fora=[];
+  String(txt||'').split(/\r?\n/).forEach(linha=>{
+    const bruta=linha.trim();
+    if(!bruta) return;
+    const c=colunasDaLinha(bruta).map(x=>x.trim());
+    if(pareceCabecalho(c)) return;                 // pula a linha de títulos
+
+    let hora='', ctx='', a='', b='';
+    if(c.length>=4){ [hora,ctx,a,b]=c; }
+    else if(c.length===3){ [ctx,a,b]=c; if(/^\d{1,2}[:h]/.test(c[0])){ hora=c[0]; ctx=''; a=c[1]; b=c[2]; } }
+    else if(c.length===2){ [a,b]=c; }
+    else {
+      // uma célula só: procura o "x" que separa as duplas
+      const d=bruta.split(/\s+[x×]\s+/i);
+      a=d[0]||''; b=d[1]||'';
+    }
+    // a última coluna ainda pode trazer as duas duplas juntas
+    if(a && !b){ const d=a.split(/\s+[x×]\s+/i); if(d.length===2){ a=d[0]; b=d[1]; } }
+
+    const j=novoJogo(hora,ctx,a,b);
+    if(jogoValido(j)) fora.push(j);
+  });
+  return fora;
+}
 
 // Quando a partida acaba, o resultado entra sozinho na agenda. Se esse
 // jogo já estava na fila, ele vira resultado ali mesmo, no lugar certo.
@@ -752,6 +889,29 @@ function anotarResultado(m){
 // Placar final em texto curto: "6-4 3-6 10-8"
 function resumoSets(m){
   return m.setsFeitos.map(s=>(s.tb&&s.g1+s.g2<=1)?(s.tb[0]+'-'+s.tb[1]):(s.g1+'-'+s.g2)).join(' ');
+}
+
+// "Ana / Bia" → ['Ana','Bia'].  A dupla pode vir com um nome só.
+function duplaDeTexto(s){
+  return String(s||'').split('/').map(x=>x.trim()).filter(Boolean).slice(0,2);
+}
+
+// Troca o jogo SEM criar transmissão nova. O link do OBS é da quadra,
+// não da partida: ele fica igual do começo ao fim do torneio.
+// Some só o que é da partida; a fila, as logos, o tamanho e as regras
+// da quadra continuam de pé.
+function trocarJogo(m, jogo){
+  m.t1 = duplaDeTexto(jogo.a);
+  m.t2 = duplaDeTexto(jogo.b);
+  const partes = String(jogo.ctx||'').split('·').map(x=>x.trim());
+  m.cat  = partes[0] || '';
+  m.fase = partes.slice(1).join(' · ');
+  m.p1=0; m.p2=0; m.g1=0; m.g2=0; m.s1=0; m.s2=0;
+  m.setsFeitos=[]; m.inTb=false; m.tb1=0; m.tb2=0; m.superSet=false;
+  m.saque=0; m.status='playing'; m.vencedor=null; m.evento=null;
+  m.inicio=Date.now(); m.fimEm=null; m.cena='placar'; m.cartela='';
+  m.v++;
+  return m;
 }
 
 function saqueDoTime(m){ return (m.saque===0||m.saque===1)?1:2; }
@@ -947,8 +1107,14 @@ function pintarOverlay(m){
         .map(x=>'<span>'+String(x).toUpperCase()+'</span>').join('');
       ident.classList.remove('hide'); anima(ident,'show'); br.classList.remove('hidden');
     } else if(cena==='patroc'){
-      $('spoNome').textContent=(m.patrocinador||'SEU PATROCINADOR').toUpperCase();
+      const ps=(m.patrocinios||[]).filter(p=>p&&(p.img||p.nome));
+      $('spoNome').textContent=(m.patrocinador||ps[0]&&ps[0].nome||'SEU PATROCINADOR').toUpperCase();
       $('spoTorn').textContent=(m.torneio||'').toUpperCase();
+      const mc=$('spoMarcas');
+      mc.classList.toggle('hidden', !ps.length);
+      mc.innerHTML=ps.slice(0,4).map(p=>'<div class="m">'+(p.img
+        ? '<img src="'+esc(p.img)+'" alt="'+esc(p.nome||'')+'">'
+        : '<div class="txt">'+esc(p.nome||'').toUpperCase()+'</div>')+'</div>').join('');
       spo.classList.remove('hide'); anima(spo,'show');
     } else if(cena==='agenda'){
       montarAgenda(m);
@@ -966,6 +1132,8 @@ function pintarOverlay(m){
   // por classe, não por style.opacity: a animação com fill-mode ganha do estilo inline
   $('ovPills').classList.toggle('out', fora);
   $('ovSetline').classList.toggle('out', fora);
+  pintarApoio(m.patrocinios);
+  $('ovApo').classList.toggle('out', escondeBug);
 
   // — fim de jogo —
   const fim=$('ovFim'), veil=$('ovVeil');
@@ -1026,7 +1194,37 @@ function montarAgenda(m){
 
 const REPLAY_MS=2600;
 const TENSAO_MS=6000;   // quanto tempo o selo de GAME/SET/MATCH POINT fica na tela
+const APOIO_MS=12000;   // de quanto em quanto tempo o selo de canto troca de marca
 let ultimoReplay=0, repTimer=null, tensTimer=null;
+let apoIdx=0, apoTimer=null, apoChave='';
+
+// Selo de canto: uma marca por vez, revezando. Se houver só uma, ela fica.
+function pintarApoio(lista){
+  const ps=(Array.isArray(lista)?lista:[]).filter(p=>p&&(p.img||p.nome));
+  const el=$('ovApo');
+  // só remonta quando a lista muda de verdade — senão o revezamento
+  // reiniciaria a cada leitura do banco e a marca nunca trocaria
+  const chave=JSON.stringify(ps.map(p=>[p.nome,p.rotulo,p.img]));
+  if(chave===apoChave) return;
+  apoChave=chave; apoIdx=0;
+
+  if(!ps.length){ el.classList.add('hidden'); clearInterval(apoTimer); apoTimer=null; return; }
+  el.classList.remove('hidden');
+
+  const mostrar=()=>{
+    const p=ps[apoIdx % ps.length];
+    el.innerHTML='<div class="rot">'+esc(p.rotulo||'APOIO')+'</div>'+
+      '<div class="marca">'+(p.img
+        ? '<img src="'+esc(p.img)+'" alt="'+esc(p.nome||'')+'">'
+        : '<div class="txt">'+esc(p.nome||'').toUpperCase()+'</div>')+'</div>';
+    anima(el,'troca');
+  };
+  mostrar();
+  clearInterval(apoTimer); apoTimer=null;
+  if(ps.length>1){
+    apoTimer=setInterval(()=>{ apoIdx++; mostrar(); }, APOIO_MS);
+  }
+}
 function tocarReplay(){
   const rep=$('ovRep');
   rep.classList.remove('hide'); rep.classList.add('show');
@@ -1123,17 +1321,50 @@ function pintarAgendaLista(agenda){
         <div class="du">${esc(i.a||'—')} × ${esc(i.b||'—')}</div>
       </div>
       ${i.placar?`<div class="res">${esc(i.placar)}</div>`
-                :`<button class="x" data-i="${idx}">TIRAR</button>`}
+                :`<button class="jg" data-j="${idx}">JOGAR</button>
+                  <button class="x" data-i="${idx}">TIRAR</button>`}
     </div>`;
   const html=ag.map((i,idx)=>({i,idx}))
                .sort((x,y)=>(x.i.placar?1:0)-(y.i.placar?1:0))
                .map(({i,idx})=>linha(i,idx)).join('');
   $('agdLista').innerHTML = html || '<div class="body-sm">Nenhum jogo na fila ainda.</div>';
   $('agdLista').querySelectorAll('.x').forEach(b=>b.onclick=()=>tirarDaFila(Number(b.dataset.i)));
+  $('agdLista').querySelectorAll('.jg').forEach(b=>b.onclick=()=>jogarDaFila(Number(b.dataset.j)));
   $('agdMsg').textContent = prox.length
     ? prox.length+(prox.length===1?' JOGO NA FILA':' JOGOS NA FILA')+
       (feitos.length?' · '+feitos.length+' JOGADO'+(feitos.length===1?'':'S'):'')
     : 'FILA DA QUADRA';
+}
+
+// Põe no ar o jogo escolhido da fila. Mesma transmissão, mesmo link.
+function jogarDaFila(i){
+  if(!M||!Array.isArray(M.agenda)) return;
+  const j=M.agenda[i];
+  if(!j||j.placar) return;                       // jogo já disputado não volta
+  if(M.status==='playing' && (M.g1||M.g2||M.p1||M.p2||M.s1||M.s2)
+     && !confirm('Trocar de jogo agora? O placar atual não foi encerrado e será perdido.')) return;
+  trocarJogo(M,j);
+  hist=[];
+  pintarControle(); publicar();
+}
+
+// A lista de patrocinadores no painel do controle.
+function pintarPatrocinios(lista){
+  const ps=Array.isArray(lista)?lista:[];
+  $('spLista').innerHTML = ps.length ? ps.map((p,i)=>`<div class="agrow">
+      ${p.img?`<img src="${esc(p.img)}" alt="" style="height:30px;max-width:76px;object-fit:contain;flex:none">`:''}
+      <div class="qd">
+        <div class="cab">${esc(p.rotulo||'APOIO')}</div>
+        <div class="du">${esc(p.nome||'—')}</div>
+      </div>
+      <button class="x" data-p="${i}">TIRAR</button>
+    </div>`).join('') : '<div class="body-sm">Nenhum patrocinador ainda.</div>';
+  $('spLista').querySelectorAll('.x').forEach(b=>b.onclick=()=>tirarPatrocinio(Number(b.dataset.p)));
+}
+function tirarPatrocinio(i){
+  if(!M||!Array.isArray(M.patrocinios)) return;
+  M.patrocinios.splice(i,1);
+  gravarPatrocinios(M.patrocinios); M.v++; pintarControle(); publicar();
 }
 
 function tirarDaFila(i){
@@ -1146,6 +1377,7 @@ function pintarControle(){
   const m=M;
   pintarEscala();
   pintarAgendaLista(m.agenda);
+  pintarPatrocinios(m.patrocinios);
   $('liveMeta').textContent=[m.cat,m.fase].filter(Boolean).join(' · ').toUpperCase()||'PARTIDA';
   const t=tensao(m);
   $('liveState').textContent = m.status==='finished' ? 'ENCERRADA'
@@ -1227,7 +1459,7 @@ async function iniciar(){
   M=novaPartida({t1,t2,cat:$('cat').value.trim(),fase:$('fase').value.trim(),
                  torneio:$('torneio').value.trim(),quadra:$('quadra').value.trim(),patrocinador:$('patroc').value.trim(),
                  alvo:cfg.alvo,tbPts:cfg.tbPts,nSets:cfg.nSets,
-                 agenda:lerAgenda()});   // a fila da quadra atravessa as partidas
+                 agenda:lerAgenda(), patrocinios:lerPatrocinios()});  // atravessam as partidas
   hist=[];
   const url=location.origin+location.pathname+'?overlay='+tokenPub;
   $('ovUrl').value=url;
@@ -1271,6 +1503,39 @@ function ligarControle(){
     const b=$('btnReplay'), t=b.textContent;
     b.disabled=true; b.textContent='NO AR…';
     setTimeout(()=>{ b.disabled=false; b.textContent=t; }, REPLAY_MS);
+  };
+  $('spArq').onchange=async e=>{
+    const arq=e.target.files&&e.target.files[0];
+    e.target.value='';                              // permite reenviar o mesmo arquivo
+    const erro=validarLogo(arq);
+    if(erro){ $('spMsg').textContent=erro.toUpperCase(); return; }
+    $('spMsg').textContent='ENVIANDO…';
+    try{
+      const url=await enviarLogo(arq);
+      if(!Array.isArray(M.patrocinios)) M.patrocinios=[];
+      M.patrocinios.push({
+        nome:   $('spNome').value.trim() || arq.name.replace(/\.[^.]*$/,''),
+        rotulo: ($('spRotulo').value.trim() || 'APOIO').toUpperCase(),
+        img:    url
+      });
+      gravarPatrocinios(M.patrocinios); M.v++;
+      $('spNome').value=''; $('spRotulo').value='';
+      pintarControle(); publicar();
+      $('spMsg').textContent='LOGO NO AR';
+    }catch(err){
+      console.error('[LevelBT] logo',err);
+      $('spMsg').textContent=String(err.message||err);
+    }
+  };
+  $('btnAgdCola').onclick=()=>{
+    const novos=lerPlanilha($('agdCola').value);
+    if(!novos.length){ $('agdMsg').textContent='NÃO ENCONTREI NENHUM JOGO NO QUE VOCÊ COLOU'; return; }
+    if(!Array.isArray(M.agenda)) M.agenda=[];
+    M.agenda=M.agenda.concat(novos);
+    gravarAgenda(M.agenda); M.v++;
+    $('agdCola').value='';
+    pintarControle(); publicar();
+    $('agdMsg').textContent=novos.length+(novos.length===1?' JOGO LIDO':' JOGOS LIDOS')+' DA PLANILHA';
   };
   $('btnAgdAdd').onclick=()=>{
     const j=novoJogo($('agHora').value,$('agCtx').value,$('agA').value,$('agB').value);
