@@ -16,7 +16,7 @@
 --   PASSO 2 · rode o INSERT do final, numa query separada, e guarde a chave
 -- ══════════════════════════════════════════════════════════════════
 
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema extensions;
 
 -- Data de criação dos grupos (o app não preenchia).
 do $$
@@ -39,7 +39,7 @@ create or replace function admin_overview(p_key text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $fn$
 declare
   v_ok boolean;

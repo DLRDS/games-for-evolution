@@ -13,7 +13,7 @@
 -- Rode isto uma vez no SQL Editor do Supabase.
 -- ══════════════════════════════════════════════════════════════════
 
-create extension if not exists pgcrypto;
+create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists broadcasts (
   id           uuid primary key default gen_random_uuid(),
@@ -35,7 +35,7 @@ create or replace function bc_create()
 returns table (token text, control_key text)
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare
   v_token text := encode(gen_random_bytes(6), 'hex');   -- 12 caracteres
@@ -51,7 +51,7 @@ create or replace function bc_read(p_token text)
 returns jsonb
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
   select payload from broadcasts where token = p_token;
 $$;
@@ -61,7 +61,7 @@ create or replace function bc_write(p_control_key text, p_payload jsonb)
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 declare v_n int;
 begin

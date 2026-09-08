@@ -15,7 +15,7 @@ create or replace function admin_ok(p_key text)
 returns boolean
 language sql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$ select exists(select 1 from admin_keys where key = p_key); $$;
 
 -- ── Tudo de um grupo ──────────────────────────────────────────────
@@ -23,7 +23,7 @@ create or replace function admin_grupo(p_key text, p_grupo text)
 returns jsonb
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $fn$
 declare v jsonb;
 begin
@@ -70,7 +70,7 @@ $fn$;
 -- ── Renomear o grupo ──────────────────────────────────────────────
 create or replace function admin_set_grupo(p_key text, p_grupo text, p_nome text)
 returns boolean
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 begin
   if not admin_ok(p_key) then return false; end if;
   update groups set name = p_nome where id = p_grupo;
@@ -81,7 +81,7 @@ end; $$;
 create or replace function admin_set_jogador(
   p_key text, p_id text, p_nome text, p_elo int, p_papel text)
 returns boolean
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, extensions as $$
 begin
   if not admin_ok(p_key) then return false; end if;
   update players set
@@ -97,7 +97,7 @@ end; $$;
 -- ── Apagar (jogador · sessão · partida · grupo inteiro) ───────────
 create or replace function admin_apagar(p_key text, p_tipo text, p_id text)
 returns jsonb
-language plpgsql security definer set search_path = public as $fn$
+language plpgsql security definer set search_path = public, extensions as $fn$
 declare n int := 0;
 begin
   if not admin_ok(p_key) then return jsonb_build_object('erro','chave invalida'); end if;
