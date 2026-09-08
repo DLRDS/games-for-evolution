@@ -489,6 +489,7 @@ async function initSupabase(){
 }
 
 function startPolling(){
+  ligarTransmissoes();
   if(_pollTimer)return;
   _pollTimer=setInterval(async()=>{
     if(document.hidden||!supa)return;
@@ -504,6 +505,95 @@ function startPolling(){
     // Sempre atualiza badge ao vivo no header
     _updateLiveBadge();
   },3000);
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TRANSMISSÃO AO VIVO
+// Quando alguém está transmitindo um jogo com o código deste grupo,
+// o placar do torneio aparece aqui dentro — sem link, sem cadastro.
+// A transmissão vive noutra tabela (broadcasts), então isto é uma
+// consulta à parte, que não mexe em nada do fluxo do grupo.
+// ══════════════════════════════════════════════════════════════════
+let TX=[];              // transmissões no ar, com o placar de cada uma
+let txTimer=null;
+function transmissoesNoAr(){ return TX; }
+
+async function carregarTransmissoes(){
+  const g=myGroupId();
+  if(!supa||!g){ TX=[]; return false; }
+  try{
+    const {data,error}=await supa.rpc('bc_ao_vivo',{p_group:g});
+    if(error) throw error;
+    const lista=Array.isArray(data)?data:[];
+    // para cada uma, busca o placar completo
+    const cheias=await Promise.all(lista.slice(0,3).map(async t=>{
+      try{
+        const {data:p}=await supa.rpc('bc_read',{p_token:t.token});
+        return (p&&p.t1)?Object.assign({},t,{m:p}):null;
+      }catch(e){ return null; }
+    }));
+    const novo=cheias.filter(Boolean);
+    const mudou=JSON.stringify(novo)!==JSON.stringify(TX);
+    TX=novo;
+    return mudou;
+  }catch(e){
+    // função ainda não instalada no banco, ou sem rede: segue sem isso
+    TX=[]; return false;
+  }
+}
+
+function ligarTransmissoes(){
+  if(txTimer) return;
+  const passo=async()=>{ if(await carregarTransmissoes()) render(); };
+  passo();
+  txTimer=setInterval(passo, 5000);
+}
+
+// Cartão do jogo que está sendo transmitido agora.
+function cartaoTransmissao(t){
+  const m=t.m||{}, PTS=['0','15','30','40'];
+  const nm=a=>(a||[]).map(x=>esc(String(x).split(' ')[0])).join('/');
+  const a=nm(m.t1)||'Dupla A', b=nm(m.t2)||'Dupla B';
+  const ponto=v=>m.inTb?v:(v>3?'AD':PTS[Math.min(v||0,3)]);
+  const p1=ponto(m.inTb?m.tb1:m.p1), p2=ponto(m.inTb?m.tb2:m.p2);
+  const ctx=[m.torneio,m.cat,m.fase].filter(Boolean).join(' · ').toUpperCase();
+  const sacaA=(m.saque===0||m.saque===1);
+  const bola=on=>`<span style="width:9px;height:9px;border-radius:999px;flex:none;background:${on?'var(--orange)':'var(--line)'}"></span>`;
+  const linha=(quem,saca,games,pt)=>`<div class="row" style="gap:12px">
+      <div class="row" style="gap:10px;min-width:0;flex:1;justify-content:flex-start">
+        ${bola(saca)}<div class="trunc" style="font-size:17px;font-weight:700">${quem}</div>
+      </div>
+      <div class="mono-md" style="color:var(--white)">${games??0}</div>
+      <div style="font-family:var(--fd);font-size:26px;letter-spacing:-.04em;color:var(--orange);min-width:44px;text-align:right">${pt}</div>
+    </div>`;
+  const acabou=m.status==='finished';
+  const venceu=acabou?(m.vencedor===1?a:b):null;
+
+  return `<div class="card stack" style="gap:12px">
+    <div class="row">
+      <span class="pill pill-live"><span class="dot"></span>${acabou?'ENCERRADO':'TRANSMISSÃO AO VIVO'}</span>
+      ${ctx?`<span class="mono-md trunc">${esc(ctx)}</span>`:''}
+    </div>
+    ${acabou
+      ? `<div class="stack" style="gap:5px">
+           <div class="mono">VENCEU</div>
+           <div class="trunc" style="font-size:19px;font-weight:700">${venceu}</div>
+           <div class="mono-md">${esc((m.setsFeitos||[]).map(s=>s.g1+'-'+s.g2).join('  '))}</div>
+         </div>`
+      : `<div class="stack" style="gap:8px">
+           ${linha(a,sacaA,m.g1,p1)}
+           ${linha(b,!sacaA,m.g2,p2)}
+         </div>
+         ${m.inTb?`<div class="mono">${m.superSet?'SUPER TIEBREAK':'TIEBREAK'}</div>`:''}`}
+  </div>`;
+}
+
+// Abre o placar de transmissão já sabendo de que grupo é, para que os
+// parceiros vejam o jogo no app sem ninguém passar link.
+function abrirPlacarTransmissao(){
+  const g=myGroupId();
+  const base=location.href.replace(/[^/]*$/,'')+'placar.html';
+  window.open(g?base+'?grupo='+encodeURIComponent(g):base,'_blank');
 }
 
 function _checkLiveSession(){
@@ -530,7 +620,9 @@ function _updateLiveBadge(){
   else { badge.style.display='none'; }
 }
 
+function pararTransmissoes(){ clearInterval(txTimer); txTimer=null; }
 function stopPolling(){
+  pararTransmissoes();
   if(_pollTimer){ clearInterval(_pollTimer); _pollTimer=null; }
 }
 
@@ -1274,9 +1366,10 @@ function renderHome(){
   };
 
   let atividade='';
+  if(TX.length) atividade+=TX.map(cartaoTransmissao).join('');
   if(liveSess.length) atividade+=liveSess.map(liveCard).join('');
   if(openSess.length) atividade+=openSess.slice(0,3).map(openCard).join('');
-  if(!liveSess.length&&!openSess.length) atividade=`<div class="line-item row">
+  if(!TX.length&&!liveSess.length&&!openSess.length) atividade=`<div class="line-item row">
       <span class="body-sm grow">Nenhuma sessão aberta agora.</span>
       <button class="btn btn-p btn-sm" onclick="nav('sessoes')">Criar sessão</button></div>`;
 
@@ -1517,6 +1610,17 @@ function renderAjustes(){
         <div class="line-item row">
           <div class="stack" style="gap:4px;min-width:0"><div class="mono" style="letter-spacing:.14em">SENHA</div><div style="font-size:16px;font-weight:600">••••••</div></div>
           <button class="btn btn-link" style="color:var(--white)" onclick="changePassword()">${icon('edit',18)}</button>
+        </div>
+      </div>
+
+      <div class="stack" style="gap:10px">
+        <div class="mono">Transmissão</div>
+        <div class="line-item row" style="cursor:pointer" onclick="abrirPlacarTransmissao()">
+          <div class="stack" style="gap:4px;min-width:0">
+            <div class="trunc" style="font-size:16px;font-weight:600">Transmitir um jogo</div>
+            <div class="body-sm">Placar para o OBS. O grupo acompanha aqui pelo app.</div>
+          </div>
+          <span class="btn btn-p btn-sm" style="white-space:nowrap">Abrir</span>
         </div>
       </div>
 

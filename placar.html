@@ -169,6 +169,9 @@
   .pl-live i{width:10px;height:10px;border-radius:999px;background:var(--ink);display:block;
     animation:vivoPisca 1.4s steps(2,jump-none) infinite;}
   .pl-dark{background:var(--ink);color:var(--white);}
+  /* o quarentão é uma tarja discreta logo abaixo do placar, não um selo de tela cheia */
+  .pl-ouro{background:var(--ink);color:var(--orange);font-weight:700;letter-spacing:.16em;
+    animation:seloIn .4s cubic-bezier(.2,.8,.2,1);}
   .pills.out{animation:faixaOut .35s ease forwards;}
 
   /* — RODAPÉ DE SETS — */
@@ -184,7 +187,6 @@
   .tens.hide{animation:seloOut .3s ease forwards;}
   .tens .big{background:var(--orange);padding:22px 34px 26px;font-family:var(--fd);font-size:128px;
     line-height:.86;letter-spacing:-.05em;color:var(--ink);text-align:right;}
-  .tens .big.longa{font-size:92px;}
   .tens .sub{background:var(--ink);padding:16px 24px;font-family:var(--fm);font-size:30px;font-weight:700;
     letter-spacing:.18em;color:var(--white);}
 
@@ -328,6 +330,7 @@
       <span class="pl pl-live"><i></i>AO VIVO</span>
       <span class="pl pl-dark" id="ovCtx"></span>
       <span class="pl pl-dark" id="ovTempo">0:00</span>
+      <span class="pl pl-ouro hidden" id="ovOuro">QUARENTÃO · QUEM FAZ, LEVA</span>
     </div>
   </div>
   <div class="anc bl" style="left:64px;bottom:56px">
@@ -436,6 +439,10 @@
         <div class="field"><label>Tiebreak</label><div class="seg" id="segTb"></div></div>
       </div>
       <div class="field"><label>Sets</label><div class="seg" id="segSets"></div></div>
+      <div class="field"><label>Código do grupo (opcional)</label>
+        <input class="input" id="grupo" placeholder="Ex.: ABC123" maxlength="16" autocapitalize="characters">
+        <div class="body-sm">Preenchendo, quem está nesse grupo acompanha o placar ao vivo dentro do app.</div>
+      </div>
       <div class="warn" id="setupMsg" style="display:none"></div>
       <button class="btn btn-p btn-full" id="btnStart">Gerar placar e link do OBS</button>
       <button class="btn btn-q btn-full" id="btnDemo">Ver demonstração do overlay</button>
@@ -750,8 +757,14 @@ function tensao(m){
     return null;
   }
 
-  // O quarentão manda: em 40—40 o selo é ele, não "GAME POINT".
-  if(ehQuarentao(m)) return {big:'QUARENTÃO', sub:oQueVale(m)};
+  // No quarentão o aviso é a tarja discreta embaixo do placar. O selo
+  // grande só entra se o game em disputa fecha um set ou o jogo.
+  if(ehQuarentao(m)){
+    const vale=oQueVale(m);
+    if(vale==='VALE O JOGO') return {big:'MATCH POINT'};
+    if(vale==='VALE O SET')  return {big:'SET POINT'};
+    return null;
+  }
 
   const chance=(meu,dele,gMeu,gDele)=>{
     if(!(meu>=3 && meu>dele)) return null;
@@ -833,7 +846,13 @@ function pintarOverlay(m){
   const sq=saqueDoTime(m), jogando=m.status==='playing';
 
   // quarentão: 40—40 com ponto de ouro
-  $('ovPtcol').classList.toggle('ouro', ehQuarentao(m) && jogando);
+  const ouro=ehQuarentao(m) && jogando;
+  $('ovPtcol').classList.toggle('ouro', ouro);
+  const tOuro=$('ovOuro');
+  if(ouro===tOuro.classList.contains('hidden')){          // mudou de estado
+    tOuro.classList.toggle('hidden', !ouro);
+    if(ouro){ tOuro.style.animation='none'; void tOuro.offsetWidth; tOuro.style.animation=''; }
+  }
   $('ovR1').classList.toggle('srv',sq===1&&jogando);
   $('ovR2').classList.toggle('srv',sq===2&&jogando);
   $('ovMark').style.top = (sq===2?'calc(50% + 1.5px)':'0');
@@ -847,8 +866,6 @@ function pintarOverlay(m){
     const el=$('ovTens'), big=$('ovTensBig');
     if(t){
       big.innerHTML=t.big.replace(' ','<br>');
-      // "QUARENTÃO" é uma palavra só e comprida: cabe em corpo menor.
-      big.classList.toggle('longa', t.big.indexOf(' ')<0 && t.big.length>7);
       $('ovTensSub').textContent = t.sub || ((sq===1?nome(m.t1):nome(m.t2)).toUpperCase()+' SACA');
       el.classList.remove('hide'); anima(el,'show');
     } else { el.classList.remove('show'); el.classList.add('hide'); }
@@ -1128,7 +1145,8 @@ async function iniciar(){
   const btn=$('btnStart'); btn.disabled=true; btn.textContent='Criando…';
   try{
     if(!supa) throw new Error('A biblioteca do Supabase não carregou. Verifique a internet.');
-    const {data,error}=await supa.rpc('bc_create');
+    const grupo=$('grupo').value.trim().toUpperCase();
+    const {data,error}=await supa.rpc('bc_create', grupo?{p_group:grupo}:{});
     if(error){
       console.error('[LevelBT] bc_create',error);
       const bruto=[error.message,error.details,error.hint,error.code].filter(Boolean).join(' · ');
@@ -1175,6 +1193,8 @@ async function tentarRetomar(){
 
 function ligarControle(){
   segs();
+  // o app pode abrir o placar já dizendo de que grupo é: ?grupo=ABC123
+  const gq=qs.get('grupo'); if(gq) $('grupo').value=gq.trim().toUpperCase();
   $('btnStart').onclick=iniciar;
   $('btnDemo').onclick=()=>window.open(location.origin+location.pathname+'?overlay=demo','_blank');
   $('tap1').onclick=()=>{pontoPara(M,1);pintarControle();publicar();};
