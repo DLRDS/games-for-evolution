@@ -85,7 +85,8 @@
   /* Palco fixo de 1920×1080. Tudo dentro é medido em pixels de Full HD;
      o escalar() só encolhe o conjunto inteiro para caber na janela, então
      a proporção nunca muda. No OBS, com fonte 1920×1080, a escala é 1:1. */
-  .stage{position:fixed;left:0;top:0;width:1920px;height:1080px;transform-origin:top left;--esc:.78;}
+  .stage{position:fixed;left:0;top:0;width:1920px;height:1080px;transform-origin:top left;--esc:.78;
+    --pulso:1.7s; --curva:cubic-bezier(.45,0,.55,1);}
   .ov *{font-kerning:none;}
 
   /* Cada peça mora numa âncora. A âncora é que encolhe (--esc), com a
@@ -102,10 +103,14 @@
   @keyframes bugIn{from{transform:translateX(-40px);opacity:0}to{transform:none;opacity:1}}
   @keyframes faixaIn{from{transform:translateY(36px);opacity:0}to{transform:none;opacity:1}}
   @keyframes cartaoIn{from{transform:translateY(48px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+  /* O design anima o letter-spacing na entrada do selo. Isso recalcula o
+     layout do texto a cada quadro — em corpo 128px trava visivelmente.
+     Mesmo efeito de "abrir", feito só com transform e opacidade, que o
+     navegador resolve na placa de vídeo. */
   @keyframes seloIn{
-    0%{transform:scale(1.45);opacity:0;letter-spacing:.12em}
-    60%{transform:none;opacity:1;letter-spacing:-.05em}
-    100%{transform:none;opacity:1;letter-spacing:-.05em}}
+    0%{transform:scale(1.28);opacity:0}
+    55%{transform:scale(.985);opacity:1}
+    100%{transform:none;opacity:1}}
   @keyframes regraIn{from{transform:scaleX(0)}to{transform:none}}
   /* saída */
   @keyframes bugOut{from{transform:none;opacity:1}to{transform:translateX(-40px);opacity:0}}
@@ -118,8 +123,13 @@
   @keyframes celaFlashG{0%{background:var(--orange);color:var(--ink)}100%{background:var(--surf);color:var(--white)}}
   /* contínuas */
   @keyframes vivoPisca{0%,100%{opacity:1}50%{opacity:.25}}
-  @keyframes ouroPulsa{0%,100%{background:var(--surf);color:var(--orange)}50%{background:var(--orange);color:var(--ink)}}
-  @keyframes anelPulsa{0%,100%{opacity:.18}50%{opacity:1}}
+  /* Pulso do quarentão. O fundo é uma camada laranja que só muda de
+     opacidade — a placa de vídeo dá conta sozinha, sem repintar a cela.
+     Fundo, texto e anel usam a MESMA duração e a mesma curva, então
+     pulsam juntos em vez de brigar entre si. */
+  @keyframes ouroFundo{0%,100%{opacity:0}50%{opacity:1}}
+  @keyframes ouroTexto{0%,100%{color:var(--orange)}50%{color:var(--ink)}}
+  @keyframes anelPulsa{0%,100%{opacity:.2}50%{opacity:1}}
   @keyframes replayVarre{0%{transform:translateY(-102%)}30%{transform:none}66%{transform:none}100%{transform:translateY(102%)}}
   @keyframes fadeIn{to{opacity:1}}
   @keyframes fadeOut{to{opacity:0}}
@@ -165,10 +175,15 @@
   .gm.flash{animation:celaFlashG .5s ease-out;}
 
   /* ponto de ouro (quarentão): anel pulsando + celas invertendo */
+  .pt{position:relative;}
+  .pt::after{content:'';position:absolute;inset:0;background:var(--orange);opacity:0;z-index:0;}
+  .pt span{position:relative;z-index:1;}
   .anel{position:absolute;inset:-6px;border:3px solid var(--orange);pointer-events:none;
-    display:none;animation:anelPulsa 1s ease-in-out infinite;z-index:1;}
-  .ptcol.ouro .anel{display:block;}
-  .ptcol.ouro .pt{animation:ouroPulsa 1s ease-in-out infinite;}
+    display:none;z-index:1;}
+  .ptcol.ouro .anel{display:block;will-change:opacity;
+    animation:anelPulsa var(--pulso) var(--curva) infinite;}
+  .ptcol.ouro .pt::after{will-change:opacity;animation:ouroFundo var(--pulso) var(--curva) infinite;}
+  .ptcol.ouro .pt span{animation:ouroTexto var(--pulso) var(--curva) infinite;}
 
   /* — PÍLULAS ABAIXO DO BUG — */
   .pills{display:flex;gap:10px;
@@ -180,7 +195,7 @@
   .pl-dark{background:var(--ink);color:var(--white);}
   /* o quarentão é uma tarja discreta logo abaixo do placar, não um selo de tela cheia */
   .pl-ouro{background:var(--ink);color:var(--orange);font-weight:700;letter-spacing:.16em;
-    animation:seloIn .4s cubic-bezier(.2,.8,.2,1);}
+    animation:faixaIn .38s cubic-bezier(.2,.8,.2,1);}
   .pills.out{animation:faixaOut .35s ease forwards;}
 
   /* — RODAPÉ DE SETS — */
@@ -876,15 +891,19 @@ function pintarOverlay(m){
   $('ovMark').style.display = jogando?'block':'none';
 
   // — selo de tensão —
+  // O selo é de passagem: entra, fica TENSAO_MS na tela e sai sozinho.
+  // Se o placar mudar e nascer uma tensão diferente, ele passa de novo.
   const t=(m.cena&&m.cena!=='placar')?null:tensao(m);
   const tChave = t ? t.big+'|'+(t.sub||'') : '';
   if(tChave!==tensaoAtual){
     tensaoAtual=tChave;
     const el=$('ovTens'), big=$('ovTensBig');
+    clearTimeout(tensTimer);
     if(t){
       big.innerHTML=t.big.replace(' ','<br>');
       $('ovTensSub').textContent = t.sub || ((sq===1?nome(m.t1):nome(m.t2)).toUpperCase()+' SACA');
       el.classList.remove('hide'); anima(el,'show');
+      tensTimer=setTimeout(()=>{ el.classList.remove('show'); el.classList.add('hide'); }, TENSAO_MS);
     } else { el.classList.remove('show'); el.classList.add('hide'); }
   }
 
@@ -1006,7 +1025,8 @@ function montarAgenda(m){
 }
 
 const REPLAY_MS=2600;
-let ultimoReplay=0, repTimer=null;
+const TENSAO_MS=6000;   // quanto tempo o selo de GAME/SET/MATCH POINT fica na tela
+let ultimoReplay=0, repTimer=null, tensTimer=null;
 function tocarReplay(){
   const rep=$('ovRep');
   rep.classList.remove('hide'); rep.classList.add('show');
