@@ -450,6 +450,7 @@ function tensao(m){
 // ── Sincronização ────────────────────────────────────────────
 async function publicar(){
   if(!supa||!ctrlKey||!M) return;
+  try{ localStorage.setItem('lbt_bc',JSON.stringify({token:tokenPub,key:ctrlKey})); }catch(e){}
   try{
     await supa.rpc('bc_write',{p_control_key:ctrlKey,p_payload:M});
     const el=$('syncMsg'); if(el) el.textContent='Sincronizado · '+new Date().toLocaleTimeString('pt-BR');
@@ -674,6 +675,23 @@ async function iniciar(){
 }
 function aviso(t){ const e=$('setupMsg'); e.textContent=t; e.style.display='block'; }
 
+async function tentarRetomar(){
+  let s=null;
+  try{ s=JSON.parse(localStorage.getItem('lbt_bc')||'null'); }catch(e){}
+  if(!s||!s.token||!s.key) return false;
+  try{
+    const {data}=await supa.rpc('bc_read',{p_token:s.token});
+    if(!data||!data.t1) return false;
+    M=data; ctrlKey=s.key; tokenPub=s.token; hist=[];
+    $('ovUrl').value=location.origin+location.pathname+'?overlay='+tokenPub;
+    $('setup').classList.add('hidden');
+    $('live').classList.remove('hidden');
+    pintarControle();
+    $('syncMsg').textContent='Partida retomada · '+nome(M.t1)+' × '+nome(M.t2);
+    return true;
+  }catch(e){ return false; }
+}
+
 function ligarControle(){
   segs();
   $('btnStart').onclick=iniciar;
@@ -704,6 +722,21 @@ if(OVERLAY_TOKEN){
 }else{
   $('ctrl').classList.remove('hidden');
   ligarControle();
+  // se havia uma partida em andamento neste aparelho, oferece retomar
+  (async()=>{
+    let s=null; try{ s=JSON.parse(localStorage.getItem('lbt_bc')||'null'); }catch(e){}
+    if(!s||!s.token) return;
+    const box=document.createElement('div');
+    box.className='warn'; box.style.marginBottom='16px';
+    box.innerHTML='<div style="margin-bottom:10px">Tem uma partida em andamento neste aparelho.</div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">'+
+      '<button class="btn btn-p" style="padding:10px 16px;font-size:15px" id="btnRet">Retomar</button>'+
+      '<button class="btn btn-q" style="padding:9px 16px;font-size:15px" id="btnNova">Começar nova</button></div>';
+    $('setup').prepend(box);
+    $('btnRet').onclick=async()=>{ $('btnRet').textContent='Carregando…';
+      const ok=await tentarRetomar(); if(!ok){ $('btnRet').textContent='Não consegui retomar'; } };
+    $('btnNova').onclick=()=>{ localStorage.removeItem('lbt_bc'); box.remove(); };
+  })();
 }
 </script>
 </body>
