@@ -377,6 +377,8 @@
   .fim{position:absolute;left:64px;right:64px;top:140px;display:flex;flex-direction:column;gap:26px;opacity:0;}
   .veil.show{animation:fadeIn .5s ease forwards;}
   .fim.show{animation:cartaoIn .6s cubic-bezier(.2,.8,.2,1) .12s forwards;}
+  .fim.hide{animation:cartaoOut .4s ease forwards;}
+  .veil.hide{animation:fadeOut .4s ease forwards;}
   .fim .hd{display:flex;align-items:center;gap:18px;}
   .fim .hd .tag{background:var(--orange);padding:12px 22px;font-family:var(--fm);font-size:28px;font-weight:700;letter-spacing:.2em;color:var(--ink);}
   .fim .hd .ctx{font-family:var(--fm);font-size:26px;letter-spacing:.16em;color:var(--white);}
@@ -795,6 +797,24 @@ function ganhaGame(m,time,sacavaTime){
   trocaSaque(m);
 }
 
+// Depois de corrigir os games na mão, relê o placar e liga ou desliga o
+// tiebreak. Era isto que faltava: a correção manual mexia nos games sem
+// nunca reavaliar, então ajustar até 6—6 não entrava no tie.
+//
+// De propósito NÃO fecho o set aqui. Corrigindo de um em um, o placar
+// passa por 6—0 no caminho até 6—5, e fechar o set nessa passagem
+// apagaria os games e deixaria o operador sem saída. Fechar set continua
+// sendo coisa do jogo correndo; na mão, existem os botões de sets.
+function conferirTiebreak(m){
+  if(m.status!=='playing' || m.superSet) return;
+  const empatadoNoAlvo = m.g1>=m.alvo && m.g2>=m.alvo && m.g1===m.g2;
+  if(empatadoNoAlvo && !m.inTb){
+    m.inTb=true; m.tb1=0; m.tb2=0; m.p1=0; m.p2=0;
+  } else if(!empatadoNoAlvo && m.inTb){
+    m.inTb=false; m.tb1=0; m.tb2=0;      // saiu do 6—6, sai do tie
+  }
+}
+
 function novoSet(m){
   m.g1=0;m.g2=0;m.inTb=false;m.tb1=0;m.tb2=0;
   // terceiro set vira super tiebreak até 10
@@ -1192,8 +1212,11 @@ function pintarOverlay(m){
   $('ovApo').classList.toggle('out', escondeBug);
 
   // — fim de jogo —
+  // A cartela do vencedor obedece à cena, como todo o resto: OCULTAR
+  // TUDO, PRÓXIMOS ou PATROCÍNIO tiram ela da tela. Antes ela ficava
+  // por cima de tudo até alguém começar outro jogo.
   const fim=$('ovFim'), veil=$('ovVeil');
-  if(m.status==='finished'){
+  if(m.status==='finished' && cena==='placar'){
     const venc=m.vencedor===1?1:2, perd=venc===1?2:1;
     $('fCtx').textContent=[m.torneio,m.cat,m.fase].filter(Boolean).join(' · ').toUpperCase();
     $('fW1').textContent=nome(venc===1?m.t1:m.t2);
@@ -1203,14 +1226,17 @@ function pintarOverlay(m){
       return '<span class="'+(meu>dele?'w':'')+'">'+meu+'</span>';
     }).join('');
     $('fS1').innerHTML=caixas(venc); $('fS2').innerHTML=caixas(perd);
-    const dur=m.inicio?Math.max(1,Math.round((Date.now()-m.inicio)/60000)):null;
-    $('fFt').innerHTML=(dur?'<span>DURAÇÃO '+dur+' MIN</span>':'')+
+    const dur=Math.max(1,Math.round(duracao(m)/60));
+    $('fFt').innerHTML='<span>DURAÇÃO '+dur+' MIN</span>'+
       (m.proxima?'<b>AVANÇA PARA '+String(m.proxima).toUpperCase()+'</b>':'');
-    if(!fim.classList.contains('show')){ anima(veil,'show'); anima(fim,'show'); }
+    if(!fim.classList.contains('show')){
+      fim.classList.remove('hide'); veil.classList.remove('hide');
+      anima(veil,'show'); anima(fim,'show');
+    }
     $('ovTens').classList.remove('show'); $('ovTens').classList.add('hide');
-  } else {
-    fim.classList.remove('show'); veil.classList.remove('show');
-    fim.style.opacity=''; veil.style.opacity='';
+  } else if(fim.classList.contains('show')){
+    fim.classList.remove('show');  fim.classList.add('hide');
+    veil.classList.remove('show'); veil.classList.add('hide');
   }
   ultimoV=m.v; ultimoM=m;
 }
@@ -1484,7 +1510,11 @@ function ajustar(cod){
   if(alvo==='s1') M.s1=lim(M.s1+sinal,9);
   if(alvo==='s2') M.s2=lim(M.s2+sinal,9);
   // se o ajuste tirou a partida do fim, ela volta a rodar
-  if(M.status==='finished' && M.s1<precisaSets(M) && M.s2<precisaSets(M)){ M.status='playing'; M.vencedor=null; }
+  if(M.status==='finished' && M.s1<precisaSets(M) && M.s2<precisaSets(M)){
+    M.status='playing'; M.vencedor=null; M.fimEm=null;
+  }
+  // e o placar corrigido é relido: 6—6 liga o tiebreak, sair dele desliga
+  if(alvo==='g1'||alvo==='g2') conferirTiebreak(M);
   M.evento=null; M.v++;
   pintarControle(); publicar();
 }
