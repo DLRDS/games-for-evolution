@@ -64,6 +64,22 @@
   .empty{padding:40px 20px;text-align:center;color:var(--label);font-size:15px;}
   a{color:var(--orange);text-decoration:none;}
   .sep{height:1px;background:var(--line);margin:22px 0;}
+  .clic{cursor:pointer;transition:border-color .15s;border:1.5px solid transparent;}
+  .clic:hover{border-color:var(--line);}
+  .back{display:flex;align-items:center;gap:8px;color:var(--white);font-family:var(--fm);
+    font-size:12px;font-weight:700;letter-spacing:.12em;margin-bottom:18px;}
+  .mini{width:70px;background:var(--ink);border:1.5px solid var(--line);border-radius:10px;
+    padding:8px 10px;font-size:15px;color:var(--white);outline:none;text-align:center;}
+  .mini:focus{border-color:var(--orange);}
+  .nome-in{flex:1;min-width:0;background:var(--ink);border:1.5px solid var(--line);border-radius:10px;
+    padding:8px 12px;font-size:15px;color:var(--white);outline:none;}
+  .nome-in:focus{border-color:var(--orange);}
+  .sel{background:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;
+    font-size:14px;color:var(--white);outline:none;}
+  .del{color:var(--danger);font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.12em;}
+  .subtabs{display:flex;gap:8px;margin:18px 0 14px;flex-wrap:wrap;}
+  .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:var(--white);
+    color:var(--ink);border-radius:999px;padding:12px 22px;font-size:15px;font-weight:700;z-index:99;}
 </style>
 </head>
 <body>
@@ -109,8 +125,10 @@
       <button class="tab" data-t="lives">TRANSMISSÕES</button>
     </div>
     <div id="conteudo"></div>
+    <div id="detalhe" class="hidden"></div>
   </div>
 </div>
+<div class="toast hidden" id="toast"></div>
 
 <script>
 const SUPA_URL='https://jvmgsedxwakzfpskvfpf.supabase.co';
@@ -153,6 +171,7 @@ function pintar(){
     bloco(t.transmissoes,'Transmissões')+
     bloco(t.no_ar,'No ar agora', t.no_ar>0?'var(--orange)':'');
 
+  if(GRUPO) return;   // detalhe aberto: não redesenha por baixo
   if(ABA==='grupos') pintarGrupos(); else pintarLives();
 }
 
@@ -164,7 +183,7 @@ function pintarGrupos(){
     `<div class="body-sm" style="margin-bottom:12px">${gs.length} ${gs.length===1?'grupo':'grupos'} · ${viv} ${viv===1?'ativo':'ativos'} nos últimos 14 dias</div>`+
     '<div class="stack-sm">'+gs.map(g=>{
       const s=situacao(g.ultima_sessao);
-      return `<div class="line">
+      return `<div class="line clic" onclick="abrirGrupo('${esc(g.codigo)}')">
         <div class="row" style="align-items:flex-start">
           <div class="grow">
             <div class="trunc" style="font-size:17px;font-weight:700">${esc(g.nome||g.codigo)}</div>
@@ -212,6 +231,127 @@ function pintarLives(){
   }).join('')+'</div>';
 }
 
+// ═════════ DETALHE E EDIÇÃO DE UM GRUPO ═════════
+let GRUPO=null, SUBABA='jogadores';
+
+function aviso(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.remove('hidden');
+  clearTimeout(window._tt); window._tt=setTimeout(()=>t.classList.add('hidden'),2400);
+}
+async function rpc(fn,args){
+  const {data,error}=await supa.rpc(fn,Object.assign({p_key:CHAVE},args||{}));
+  if(error) return null;
+  return data;
+}
+async function abrirGrupo(cod){
+  const d=await rpc('admin_grupo',{p_grupo:cod});
+  if(!d||d.erro){ aviso('Não consegui abrir. O SQL de detalhe já foi rodado?'); return; }
+  GRUPO=d; SUBABA='jogadores';
+  $('conteudo').classList.add('hidden');
+  document.querySelector('.tabs').classList.add('hidden');
+  $('detalhe').classList.remove('hidden');
+  pintarDetalhe();
+  window.scrollTo(0,0);
+}
+function fecharGrupo(){
+  GRUPO=null;
+  $('detalhe').classList.add('hidden');
+  $('conteudo').classList.remove('hidden');
+  document.querySelector('.tabs').classList.remove('hidden');
+  carregar();
+}
+function subaba(s){ SUBABA=s; pintarDetalhe(); }
+
+function pintarDetalhe(){
+  const g=GRUPO.grupo||{}, js=GRUPO.jogadores||[], ss=GRUPO.sessoes||[], ms=GRUPO.partidas||[];
+  const nomePorId={}; js.forEach(p=>nomePorId[p.id]=p.nome);
+  const dupla=arr=>(arr||[]).map(id=>nomePorId[id]||'?').join(' & ');
+
+  const cab=`
+    <div class="back" onclick="fecharGrupo()">← TODOS OS GRUPOS</div>
+    <div class="panel stack" style="gap:14px;margin-bottom:18px">
+      <div class="row">
+        <input class="nome-in" id="gNome" value="${esc(g.nome||'')}" placeholder="Nome do grupo" style="font-size:19px;font-weight:700">
+        <button class="btn btn-p" style="padding:10px 18px;font-size:15px" onclick="salvarGrupo()">Salvar</button>
+      </div>
+      <div class="mono-md">CÓDIGO ${esc(g.codigo||'')} · CRIADO ${dt(g.criado_em)}</div>
+      <div style="display:flex;gap:22px;flex-wrap:wrap">
+        <div><div class="num" style="font-size:22px">${js.length}</div><div class="mono" style="margin-top:2px">jogadores</div></div>
+        <div><div class="num" style="font-size:22px">${ss.length}</div><div class="mono" style="margin-top:2px">sessões</div></div>
+        <div><div class="num" style="font-size:22px">${ms.length}</div><div class="mono" style="margin-top:2px">partidas</div></div>
+      </div>
+      <div><button class="del" onclick="apagar('grupo','${esc(g.codigo)}','o grupo inteiro, com todos os jogadores, sessões e partidas')">APAGAR ESTE GRUPO</button></div>
+    </div>
+    <div class="subtabs">
+      ${[['jogadores','JOGADORES'],['sessoes','SESSÕES'],['partidas','PARTIDAS']].map(([k,l])=>
+        `<button class="tab ${SUBABA===k?'on':''}" onclick="subaba('${k}')">${l}</button>`).join('')}
+    </div>`;
+
+  let corpo='';
+  if(SUBABA==='jogadores'){
+    corpo = js.length ? '<div class="stack-sm">'+js.map(p=>`
+      <div class="line">
+        <div class="row" style="flex-wrap:wrap;gap:10px">
+          <input class="nome-in" id="n_${p.id}" value="${esc(p.nome||'')}">
+          <input class="mini" id="e_${p.id}" type="number" value="${p.elo??1000}">
+          <select class="sel" id="r_${p.id}">
+            ${[['__nenhum__','—'],['dono','Dono'],['presidente','Presidente'],['vice','Vice']].map(([v,l])=>
+              `<option value="${v}" ${((p.papel||'__nenhum__')===v)?'selected':''}>${l}</option>`).join('')}
+          </select>
+          <button class="btn btn-q" style="padding:8px 16px;font-size:14px" onclick="salvarJogador('${p.id}')">Salvar</button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div class="mono-md">${p.tem_conta?'COM CONTA':'SEM CONTA'} · ${p.partidas} PARTIDAS</div>
+          <button class="del" onclick="apagar('jogador','${p.id}','o jogador ${esc(p.nome)}')">REMOVER</button>
+        </div>
+      </div>`).join('')+'</div>' : '<div class="empty">Nenhum jogador neste grupo.</div>';
+  }
+  else if(SUBABA==='sessoes'){
+    corpo = ss.length ? '<div class="stack-sm">'+ss.map(s=>`
+      <div class="line row">
+        <div class="grow">
+          <div class="trunc" style="font-size:16px;font-weight:600">${esc(s.nome||'Sessão')} · ${dt(s.data)}</div>
+          <div class="mono-md" style="margin-top:5px">${String(s.status||'').toUpperCase()} · ${s.confirmados} CONFIRMADOS · ${s.partidas} PARTIDAS</div>
+        </div>
+        <button class="del" onclick="apagar('sessao','${s.id}','esta sessão e as partidas dela')">APAGAR</button>
+      </div>`).join('')+'</div>' : '<div class="empty">Nenhuma sessão neste grupo.</div>';
+  }
+  else {
+    corpo = ms.length ? '<div class="stack-sm">'+ms.map(m=>`
+      <div class="line row">
+        <div class="grow">
+          <div class="trunc" style="font-size:16px;font-weight:600">${esc(dupla(m.time1))} × ${esc(dupla(m.time2))}</div>
+          <div class="mono-md" style="margin-top:5px">${dt(m.data)} · VENCEU O TIME ${m.vencedor||'?'}</div>
+        </div>
+        <div class="num" style="font-size:22px;color:var(--orange)">${m.games1}—${m.games2}</div>
+        <button class="del" onclick="apagar('partida','${m.id}','esta partida')">APAGAR</button>
+      </div>`).join('')+'</div>' : '<div class="empty">Nenhuma partida neste grupo.</div>';
+  }
+  $('detalhe').innerHTML=cab+corpo;
+}
+
+async function salvarGrupo(){
+  const nome=$('gNome').value.trim();
+  const ok=await rpc('admin_set_grupo',{p_grupo:GRUPO.grupo.codigo,p_nome:nome});
+  if(ok){ GRUPO.grupo.nome=nome; aviso('Grupo salvo'); } else aviso('Não consegui salvar');
+}
+async function salvarJogador(id){
+  const nome=$('n_'+id).value.trim();
+  const elo=parseInt($('e_'+id).value,10);
+  const papel=$('r_'+id).value;
+  const ok=await rpc('admin_set_jogador',{p_id:id,p_nome:nome,p_elo:isNaN(elo)?null:elo,p_papel:papel});
+  if(ok) aviso('Jogador salvo'); else aviso('Não consegui salvar');
+}
+async function apagar(tipo,id,oque){
+  if(!confirm('Apagar '+oque+'?\n\nIsso não tem desfazer.')) return;
+  if(tipo==='grupo' && !confirm('Tem certeza mesmo? Todos os dados deste grupo serão perdidos.')) return;
+  const r=await rpc('admin_apagar',{p_tipo:tipo,p_id:id});
+  if(!r||r.erro){ aviso('Não consegui apagar'); return; }
+  aviso('Apagado');
+  if(tipo==='grupo') fecharGrupo();
+  else abrirGrupo(GRUPO.grupo.codigo);
+}
+
 async function entrar(){
   const k=$('key').value.trim();
   if(!k) return;
@@ -233,7 +373,10 @@ $('btnEnter').onclick=entrar;
 $('key').addEventListener('keydown',e=>{ if(e.key==='Enter') entrar(); });
 $('btnReload').onclick=carregar;
 $('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');}catch(e){}
-  clearInterval(timer); CHAVE=null; $('board').classList.add('hidden'); $('auth').classList.remove('hidden'); $('key').value=''; };
+  clearInterval(timer); CHAVE=null; GRUPO=null;
+  $('detalhe').classList.add('hidden'); $('conteudo').classList.remove('hidden');
+  document.querySelector('.tabs').classList.remove('hidden');
+  $('board').classList.add('hidden'); $('auth').classList.remove('hidden'); $('key').value=''; };
 
 // entra sozinho se a chave já estiver guardada neste aparelho
 (async()=>{

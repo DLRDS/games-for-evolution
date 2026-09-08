@@ -53,6 +53,21 @@
   .tap{background:var(--surf);border-radius:20px;padding:20px;text-align:left;width:100%;}
   .tap.lead{border:1.5px solid var(--orange);}
   .big{font-family:var(--fd);font-size:64px;line-height:.85;letter-spacing:-.04em;}
+  .srvgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .srvb{background:var(--surf);border:1.5px solid var(--line);border-radius:14px;padding:12px;
+    font-size:15px;font-weight:600;color:var(--label);text-align:center;}
+  .srvb.on{border-color:var(--orange);color:var(--orange);}
+  .adj{display:flex;align-items:center;gap:8px;}
+  .adjb{width:44px;height:44px;border-radius:999px;border:1.5px solid var(--line);
+    font-family:var(--fd);font-size:20px;color:var(--white);display:flex;align-items:center;justify-content:center;}
+  .adjb:active{border-color:var(--orange);color:var(--orange);}
+  .cenas{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .cenab{background:var(--surf);border:1.5px solid var(--line);border-radius:14px;padding:13px;
+    font-family:var(--fm);font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--label);text-align:center;}
+  .cenab.on{background:var(--orange);border-color:var(--orange);color:var(--ink);}
+  details{background:var(--surf);border-radius:16px;padding:14px 16px;}
+  summary{font-family:var(--fm);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--label);cursor:pointer;}
+  details[open] summary{margin-bottom:14px;}
   .warn{background:rgba(255,102,0,.12);border:1.5px solid var(--orange);border-radius:16px;padding:14px 16px;font-size:14px;}
 
   /* ═════════ MODO OVERLAY (OBS · 1920×1080) ═════════ */
@@ -146,6 +161,38 @@
   .ident .meta{font-family:var(--fm);font-size:26px;letter-spacing:.16em;color:var(--label);display:flex;gap:24px;}
   .brandTR{position:absolute;right:64px;top:56px;background:var(--ink);padding:16px 22px;display:flex;align-items:center;gap:16px;}
 
+  /* — REPLAY — */
+  .rep{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;}
+  .rep.show{animation:fadeIn .35s ease forwards;}
+  .rep.hide{animation:fadeOut .3s ease forwards;}
+  @keyframes fadeOut{to{opacity:0}}
+  .rep .bars{position:absolute;top:0;left:0;right:0;display:flex;gap:6px;padding:0 6px;height:26px;}
+  .rep .bars i{flex:1;background:var(--orange);border-radius:999px 999px 0 0;display:block;
+    transform:scaleY(0);transform-origin:top;animation:barDrop .5s cubic-bezier(.2,1.1,.3,1) forwards;}
+  .rep .bars i:last-child{background:var(--ink);}
+  .rep .bars i:nth-child(2){animation-delay:.05s} .rep .bars i:nth-child(3){animation-delay:.1s}
+  .rep .bars i:nth-child(4){animation-delay:.15s} .rep .bars i:nth-child(5){animation-delay:.2s}
+  @keyframes barDrop{to{transform:scaleY(1)}}
+  .rep .box{background:var(--ink);padding:30px 44px;display:flex;align-items:center;gap:28px;}
+  .rep .mtr{display:flex;align-items:flex-end;gap:8px;height:62px;}
+  .rep .mtr i{width:16px;border-radius:999px;background:var(--orange);display:block;}
+  .rep .mtr i:last-child{background:var(--line);}
+  .rep .w{font-family:var(--fd);font-size:96px;line-height:.9;letter-spacing:-.045em;color:var(--white);}
+
+  /* — PATROCÍNIO — */
+  .spo{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    background:rgba(13,13,13,.72);opacity:0;pointer-events:none;}
+  .spo.show{animation:fadeIn .45s ease forwards;}
+  .spo.hide{animation:fadeOut .35s ease forwards;}
+  .spo .box{background:var(--ink);padding:40px 36px;display:flex;flex-direction:column;gap:30px;max-width:1200px;}
+  .spo .lb{font-family:var(--fm);font-size:28px;font-weight:700;letter-spacing:.2em;color:var(--orange);}
+  .spo .nm{font-family:var(--fd);font-size:64px;line-height:.95;letter-spacing:-.04em;color:var(--white);}
+  .spo .ft{display:flex;align-items:center;gap:16px;}
+  .spo .ft .wm{font-family:var(--fd);font-size:24px;letter-spacing:-.03em;color:var(--white);}
+  .spo .ft .wm b{color:var(--orange);font-weight:inherit;}
+  .spo .ft .tn{font-family:var(--fm);font-size:24px;letter-spacing:.16em;color:var(--label);}
+
   /* — FIM DE JOGO — */
   .veil{position:absolute;inset:0;background:rgba(13,13,13,.6);opacity:0;}
   .fim{position:absolute;left:64px;right:64px;top:140px;display:flex;flex-direction:column;gap:26px;opacity:0;transform:translateY(30px);}
@@ -217,6 +264,26 @@
     <div style="font-family:var(--fd);font-size:24px;letter-spacing:-.03em">LEVEL<span style="color:var(--orange)">BT</span></div>
   </div>
 
+  <div class="rep" id="ovRep">
+    <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="box">
+      <div class="mtr"><i style="height:26px"></i><i style="height:38px"></i><i style="height:50px"></i><i style="height:62px"></i></div>
+      <div class="w">REPLAY</div>
+    </div>
+  </div>
+
+  <div class="spo" id="ovSpo">
+    <div class="box">
+      <div class="lb">APRESENTADO POR</div>
+      <div class="nm" id="spoNome">—</div>
+      <div class="ft">
+        <div class="meter" style="height:26px;gap:4px"><i class="on" style="width:7px;height:11px"></i><i class="on" style="width:7px;height:17px"></i><i class="on" style="width:7px;height:22px"></i><i style="width:7px;height:26px"></i></div>
+        <div class="wm">LEVEL<b>BT</b></div>
+        <div class="tn" id="spoTorn"></div>
+      </div>
+    </div>
+  </div>
+
   <div class="fim" id="ovFim">
     <div class="hd"><span class="tag">FIM DE JOGO</span><span class="ctx" id="fCtx"></span></div>
     <div class="box">
@@ -256,6 +323,7 @@
         <div class="field"><label>Categoria</label><input class="input" id="cat" placeholder="Ex.: Mista B" maxlength="18"></div>
         <div class="field"><label>Fase</label><input class="input" id="fase" placeholder="Ex.: Quartas de final" maxlength="22"></div>
         <div class="field"><label>Quadra</label><input class="input" id="quadra" placeholder="Ex.: Quadra 2" maxlength="16"></div>
+        <div class="field"><label>Patrocinador (opcional)</label><input class="input" id="patroc" placeholder="Ex.: Arena Beach" maxlength="30"></div>
       </div>
       <div class="grid2">
         <div class="field"><label>Games</label><div class="seg" id="segGames"></div></div>
@@ -297,14 +365,47 @@
         <div class="row" style="margin-top:8px"><div class="mono" id="lg2">SETS 0 · GAMES 0</div><div class="mono" id="ls2"></div></div>
       </button>
     </div>
-    <div class="stack" style="gap:8px;margin-top:14px">
-      <div class="grid2">
-        <button class="btn btn-q" id="btnUndo">Desfazer</button>
-        <button class="btn btn-q" id="btnServe">Trocar saque</button>
+    <div class="stack" style="gap:10px;margin-top:14px">
+      <button class="btn btn-q btn-full" id="btnUndo">Desfazer último ponto</button>
+
+      <div class="stack" style="gap:10px">
+        <div class="mono">O que aparece na transmissão</div>
+        <div class="cenas" id="cenas">
+          <button class="cenab" data-c="placar">PLACAR</button>
+          <button class="cenab" data-c="cartela">CARTELA</button>
+          <button class="cenab" data-c="replay">REPLAY</button>
+          <button class="cenab" data-c="patroc">PATROCÍNIO</button>
+          <button class="cenab" data-c="oculto" style="grid-column:1/-1">OCULTAR TUDO</button>
+        </div>
       </div>
-      <button class="btn btn-q btn-full" id="btnCartela">Mostrar cartela da partida</button>
+
+      <details>
+        <summary>Quem está sacando</summary>
+        <div class="srvgrid" id="srvgrid"></div>
+      </details>
+
+      <details>
+        <summary>Corrigir placar</summary>
+        <div class="stack" style="gap:14px">
+          <div class="row"><div class="body-sm" id="ajN1">Dupla 1</div>
+            <div class="adj"><button class="adjb" data-a="p1-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p1+">+</button></div></div>
+          <div class="row"><div class="body-sm">&nbsp;</div>
+            <div class="adj"><button class="adjb" data-a="g1-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g1+">+</button></div></div>
+          <div style="height:1px;background:var(--line)"></div>
+          <div class="row"><div class="body-sm" id="ajN2">Dupla 2</div>
+            <div class="adj"><button class="adjb" data-a="p2-">−</button><span class="mono" style="width:54px;text-align:center">PONTO</span><button class="adjb" data-a="p2+">+</button></div></div>
+          <div class="row"><div class="body-sm">&nbsp;</div>
+            <div class="adj"><button class="adjb" data-a="g2-">−</button><span class="mono" style="width:54px;text-align:center">GAME</span><button class="adjb" data-a="g2+">+</button></div></div>
+          <div class="row"><div class="body-sm">Sets</div>
+            <div class="adj"><button class="adjb" data-a="s1-">−</button><span class="mono" style="width:54px;text-align:center" id="ajSets">0-0</span><button class="adjb" data-a="s2+">+</button></div></div>
+        </div>
+      </details>
+
       <button class="btn btn-q btn-full" id="btnLink">Ver link do OBS</button>
-      <button class="btn btn-q btn-full" style="color:var(--danger);border-color:var(--danger)" id="btnEnd">Encerrar partida</button>
+      <div class="grid2">
+        <button class="btn btn-q" id="btnNova">Nova transmissão</button>
+        <button class="btn btn-q" style="color:var(--danger);border-color:var(--danger)" id="btnEnd">Encerrar</button>
+      </div>
     </div>
     <div class="body-sm" style="text-align:center;margin-top:14px" id="syncMsg">—</div>
   </div>
@@ -330,7 +431,8 @@ const OVERLAY_TOKEN=qs.get('overlay');
 function novaPartida(o){
   return {
     t1:o.t1, t2:o.t2, cat:o.cat||'', fase:o.fase||'',
-    torneio:o.torneio||'', quadra:o.quadra||'', proxima:'', cartela:'', inicio:Date.now(),
+    torneio:o.torneio||'', quadra:o.quadra||'', patrocinador:o.patrocinador||'',
+    proxima:'', cena:'placar', cartela:'', inicio:Date.now(),
     alvo:o.alvo||6, tbPts:o.tbPts||7, superTb:10, nSets:o.nSets||3, ouro:true,
     p1:0,p2:0,        // pontos do game
     g1:0,g2:0,        // games do set
@@ -515,7 +617,7 @@ function pintarOverlay(m){
   $('ovMark').style.display = jogando?'block':'none';
 
   // — selo de tensão —
-  const t=tensao(m);
+  const t=(m.cena&&m.cena!=='placar')?null:tensao(m);
   if(t!==tensaoAtual){
     tensaoAtual=t;
     const el=$('ovTens');
@@ -539,23 +641,37 @@ function pintarOverlay(m){
     }
   }
 
-  // — cartela de abertura (acionada pelo controle) —
-  const ic=m.cartela||'';
-  if(ic!==identAtual){
-    identAtual=ic;
-    const el=$('ovIdent'), br=$('ovBrandTR');
-    if(ic){
+  // — cena (placar · oculto · cartela · replay · patrocínio) —
+  const cena=m.cena||'placar';
+  if(cena!==identAtual){
+    identAtual=cena;
+    const ident=$('ovIdent'), br=$('ovBrandTR'), rep=$('ovRep'), spo=$('ovSpo');
+    const fora=el=>{ el.classList.remove('show'); el.classList.add('hide'); };
+
+    // recolhe tudo antes de montar a cena nova
+    fora(ident); fora(rep); fora(spo); br.classList.add('hidden');
+
+    if(cena==='cartela'){
       $('idTorn').textContent=(m.torneio||'LEVEL BT').toUpperCase();
       $('idCat').textContent=(m.cat||'—').toUpperCase();
       $('idFase').textContent=(m.fase||'').toUpperCase();
       $('idMeta').innerHTML=[m.quadra,new Date().toLocaleDateString('pt-BR')].filter(Boolean)
         .map(x=>'<span>'+String(x).toUpperCase()+'</span>').join('');
-      el.classList.remove('hide'); anima(el,'show'); br.classList.remove('hidden');
-      clearTimeout(identTimer);
-      identTimer=setTimeout(()=>{ el.classList.remove('show'); el.classList.add('hide');
-        setTimeout(()=>br.classList.add('hidden'),400); },9000);
+      ident.classList.remove('hide'); anima(ident,'show'); br.classList.remove('hidden');
+    } else if(cena==='replay'){
+      rep.classList.remove('hide'); anima(rep,'show');
+      rep.querySelectorAll('.bars i').forEach(i=>{ i.style.animation='none'; void i.offsetWidth; i.style.animation=''; });
+    } else if(cena==='patroc'){
+      $('spoNome').textContent=(m.patrocinador||'SEU PATROCINADOR').toUpperCase();
+      $('spoTorn').textContent=(m.torneio||'').toUpperCase();
+      spo.classList.remove('hide'); anima(spo,'show');
     }
   }
+  // o placar some nas cenas que ocupam a tela
+  const escondeBug = cena==='oculto'||cena==='cartela'||cena==='replay'||cena==='patroc';
+  $('bug').classList.toggle('out', escondeBug || m.status==='finished');
+  $('ovPills').style.opacity   = escondeBug?'0':'';
+  $('ovSetline').style.opacity = escondeBug?'0':'';
 
   // — fim de jogo —
   const fim=$('ovFim'), veil=$('ovVeil');
@@ -573,12 +689,10 @@ function pintarOverlay(m){
     $('fFt').innerHTML=(dur?'<span>DURAÇÃO '+dur+' MIN</span>':'')+
       (m.proxima?'<b>AVANÇA PARA '+String(m.proxima).toUpperCase()+'</b>':'');
     if(!fim.classList.contains('show')){ anima(veil,'show'); anima(fim,'show'); }
-    $('bug').classList.add('out');
     $('ovTens').classList.remove('show'); $('ovTens').classList.add('hide');
   } else {
     fim.classList.remove('show'); veil.classList.remove('show');
     fim.style.opacity=''; veil.style.opacity='';
-    $('bug').classList.remove('out');
   }
   ultimoV=m.v;
 }
@@ -645,7 +759,46 @@ function pintarControle(){
   $('tap1').classList.toggle('lead',sq===1&&m.status==='playing');
   $('tap2').classList.toggle('lead',sq===2&&m.status==='playing');
   $('btnUndo').disabled=!hist.length;
+
+  // quem saca: um botão por jogador
+  const todos=[...m.t1,...m.t2];
+  $('srvgrid').innerHTML=todos.map((n,i)=>
+    `<button class="srvb ${m.saque===i?'on':''}" data-s="${i}">${esc(n)}</button>`).join('');
+  $('srvgrid').querySelectorAll('.srvb').forEach(b=>b.onclick=()=>{
+    hist.push(JSON.stringify(M)); M.saque=Number(b.dataset.s); M.v++; pintarControle(); publicar(); });
+
+  // ajustes
+  $('ajN1').textContent=nome(m.t1); $('ajN2').textContent=nome(m.t2);
+  $('ajSets').textContent=m.s1+'-'+m.s2;
+
+  // cena ativa
+  const cena=m.cena||'placar';
+  document.querySelectorAll('.cenab').forEach(b=>b.classList.toggle('on',b.dataset.c===cena));
 }
+function esc(s){ return String(s??'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ajuste manual: mexe direto no placar, sem passar pelas regras
+function ajustar(cod){
+  hist.push(JSON.stringify(M));
+  const alvo=cod.slice(0,2), sinal=cod.slice(2)==='+'?1:-1;
+  const lim=(v,max)=>Math.max(0,Math.min(max,v));
+  if(M.inTb){
+    if(alvo==='p1') M.tb1=lim(M.tb1+sinal,99);
+    if(alvo==='p2') M.tb2=lim(M.tb2+sinal,99);
+  } else {
+    if(alvo==='p1') M.p1=lim(M.p1+sinal,4);
+    if(alvo==='p2') M.p2=lim(M.p2+sinal,4);
+  }
+  if(alvo==='g1') M.g1=lim(M.g1+sinal,99);
+  if(alvo==='g2') M.g2=lim(M.g2+sinal,99);
+  if(alvo==='s1') M.s1=lim(M.s1+sinal,9);
+  if(alvo==='s2') M.s2=lim(M.s2+sinal,9);
+  // se o ajuste tirou a partida do fim, ela volta a rodar
+  if(M.status==='finished' && M.s1<precisaSets(M) && M.s2<precisaSets(M)){ M.status='playing'; M.vencedor=null; }
+  M.evento=null; M.v++;
+  pintarControle(); publicar();
+}
+function setCena(c){ M.cena=c; M.v++; pintarControle(); publicar(); }
 
 async function iniciar(){
   const t1=[$('a1').value.trim(),$('a2').value.trim()].filter(Boolean);
@@ -663,7 +816,7 @@ async function iniciar(){
     btn.disabled=false; btn.textContent='Gerar placar e link do OBS'; return;
   }
   M=novaPartida({t1,t2,cat:$('cat').value.trim(),fase:$('fase').value.trim(),
-                 torneio:$('torneio').value.trim(),quadra:$('quadra').value.trim(),
+                 torneio:$('torneio').value.trim(),quadra:$('quadra').value.trim(),patrocinador:$('patroc').value.trim(),
                  alvo:cfg.alvo,tbPts:cfg.tbPts,nSets:cfg.nSets});
   hist=[];
   const url=location.origin+location.pathname+'?overlay='+tokenPub;
@@ -699,11 +852,20 @@ function ligarControle(){
   $('tap1').onclick=()=>{pontoPara(M,1);pintarControle();publicar();};
   $('tap2').onclick=()=>{pontoPara(M,2);pintarControle();publicar();};
   $('btnUndo').onclick=()=>{ if(!hist.length)return; M=JSON.parse(hist.pop()); M.v++; pintarControle(); publicar(); };
-  $('btnServe').onclick=()=>{ trocaSaque(M); M.v++; pintarControle(); publicar(); };
   $('btnLink').onclick=()=>$('linkbox').classList.toggle('hidden');
-  $('btnCartela').onclick=()=>{ M.cartela='ident#'+Date.now(); M.v++; publicar();
-    $('btnCartela').textContent='Cartela no ar…';
-    setTimeout(()=>{ M.cartela=''; publicar(); $('btnCartela').textContent='Mostrar cartela da partida'; },9000); };
+  document.querySelectorAll('.cenab').forEach(b=>b.onclick=()=>setCena(b.dataset.c));
+  document.querySelectorAll('.adjb').forEach(b=>b.onclick=()=>ajustar(b.dataset.a));
+  $('btnNova').onclick=()=>{
+    if(!confirm('Começar uma transmissão nova? A atual para de ser atualizada.')) return;
+    try{ localStorage.removeItem('lbt_bc'); }catch(e){}
+    M=null; ctrlKey=null; tokenPub=null; hist=[];
+    $('live').classList.add('hidden'); $('linkbox').classList.add('hidden');
+    $('setup').classList.remove('hidden');
+    ['a1','a2','b1','b2','cat','fase','quadra','patroc'].forEach(id=>{ const e=$(id); if(e) e.value=''; });
+    const btn=$('btnStart'); btn.disabled=false; btn.textContent='Gerar placar e link do OBS';
+    $('setupMsg').style.display='none';
+    window.scrollTo(0,0);
+  };
   $('btnEnd').onclick=()=>{ if(!confirm('Encerrar a partida?'))return; hist.push(JSON.stringify(M));
     M.status='finished'; M.vencedor=(M.s1>M.s2)?1:(M.s2>M.s1?2:(M.g1>=M.g2?1:2));
     M.evento={t:'FIM',time:M.vencedor}; M.v++; pintarControle(); publicar(); };
