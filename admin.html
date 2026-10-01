@@ -100,13 +100,18 @@
     <div class="h1" style="margin-bottom:8px">PAINEL</div>
     <div class="body-sm" style="margin-bottom:22px">Visão de todos os grupos e transmissões da plataforma.</div>
     <div class="panel stack" style="gap:14px;max-width:460px">
-      <div class="field"><label>Chave de admin</label>
+      <div class="field"><label>Chave do app</label>
         <input class="input" id="key" type="password" placeholder="cole a chave aqui" autocomplete="off"></div>
+      <div class="field"><label>Chave da transmissão (opcional)</label>
+        <input class="input" id="keyLive" type="password" placeholder="cole a chave do outro banco" autocomplete="off">
+        <div class="body-sm">Sem ela, você entra e vê os grupos; a aba de transmissões fica vazia.</div></div>
       <div id="authMsg" class="body-sm" style="color:var(--danger);display:none"></div>
       <button class="btn btn-p" id="btnEnter" style="width:fit-content">Entrar</button>
     </div>
     <div class="body-sm" style="margin-top:16px;max-width:460px">
-      A chave é criada uma vez no Supabase, com o SQL do arquivo <code>admin-supabase.sql</code>.
+      São dois bancos separados, cada um com a sua chave. A do app vem do
+      <code>admin-supabase.sql</code>; a da transmissão, do <code>banco.sql</code>
+      do repositório <code>levelbt-live</code>.
     </div>
   </div>
 
@@ -133,13 +138,29 @@
 <div class="toast hidden" id="toast"></div>
 
 <script>
+// ── Os dois bancos ────────────────────────────────────────────────
+// O app e a transmissão viraram produtos separados, cada um no seu
+// projeto do Supabase. O painel continua sendo um só e fala com os
+// dois — são duas conexões e duas chaves de admin.
 const SUPA_URL='https://jvmgsedxwakzfpskvfpf.supabase.co';
 const SUPA_KEY='sb_publishable_HeNPn65BKSEuJx63GVTiGA_1d3yciE1';
 const supa=window.supabase?window.supabase.createClient(SUPA_URL,SUPA_KEY):null;
+
+// ⚠ TROQUE PELOS DADOS DO PROJETO DA TRANSMISSÃO (Settings → API).
+// Enquanto não trocar, a aba TRANSMISSÕES fica vazia e avisa o porquê;
+// a aba GRUPOS funciona normalmente.
+const LIVE_URL='COLE_AQUI_A_URL_DO_PROJETO_DA_TRANSMISSAO';
+const LIVE_KEY='COLE_AQUI_A_CHAVE_PUBLICA_DA_TRANSMISSAO';
+// Onde o Level BT Live está publicado. Troque se mudar o endereço.
+const LIVE_SITE='https://dlrds.github.io/levelbt-live/';
+const liveConfigurado = /^https:\/\/.+\.supabase\.co$/.test(LIVE_URL);
+const supaLive = (window.supabase && liveConfigurado)
+  ? window.supabase.createClient(LIVE_URL, LIVE_KEY) : null;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]));
 
 let CHAVE=null, DADOS=null, ABA='grupos', timer=null;
+let CHAVE_LIVE=null, ERRO_LIVE='';
 
 const dt=s=>{ if(!s)return'—'; try{ return new Date(s).toLocaleDateString('pt-BR'); }catch(e){ return '—'; } };
 const hr=s=>{ if(!s)return'—'; try{ return new Date(s).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }catch(e){ return '—'; } };
@@ -167,9 +188,44 @@ async function carregar(){
   if(!data){ ULTIMO_ERRO='O banco respondeu vazio.'; return false; }
   if(data.erro){ ULTIMO_ERRO='Chave inválida. Confira se você não trocou a chave depois.'; return false; }
   DADOS=data;
+  await carregarLives();          // um banco fora do ar não derruba o outro
   $('stamp').textContent='ATUALIZADO '+new Date().toLocaleTimeString('pt-BR');
   pintar();
   return true;
+}
+
+// As transmissões vêm do outro banco. Qualquer problema aqui vira um
+// aviso dentro da aba, nunca um erro que impede de ver os grupos.
+async function carregarLives(){
+  ERRO_LIVE='';
+  DADOS.transmissoes=[];
+  DADOS.totais=DADOS.totais||{};
+  DADOS.totais.transmissoes=0; DADOS.totais.no_ar=0;
+
+  if(!liveConfigurado){
+    ERRO_LIVE='O banco da transmissão ainda não foi configurado neste painel. '+
+              'Abra o admin.html e preencha LIVE_URL e LIVE_KEY.';
+    return;
+  }
+  if(!supaLive){ ERRO_LIVE='A biblioteca do Supabase não carregou.'; return; }
+  if(!CHAVE_LIVE){
+    ERRO_LIVE='Falta a chave de admin do banco da transmissão. '+
+              'Ela é diferente da chave do app.';
+    return;
+  }
+  try{
+    const {data,error}=await supaLive.rpc('admin_lives',{p_key:CHAVE_LIVE});
+    if(error) throw error;
+    if(!data)       { ERRO_LIVE='O banco da transmissão respondeu vazio.'; return; }
+    if(data.erro)   { ERRO_LIVE='Chave de admin da transmissão inválida.'; return; }
+    DADOS.transmissoes=data.transmissoes||[];
+    DADOS.totais.transmissoes=(data.totais&&data.totais.transmissoes)||0;
+    DADOS.totais.no_ar=(data.totais&&data.totais.no_ar)||0;
+  }catch(e){
+    const bruto=[e.message,e.details,e.hint,e.code].filter(Boolean).join(' · ');
+    ERRO_LIVE='admin_lives → '+(bruto||'erro sem mensagem');
+    console.error('[LevelBT] admin_lives',e);
+  }
 }
 
 function pintar(){
@@ -214,17 +270,25 @@ function pintarGrupos(){
 
 function pintarLives(){
   const ls=DADOS.transmissoes||[];
-  const base=location.origin+location.pathname.replace(/admin\.html$/,'placar.html');
+  // O placar virou um site à parte. Estes links saem daqui para lá.
+  const base=LIVE_SITE;
+  const novo=base;
   const topo=`<div class="row" style="margin-bottom:14px">
       <div class="body-sm">${ls.length} ${ls.length===1?'transmissão':'transmissões'}</div>
-      <a href="${base}" target="_blank" class="btn btn-p" style="padding:11px 18px;font-size:15px">+ Nova transmissão</a>
+      <a href="${novo}" target="_blank" class="btn btn-p" style="padding:11px 18px;font-size:15px">+ Nova transmissão</a>
     </div>`;
+  if(ERRO_LIVE){
+    $('conteudo').innerHTML=topo+`<div class="empty">
+      <div style="font-size:17px;font-weight:700;color:var(--orange);margin-bottom:8px">Não consegui ler as transmissões</div>
+      <div style="max-width:520px;margin:0 auto">${esc(ERRO_LIVE)}</div>
+    </div>`;
+    return;
+  }
   if(!ls.length){
     $('conteudo').innerHTML=topo+`<div class="empty">
       <div style="font-size:17px;font-weight:700;color:var(--white);margin-bottom:8px">Nenhuma transmissão ainda</div>
-      <div>As transmissões são criadas na página do placar.<br>
+      <div>As transmissões são criadas no Level BT Live, que agora é um site à parte.<br>
       Toque em <b style="color:var(--orange)">Nova transmissão</b> acima para abrir.</div>
-      <a href="${base}?overlay=demo" target="_blank" class="btn btn-q" style="margin-top:16px">Ver demonstração do overlay</a>
     </div>`;
     return;
   }
@@ -387,11 +451,16 @@ async function entrar(){
   const k=$('key').value.trim();
   if(!k) return;
   CHAVE=k;
+  CHAVE_LIVE=$('keyLive').value.trim()||null;
   $('btnEnter').textContent='Entrando…';
   const ok=await carregar();
   $('btnEnter').textContent='Entrar';
   if(!ok){ $('authMsg').textContent=ULTIMO_ERRO||'Não consegui entrar.'; $('authMsg').style.display='block'; CHAVE=null; return; }
-  try{ localStorage.setItem('lbt_admin',k); }catch(e){}
+  try{
+    localStorage.setItem('lbt_admin',k);
+    CHAVE_LIVE ? localStorage.setItem('lbt_admin_live',CHAVE_LIVE)
+               : localStorage.removeItem('lbt_admin_live');
+  }catch(e){}
   $('auth').classList.add('hidden'); $('board').classList.remove('hidden');
   clearInterval(timer); timer=setInterval(carregar,30000);
 }
@@ -409,7 +478,8 @@ $('btnInicio').onclick=()=>{
   window.scrollTo(0,0);
 };
 $('btnReload').onclick=carregar;
-$('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');}catch(e){}
+$('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');
+    localStorage.removeItem('lbt_admin_live');}catch(e){}
   clearInterval(timer); CHAVE=null; GRUPO=null;
   $('detalhe').classList.add('hidden'); $('conteudo').classList.remove('hidden');
   document.querySelector('.tabs').classList.remove('hidden');
@@ -417,7 +487,8 @@ $('btnOut').onclick=()=>{ try{localStorage.removeItem('lbt_admin');}catch(e){}
 
 // entra sozinho se a chave já estiver guardada neste aparelho
 (async()=>{
-  let k=null; try{ k=localStorage.getItem('lbt_admin'); }catch(e){}
+  let k=null; try{ k=localStorage.getItem('lbt_admin');
+    CHAVE_LIVE=localStorage.getItem('lbt_admin_live')||null; }catch(e){}
   const q=new URLSearchParams(location.search).get('k');
   if(q) k=q;
   if(k){ $('key').value=k; await entrar(); }
