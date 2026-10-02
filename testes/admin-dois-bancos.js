@@ -31,12 +31,12 @@ const LIVES={
 
 // comoLive: 'ok' | 'erro' | 'chave-ruim' | 'sem-config'
 function abrir(comoLive){
-  const semConfig = comoLive==='sem-config';
-  let fonte=html;
-  if(!semConfig){
-    fonte=fonte.replace("const LIVE_URL='COLE_AQUI_A_URL_DO_PROJETO_DA_TRANSMISSAO';",
-                        "const LIVE_URL='https://exemplo-live.supabase.co';");
-  }
+  // o arquivo real já está ligado; aqui só trocamos o endereço para um
+  // de mentira, ou devolvemos o marcador para testar o aviso
+  let fonte=html.replace(/const LIVE_URL='[^']*';/,
+    comoLive==='sem-config'
+      ? "const LIVE_URL='COLE_AQUI_A_URL_DO_PROJETO_DA_TRANSMISSAO';"
+      : "const LIVE_URL='https://exemplo-live.supabase.co';");
   return new JSDOM(fonte,{runScripts:'dangerously',url:'https://x/admin.html',pretendToBeVisual:true,
    beforeParse(w){
     w.scrollTo=()=>{};
@@ -69,8 +69,15 @@ async function entrar(w,comChaveLive){
 console.log('── OS DOIS BANCOS SEPARADOS ──');
 t('o painel tem duas conexões', ()=>html.includes('const supaLive'));
 t('e pede duas chaves na entrada', ()=>html.includes('id="keyLive"'));
-t('o banco da transmissão está marcado para você preencher',
-  ()=>html.includes('COLE_AQUI_A_URL_DO_PROJETO_DA_TRANSMISSAO'));
+t('o banco da transmissão está ligado, com URL de verdade',
+  ()=>/const LIVE_URL='https:\/\/[a-z0-9]+\.supabase\.co';/.test(html));
+t('e com chave publicável, nunca secreta',
+  ()=>/const LIVE_KEY='sb_publishable_/.test(html) && !html.includes('sb_secret'));
+t('os dois bancos são projetos diferentes', ()=>{
+  const app =(html.match(/const SUPA_URL='https:\/\/([a-z0-9]+)\./)||[])[1];
+  const live=(html.match(/const LIVE_URL='https:\/\/([a-z0-9]+)\./)||[])[1];
+  return app && live && app!==live;
+});
 t('os links do placar apontam para o site novo',
   ()=>html.includes("const LIVE_SITE='https://dlrds.github.io/levelbt-live/'"));
 t('o painel não procura mais placar.html ao lado',
